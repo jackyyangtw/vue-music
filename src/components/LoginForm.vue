@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="loginShowAlert"
-    class="text-white text-center font-blod p-4 mb-4"
+    class="text-white text-center font-blod p-4 mb-4 transition"
     :class="loginAlertVariant"
   >
     {{ loginAlertMsg }}
@@ -41,6 +41,8 @@
 
 <script>
 import { ErrorMessage } from "vee-validate";
+import useUserStore from "@/stores/user";
+import { mapActions } from "pinia";
 export default {
   components: {
     ErrorMessage,
@@ -58,15 +60,23 @@ export default {
     };
   },
   methods: {
-    login(values) {
+    ...mapActions(useUserStore, ["authenticateAction"]),
+    async login(values) {
       this.loginInSubmission = true;
       this.loginShowAlert = true;
       this.loginAlertVariant = "bg-blue-500";
       this.loginAlertMsg = "Please wait! We are logging you in.";
 
-      this.loginAlertVariant = "bg-green-500";
-      this.loginAlertMsg = "Success! You are now logged in!";
-      console.log(values);
+      try {
+        await this.authenticateAction(values);
+        this.loginAlertVariant = "bg-green-500";
+        this.loginAlertMsg = "Success! You are now logged in!";
+        window.location.reload();
+      } catch (err) {
+        this.loginInSubmission = false;
+        this.loginAlertVariant = "bg-red-500";
+        this.loginAlertMsg = "Invalid login details.";
+      }
     },
   },
 };
