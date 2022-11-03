@@ -43,6 +43,7 @@
 <script>
 import { storage, auth, songsCollection } from "@/includes/firebase";
 export default {
+  props: ["addSong"],
   data() {
     return {
       isDragover: false,
@@ -50,15 +51,15 @@ export default {
     };
   },
   mounted() {
-    console.log(auth.currentUser);
+    console.log("user data:", auth.currentUser);
   },
   methods: {
     uploadFile(e) {
       this.isDragover = false;
 
       const files = e.dataTransfer
-        ? [...e.dataTransfer.files]
-        : [...e.target.files];
+        ? [...e.dataTransfer.files] // for drag
+        : [...e.target.files]; // for input
 
       files.forEach((file) => {
         if (file.type !== "audio/mpeg") {
@@ -67,9 +68,9 @@ export default {
         }
         const storageRef = storage.ref(); // vue-music-f1733.appspot.com
         const songRef = storageRef.child(`song/${file.name}`); // vue-music-f1733.appspot.com/songs/example.mp3
-        const task = songRef.put(file);
+        const task = songRef.put(file); // snapshot
 
-        // push method return pushed data index
+        // push method return "pushed data" index
         const uploadIndex =
           this.uploads.push({
             task,
@@ -84,11 +85,13 @@ export default {
         task.on(
           "state_changed",
           (snapshot) => {
+            // progressing
             const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100; // upload到多少%
             this.uploads[uploadIndex].currentProgress = progress;
           },
           (err) => {
+            // error
             this.uploads[uploadIndex].variant = "bg-red-400";
             this.uploads[uploadIndex].icon = "fas fa-times";
             this.uploads[uploadIndex].textClass = "text-red-400";
@@ -108,8 +111,14 @@ export default {
             // 取得download URL
             song.url = await task.snapshot.ref.getDownloadURL();
 
-            // song add to collection
-            await songsCollection.add(song);
+            // song add to collection (return reference)
+            const songRef = await songsCollection.add(song);
+
+            // get song snapshot to access .data()
+            const songSnapshot = await songRef.get();
+
+            // add song data to ManageView songs array to display song
+            this.addSong(songSnapshot);
 
             this.uploads[uploadIndex].variant = "bg-green-400";
             this.uploads[uploadIndex].icon = "fas fa-check";

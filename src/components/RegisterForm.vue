@@ -153,6 +153,7 @@ export default {
 
       try {
         console.log(values);
+        console.log(this.song);
         await this.createUser(values); // 存使用者帳密
       } catch (err) {
         this.regInSubmission = false;
