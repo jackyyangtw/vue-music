@@ -8,6 +8,7 @@
     <div class="container mx-auto flex items-center">
       <!-- Play/Pause Button -->
       <button
+        @click.prevent="newSong(song)"
         type="button"
         class="z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
       >
@@ -89,7 +90,8 @@
 
 <script>
 import { songsCollection, commentCollection, auth } from "../includes/firebase";
-import { mapState } from "pinia";
+import { mapActions, mapState } from "pinia";
+import usePlayerStore from "@/stores/player";
 import userStore from "@/stores/user";
 export default {
   name: "SongView",
@@ -148,6 +150,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(usePlayerStore, ["newSong"]),
     async addComment(values, { resetForm }) {
       this.commentInSubmission = true;
       this.commentShowAlert = true;
