@@ -2,7 +2,11 @@
   <!-- Header -->
   <AppHeader></AppHeader>
 
-  <router-view></router-view>
+  <router-view v-slot="{ Component }">
+    <transition name="fade" mode="out-in">
+      <component :is="Component"></component>
+    </transition>
+  </router-view>
 
   <!-- Player -->
   <AppPlayer></AppPlayer>
@@ -37,4 +41,14 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style>
+.fade-enter-from {
+  opacity: 0;
+}
+.fade-enter-active {
+  transition: 0.5s linear;
+}
+.fade-leave-to {
+  transition: 0.5s linear;
+}
+</style>

@@ -3,8 +3,8 @@ import { Howl } from "howler";
 import helper from "@/includes/helper";
 export default defineStore("player", {
   state: () => ({
-    currentSong: {},
-    sound: {},
+    currentSong: {}, // song info
+    sound: {}, // song instance created by Howl
     seek: "00:00",
     duration: "00:00",
     playerProgress: "0%",
@@ -54,8 +54,8 @@ export default defineStore("player", {
       const clickX = event.clientX - x;
       const percentage = clickX / width;
       const seconds = this.sound.duration() * percentage;
-      this.sound.seek(seconds);
-      this.sound.on("seek", this.progress);
+      this.sound.seek(seconds); // update progress bar position
+      this.sound.on("seek", this.progress); // listen seek event
     },
   },
   getters: {
