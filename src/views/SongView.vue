@@ -122,19 +122,22 @@ export default {
       commentAlertMessage: "Please wait! Your comment is being submitted...",
     };
   },
-  async created() {
-    const docSnapshot = await songsCollection.doc(this.$route.params.id).get();
-    if (!docSnapshot.exists) {
-      this.$router.push({ name: "home" });
-      return;
-    }
+  // 原本是用created，但為了先顯示內容，使用 beforeRouteEnter，先顯示內容邊抓Data
+  async beforeRouteEnter(to, from, next) {
+    const docSnapshot = await songsCollection.doc(to.params.id).get();
+    next((vm) => {
+      if (!docSnapshot.exists) {
+        vm.$router.push({ name: "home" });
+        return;
+      }
 
-    const { sort } = this.$route.query;
-    this.sort = sort === "1" || sort === "2" ? sort : "1"; // 確保sort 是有效的值才 assign 否則sort by default(new to old)
+      const { sort } = vm.$route.query;
+      vm.sort = sort === "1" || sort === "2" ? sort : "1"; // 確保sort 是有效的值才 assign 否則sort by default(new to old)
 
-    this.song = docSnapshot.data();
-    this.getComments();
-    console.log(auth.currentUser);
+      vm.song = docSnapshot.data();
+      vm.getComments();
+      console.log(auth.currentUser);
+    });
   },
   computed: {
     ...mapState(userStore, ["userLoggedIn"]),

@@ -1,9 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "@/views/HomeView.vue";
-import AboutView from "@/views/AboutView.vue";
-import ManageView from "@/views/ManageView.vue";
+
 import useUserStore from "@/stores/user";
-import SongView from "@/views/SongView.vue";
+
+const HomeView = () => import("@/views/HomeView.vue");
+const ManageView = () => import("@/views/ManageView.vue");
+const SongView = () => import("@/views/SongView.vue");
+const AboutView = () => import("@/views/AboutView.vue");
+
 const routes = [
   {
     path: "/",
@@ -20,9 +23,6 @@ const routes = [
     // alias: "/manage", // rediect 的另一種選擇，不過為了seo 還是推薦使用redirect
     name: "manage",
     component: ManageView,
-    // beforeEnter: (to, from, next) => {
-    //   // ...
-    // },
     meta: {
       requiresAuth: true,
     },
