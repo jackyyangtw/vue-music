@@ -9,13 +9,17 @@
       <div class="container mx-auto flex items-center">
         <!-- Play/Pause Button -->
         <button
-          @click.prevent="newSong(song)"
+          @click.prevent="toggleAudio(song)"
           type="button"
           class="z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
         >
-          <i class="fas fa-play"></i>
+          <i
+            class="fas"
+            :class="{ 'fa-play': !playing, 'fa-pause': playing }"
+          ></i>
         </button>
-        <div class="z-50 text-left ml-8">
+
+        <div class="z-50 text-left ml-8 mr-8">
           <!-- Song Info -->
           <div class="text-3xl font-bold">{{ song.modifiedName }}</div>
           <div>{{ song.genre }}</div>
@@ -23,6 +27,21 @@
           <!-- $n(price,translation,locale) -->
           <div class="song-price">{{ $n(100000, "currency", "ja") }}</div>
         </div>
+        <button
+          @click.prevent="newSong(song)"
+          type="button"
+          class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
+        >
+          <i class="fas fa-redo-alt"></i>
+        </button>
+        <button
+          @click.prevent="loopSong(song)"
+          type="button"
+          class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
+          :class="{ 'text-red-500': loop }"
+        >
+          <i class="fas fa-recycle"></i>
+        </button>
       </div>
     </section>
     <!-- Form -->
@@ -135,12 +154,15 @@ export default {
       vm.sort = sort === "1" || sort === "2" ? sort : "1"; // 確保sort 是有效的值才 assign 否則sort by default(new to old)
 
       vm.song = docSnapshot.data();
+      vm.song.sid = to.params.id;
+      console.log("set new song");
       vm.getComments();
       console.log(auth.currentUser);
     });
   },
   computed: {
     ...mapState(userStore, ["userLoggedIn"]),
+    ...mapState(usePlayerStore, ["playing", "loop"]),
     sortedComments() {
       return this.comments.slice().sort((a, b) => {
         if (this.sort === "1") {
@@ -166,7 +188,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(usePlayerStore, ["newSong"]),
+    ...mapActions(usePlayerStore, ["newSong", "toggleAudio", "loopSong"]),
     async addComment(values, { resetForm }) {
       this.commentInSubmission = true;
       this.commentShowAlert = true;

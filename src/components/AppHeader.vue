@@ -36,24 +36,32 @@
             </li>
             <li>
               <a class="px-2 text-white" href="#" @click.prevent="signOut">{{
-                $("header.logout")
+                $t("header.logout")
               }}</a>
             </li>
           </template>
         </ul>
         <div class="ml-auto relative">
-          <a href="#" class="px-2 text-white" @mouseenter="showLanguageBox">
-            {{ currentLocale }}
+          <a
+            href="#"
+            class="px-2 text-white text-yellow-500"
+            @mouseenter="showLanguageBox"
+          >
+            {{ currentLocale.displayName }}
           </a>
           <ul
-            class="absolute z-10 bg-gray-700 w-full mt-2"
+            class="absolute z-10 bg-gray-700 w-40 mt-2"
             v-show="isLanguageBoxShow"
           >
             <li
               class="cursor-pointer text-center p-2 text-white hover:text-yellow-500"
+              :class="{
+                'text-yellow-500':
+                  currentLocale.displayName === locale.displayName,
+              }"
               v-for="locale in locales"
               :key="locale.locale"
-              @click.prevent="changeLocale(locale.locale)"
+              @click.prevent="changeLocale(locale)"
             >
               {{ locale.displayName }}
             </li>
@@ -73,7 +81,7 @@ export default {
   data() {
     return {
       locales: [],
-      currentLocale: "en",
+      currentLocale: {},
       isLanguageBoxShow: false,
     };
   },
@@ -91,9 +99,9 @@ export default {
         this.$router.push({ name: "home" });
       }
     },
-    changeLocale(lan) {
-      this.currentLocale = lan;
-      localStorage.setItem("currentLanguage", lan);
+    changeLocale(localObj) {
+      this.currentLocale = localObj;
+      localStorage.setItem("currentLanguage", JSON.stringify(localObj));
       location.reload();
     },
     showLanguageBox() {
@@ -103,7 +111,7 @@ export default {
   created() {
     Object.keys(this.$i18n.messages).forEach((key) => {
       let displayName;
-      if (key === "en") displayName = "Enhlish";
+      if (key === "en") displayName = "English";
       if (key === "fr") displayName = "Français";
       if (key === "tw") displayName = "繁體中文";
       this.locales.push({
@@ -112,8 +120,9 @@ export default {
       });
     });
     const currentLangueage = localStorage.getItem("currentLanguage");
-    this.$i18n.locale = currentLangueage;
-    this.currentLocale = currentLangueage;
+    const currentLangueageObj = JSON.parse(currentLangueage);
+    this.$i18n.locale = currentLangueageObj.locale;
+    this.currentLocale = currentLangueageObj;
   },
 };
 </script>

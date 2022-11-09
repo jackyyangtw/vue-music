@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { Howl } from "howler";
 import helper from "@/includes/helper";
+// import { useRoute } from "vue-router";
 export default defineStore("player", {
   state: () => ({
     currentSong: {}, // song info
@@ -8,6 +9,7 @@ export default defineStore("player", {
     seek: "00:00",
     duration: "00:00",
     playerProgress: "0%",
+    loop: false,
   }),
   actions: {
     async newSong(song) {
@@ -17,23 +19,38 @@ export default defineStore("player", {
       this.currentSong = song;
       this.sound = new Howl({
         src: [song.url],
-        html5: true, // 使用 html5 audio api
+        html5: true, // 用於撥放檔案較大的檔案。直接撥放，不等到全部檔案解析完就開始撥放
+        onend: () => {
+          this.sound._loop = this.loop;
+        },
       });
+
       this.sound.play();
+
       this.sound.on("play", () => {
         requestAnimationFrame(this.progress);
       });
-    },
-    async toggleAudio() {
       if (!this.sound.playing) {
         return;
       }
+    },
+    async toggleAudio(song) {
+      // if (!this.sound.playing) {
+      //   return;
+      // }
 
       // playing() return true or false
-      if (this.sound.playing()) {
-        this.sound.pause();
-      } else {
+      console.log(this.isDifferentSong);
+
+      // const songId = this.router.currentRoute._value.params.id;
+      if (!this.sound.playing || this.isDifferentSong) {
+        this.newSong(song);
+      } else if (!this.sound.playing() && !this.isDifferentSong) {
+        console.log("play same song");
         this.sound.play();
+      } else if (this.sound.playing() && !this.isDifferentSong) {
+        console.log("pause same song");
+        this.sound.pause();
       }
     },
     progress() {
@@ -57,11 +74,21 @@ export default defineStore("player", {
       this.sound.seek(seconds); // update progress bar position
       this.sound.on("seek", this.progress); // listen seek event
     },
+    loopSong() {
+      this.loop = !this.loop;
+    },
   },
   getters: {
     playing: (state) => {
       if (state.sound.playing) {
         return state.sound.playing();
+      }
+      return false;
+    },
+    isDifferentSong() {
+      const songId = this.router.currentRoute._value.params.id;
+      if (this.currentSong && songId !== this.currentSong.sid) {
+        return true;
       }
       return false;
     },
