@@ -20,9 +20,6 @@ export default defineStore("player", {
       this.sound = new Howl({
         src: [song.url],
         html5: true, // 用於撥放檔案較大的檔案。直接撥放，不等到全部檔案解析完就開始撥放
-        onend: () => {
-          this.sound._loop = this.loop;
-        },
       });
 
       this.sound.play();
@@ -76,6 +73,7 @@ export default defineStore("player", {
     },
     loopSong() {
       this.loop = !this.loop;
+      this.sound._loop = this.loop;
     },
   },
   getters: {
