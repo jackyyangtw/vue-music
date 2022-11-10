@@ -21,12 +21,9 @@
           </li>
           <!-- userStore => 使用mapStore才要這樣用 -->
           <li v-if="!userStore.userLoggedIn">
-            <a
-              @click.prevent="toggleAuthModal"
-              class="px-2 text-white"
-              href="#"
-              >{{ $t("header.login") }}</a
-            >
+            <a @click.prevent="toggleModal" class="px-2 text-white" href="#">{{
+              $t("header.login")
+            }}</a>
           </li>
           <template v-else>
             <li>
@@ -73,7 +70,7 @@
 </template>
 
 <script>
-import { mapStores, mapWritableState } from "pinia";
+import { mapStores, mapActions } from "pinia";
 import useModalStore from "@/stores/modal";
 import useUserStore from "@/stores/user";
 export default {
@@ -87,12 +84,9 @@ export default {
   },
   computed: {
     ...mapStores(useUserStore), // 可直接使用action、state
-    ...mapWritableState(useModalStore, ["isOpen"]),
   },
   methods: {
-    toggleAuthModal() {
-      this.isOpen = !this.isOpen;
-    },
+    ...mapActions(useModalStore, ["toggleModal"]),
     signOut() {
       this.userStore.signoutAction();
       if (this.$route.meta.requiresAuth) {

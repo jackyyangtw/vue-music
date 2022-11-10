@@ -35,7 +35,7 @@
           <i class="fas fa-redo-alt"></i>
         </button>
         <button
-          @click.prevent="loopSong(song)"
+          @click.prevent="loopSong"
           type="button"
           class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
           :class="{ 'text-red-500': loop }"

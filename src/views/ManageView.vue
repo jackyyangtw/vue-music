@@ -1,7 +1,11 @@
 <template>
-  <section class="container mx-auto mt-6">
+  <section class="container mx-auto mt-6 rel">
     <div class="md:grid md:grid-cols-3 md:gap-4">
       <div class="col-span-1">
+        <UserInfo
+          :userData="userData"
+          :isContentLoading="isContentLoading"
+        ></UserInfo>
         <AppUpload ref="upload" :addSong="addSong"></AppUpload>
       </div>
       <div class="col-span-2">
@@ -24,33 +28,63 @@
               :removeSongData="removeSongData"
               :updateUnsavedFlag="updateUnsavedFlag"
             ></CompositionItem>
+            <div class="text-center" v-if="!songs.length">
+              No song found, let's upload song now : )
+            </div>
+            <div v-if="isContentLoading">
+              <div
+                v-for="song in 3"
+                :key="song"
+                class="border border-gray-200 p-3 mb-4 rounded animate-pulse flex justify-between align-center"
+              >
+                <div
+                  class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[320px] max-w-[360px] my-3"
+                ></div>
+                <div class="flex">
+                  <div class="rounded w-6 h-6 dark:bg-gray-700 mr-2"></div>
+                  <div class="rounded w-6 h-6 dark:bg-gray-700"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <ComfirmModal :removeSongData="removeSongData"></ComfirmModal>
   </section>
 </template>
 
 <script>
 // import useUserStore from "@/stores/user";
 import AppUpload from "@/components/Upload.vue";
-import { songsCollection, auth } from "../includes/firebase";
+import { songsCollection, auth, usersCollection } from "../includes/firebase";
 import CompositionItem from "../components/CompositionItem.vue";
+import ComfirmModal from "../components/ComfirmModal.vue";
+import UserInfo from "../components/UserInfo.vue";
 export default {
-  components: { AppUpload, CompositionItem },
+  components: { AppUpload, CompositionItem, ComfirmModal, UserInfo },
   name: "manage",
   async created() {
     // 取得 song snapshot(copy of firebase document)
+    this.isContentLoading = true;
     const snapshot = await songsCollection
       .where("uid", "==", auth.currentUser.uid)
       .get();
 
+    const userSnapshot = await usersCollection.doc(auth.currentUser.uid).get();
+    const userData = userSnapshot.data();
+    this.userData = {
+      ...userData,
+    };
     snapshot.forEach(this.addSong);
+    this.isContentLoading = false;
   },
   data() {
     return {
       songs: [],
       unsavedFlag: false,
+      isContentLoading: false,
+      userData: {},
     };
   },
   methods: {

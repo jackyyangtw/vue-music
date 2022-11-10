@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { Howl } from "howler";
 import helper from "@/includes/helper";
+// import { watch, toRef } from "vue";
 // import { useRoute } from "vue-router";
 export default defineStore("player", {
   state: () => ({
@@ -10,6 +11,7 @@ export default defineStore("player", {
     duration: "00:00",
     playerProgress: "0%",
     loop: false,
+    sid: "",
   }),
   actions: {
     async newSong(song) {
@@ -22,7 +24,7 @@ export default defineStore("player", {
         html5: true, // 用於撥放檔案較大的檔案。直接撥放，不等到全部檔案解析完就開始撥放
       });
 
-      this.sound.play();
+      this.sid = this.sound.play();
 
       this.sound.on("play", () => {
         requestAnimationFrame(this.progress);
@@ -36,11 +38,12 @@ export default defineStore("player", {
       //   return;
       // }
 
-      // playing() return true or false
       console.log(this.isDifferentSong);
-
-      // const songId = this.router.currentRoute._value.params.id;
-      if (!this.sound.playing || this.isDifferentSong) {
+      // this.newSong(song);
+      if (
+        (this.isDifferentSong && !this.sound.playing) ||
+        (this.isDifferentSong && this.sound.playing)
+      ) {
         this.newSong(song);
       } else if (!this.sound.playing() && !this.isDifferentSong) {
         console.log("play same song");
@@ -73,7 +76,10 @@ export default defineStore("player", {
     },
     loopSong() {
       this.loop = !this.loop;
-      this.sound._loop = this.loop;
+      this.sound.loop(this.loop, this.sid);
+    },
+    onSidChange() {
+      console.log("sid change");
     },
   },
   getters: {
@@ -85,7 +91,7 @@ export default defineStore("player", {
     },
     isDifferentSong() {
       const songId = this.router.currentRoute._value.params.id;
-      if (this.currentSong && songId !== this.currentSong.sid) {
+      if (songId !== this.currentSong.sid) {
         return true;
       }
       return false;

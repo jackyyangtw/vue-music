@@ -8,7 +8,7 @@
     </div>
     <div class="flex flex-nowrap gap-4 items-center">
       <!-- Play/Pause Button -->
-      <button type="button" @click.prevent="toggleAudio()">
+      <button type="button" @click.prevent="toggleAudio(song)">
         <i
           class="fa text-gray-500 text-xl"
           :class="{ 'fa-play': !playing, 'fa-pause': playing }"
@@ -43,10 +43,22 @@
 <script>
 import { mapActions, mapState } from "pinia";
 import usePlayerStore from "@/stores/player";
+import { songsCollection } from "../includes/firebase";
 export default {
   methods: {
     ...mapActions(usePlayerStore, ["toggleAudio", "updateSeek"]),
   },
+  data() {
+    return {
+      song: {},
+    };
+  },
+  // async created() {
+  //   const docSnapshot = await songsCollection.doc(this.$route.params.id).get();
+  //   this.song = docSnapshot.data();
+  //   // this.song.sid = this.$route.params.id;
+  //   console.log(this.$route);
+  // },
   computed: {
     ...mapState(usePlayerStore, [
       "playing",
@@ -55,6 +67,19 @@ export default {
       "playerProgress",
       "currentSong",
     ]),
+  },
+  watch: {
+    $route: async function (to) {
+      console.log(to);
+      const docSnapshot = await songsCollection
+        .doc(this.$route.params.id)
+        .get();
+      this.song = docSnapshot.data();
+      if (!to.params.id) {
+        return;
+      }
+      this.song.sid = to.params.id;
+    },
   },
 };
 </script>

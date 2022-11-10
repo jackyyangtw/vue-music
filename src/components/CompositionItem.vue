@@ -5,7 +5,7 @@
       <h4 class="inline-block text-2xl font-bold">{{ song.modifiedName }}</h4>
       <button
         class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 float-right"
-        @click="deleteSong"
+        @click="openComfirmModal(song, index)"
       >
         <i class="fa fa-times"></i>
       </button>
@@ -74,6 +74,8 @@
 <script>
 import { ErrorMessage } from "vee-validate";
 import { songsCollection, storage } from "../includes/firebase";
+import useModalStore from "@/stores/modal";
+import { mapActions } from "pinia";
 export default {
   name: "CompositionItem",
   components: { ErrorMessage },
@@ -112,6 +114,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(useModalStore, ["openComfirmModal"]),
     async editForm(values) {
       console.log(values);
       this.isSubmission = true;

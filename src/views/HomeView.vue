@@ -40,6 +40,27 @@
             :key="song.docID"
             :song="song"
           ></SongItem>
+
+          <!-- skeleton -->
+          <div v-if="isContentLoading">
+            <div
+              class="p-3 pl-6 rounded animate-pulse flex justify-between align-center"
+              v-for="i in maxPerPage"
+              :key="i"
+            >
+              <div>
+                <div
+                  class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[360px] max-w-[360px] my-3"
+                ></div>
+                <div
+                  class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[150px] max-w-[360px]"
+                ></div>
+              </div>
+              <div class="flex text-[18px]">
+                <i class="fa fa-comments text-gray-600 mr-2"></i>0
+              </div>
+            </div>
+          </div>
         </ol>
         <!-- .. end Playlist -->
       </div>
@@ -59,8 +80,10 @@ export default {
   data() {
     return {
       songs: [],
-      maxPerPage: 10,
+      maxPerPage: 5,
       pendingRequest: false,
+      isContentLoading: false,
+      fetchCount: 0,
     };
   },
 
@@ -74,6 +97,14 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.scrollHandler);
+  },
+  computed: {
+    isFetchingComplete() {
+      if (this.fetchCount * this.maxPerPage >= this.songs.length) {
+        return true;
+      }
+      return false;
+    },
   },
   methods: {
     async scrollHandler() {
@@ -91,8 +122,10 @@ export default {
       if (this.pendingRequest) {
         return;
       }
+
       this.pendingRequest = true;
       let snapshot;
+      this.isContentLoading = true;
 
       if (this.songs.length) {
         // 最後一筆data
@@ -104,8 +137,10 @@ export default {
           .startAfter(lastDoc)
           .limit(this.maxPerPage) // 限制取得的data數
           .get();
+        this.fetchCount += 1;
       } else {
         // 第一次載入頁面的時候
+
         snapshot = await songsCollection
           .orderBy("modifiedName")
           .limit(this.maxPerPage)
@@ -118,6 +153,11 @@ export default {
           ...document.data(),
         });
       });
+      if (this.isFetchingComplete) {
+        this.isContentLoading = false;
+        return;
+      }
+      this.isContentLoading = false;
       this.pendingRequest = false;
     },
   },
