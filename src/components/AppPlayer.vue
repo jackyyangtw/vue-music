@@ -70,7 +70,6 @@ export default {
   },
   watch: {
     $route: async function (to) {
-      console.log(to);
       const docSnapshot = await songsCollection
         .doc(this.$route.params.id)
         .get();

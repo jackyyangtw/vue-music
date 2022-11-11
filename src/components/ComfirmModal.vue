@@ -1,5 +1,5 @@
 <template>
-  <transition name="fadeUp">
+  <transition name="fadeUp" @after-leave="isDeleting = false">
     <div
       v-show="isComfirmModalOpen"
       class="flex items-center justify-center pt-4 px-4 pb-20 text-center sm:block sm:p-0"
@@ -12,7 +12,7 @@
       <div
         class="content ab-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transform transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
       >
-        <div class="text-2xl font-bold pb-5">
+        <div class="text-2xl font-bold pb-5" v-if="!isDeleting">
           <svg
             aria-hidden="true"
             class="mx-auto mb-4 w-20 h-20 text-gray-400 dark:text-black-200"
@@ -31,12 +31,17 @@
           <div class="pb-3">Are you sure you want to delete this song?</div>
           <div class="text-green-500 italic pb-3">{{ song.modifiedName }}</div>
         </div>
+        <div class="text-2xl font-bold" v-else>Deleting song...</div>
+
+        <!-- buttons -->
         <div class="flex justify-end items-center pb-4">
-          <div class="cursor-pointer bg-blue-500 p-3 rounded text-white mr-5">
-            <div @click.prevent="closeComfirmModal">Cancel</div>
+          <div
+            class="cursor-pointer bg-blue-500 hover:bg-blue-400 p-3 rounded text-white mr-5"
+          >
+            <button @click="closeComfirmModal">Cancel</button>
           </div>
           <div
-            class="cursor-pointer bg-red-500 text-white p-3 rounded"
+            class="cursor-pointer bg-red-500 text-white p-3 rounded hover:bg-red-400"
             @click="deleteSong"
           >
             Delete
@@ -52,6 +57,12 @@ import useModalStore from "@/stores/modal";
 import { mapActions, mapState } from "pinia";
 import { storage, songsCollection } from "../includes/firebase";
 export default {
+  data() {
+    return {
+      isDeleting: false,
+      delete: {},
+    };
+  },
   computed: {
     ...mapState(useModalStore, ["isComfirmModalOpen", "song", "index"]),
   },
@@ -62,10 +73,12 @@ export default {
       // delete storage file
       const storeRef = storage.ref();
       const songRef = storeRef.child(`song/${this.song.originialName}`);
-      await songRef.delete();
+      this.isDeleting = true;
 
+      await songRef.delete();
       // delete data
       await songsCollection.doc(this.song.docID).delete();
+
       this.removeSongData(this.index);
       this.closeComfirmModal();
     },

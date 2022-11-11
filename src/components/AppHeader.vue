@@ -44,7 +44,7 @@
             class="px-2 text-white text-yellow-500"
             @mouseenter="showLanguageBox"
           >
-            {{ currentLocale.displayName }}
+            {{ currentLocale.displayName || "English" }}
           </a>
           <ul
             class="absolute z-10 bg-gray-700 w-40 mt-2"
@@ -114,6 +114,9 @@ export default {
       });
     });
     const currentLangueage = localStorage.getItem("currentLanguage");
+    if (!currentLangueage) {
+      return;
+    }
     const currentLangueageObj = JSON.parse(currentLangueage);
     this.$i18n.locale = currentLangueageObj.locale;
     this.currentLocale = currentLangueageObj;

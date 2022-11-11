@@ -4,7 +4,10 @@
       <div class="col-span-1">
         <UserInfo
           :userData="userData"
-          :isContentLoading="isContentLoading"
+          :isUserInfoLoading="isUserInfoLoading"
+          :addUserInfo="addUserInfo"
+          :forceUpdate="forceUpdate"
+          :getUserData="getUserData"
         ></UserInfo>
         <AppUpload ref="upload" :addSong="addSong"></AppUpload>
       </div>
@@ -28,7 +31,7 @@
               :removeSongData="removeSongData"
               :updateUnsavedFlag="updateUnsavedFlag"
             ></CompositionItem>
-            <div class="text-center" v-if="!songs.length">
+            <div class="text-center" v-if="!songs.length && !isContentLoading">
               No song found, let's upload song now : )
             </div>
             <div v-if="isContentLoading">
@@ -65,8 +68,10 @@ export default {
   components: { AppUpload, CompositionItem, ComfirmModal, UserInfo },
   name: "manage",
   async created() {
-    // 取得 song snapshot(copy of firebase document)
     this.isContentLoading = true;
+    this.isUserInfoLoading = true;
+
+    // 取得 song snapshot(copy of firebase document)
     const snapshot = await songsCollection
       .where("uid", "==", auth.currentUser.uid)
       .get();
@@ -76,18 +81,44 @@ export default {
     this.userData = {
       ...userData,
     };
+
     snapshot.forEach(this.addSong);
     this.isContentLoading = false;
+    this.isUserInfoLoading = false;
   },
   data() {
     return {
       songs: [],
       unsavedFlag: false,
       isContentLoading: false,
+      isUserInfoLoading: false,
       userData: {},
     };
   },
+  // watch: {
+  //   userData(newVal) {
+  //     if (newVal) {
+  //       this.isUserInfoLoading = false;
+  //     }
+  //   },
+  //   songs(newVal) {
+  //     if (newVal) {
+  //       this.isContentLoading = false;
+  //     }
+  //   },
+  // },
   methods: {
+    async getUserData() {
+      this.isUserInfoLoading = true;
+      const userSnapshot = await usersCollection
+        .doc(auth.currentUser.uid)
+        .get();
+      const userData = userSnapshot.data();
+      this.userData = {
+        ...userData,
+      };
+      this.isUserInfoLoading = false;
+    },
     updateSong(index, values) {
       this.songs[index].modifiedName = values.modifiedName;
       this.songs[index].genre = values.genre;
@@ -102,8 +133,17 @@ export default {
       };
       this.songs.push(song);
     },
+    addUserInfo(document) {
+      const userInfo = {
+        ...document.data(),
+      };
+      this.userData = userInfo;
+    },
     updateUnsavedFlag(value) {
       this.unsavedFlag = value;
+    },
+    forceUpdate() {
+      this.$forceUpdate();
     },
   },
   beforeRouteLeave(to, from, next) {
