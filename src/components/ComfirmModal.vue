@@ -10,7 +10,7 @@
       </div>
       <!-- content -->
       <div
-        class="content ab-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transform transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+        class="content ab-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
       >
         <div class="text-2xl font-bold pb-5" v-if="!isDeleting">
           <svg
@@ -87,13 +87,6 @@ export default {
 </script>
 
 <style scoped>
-.ab-center {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
 .fadeUp-enter-active {
   animation: fadeUp 0.3s;
 }

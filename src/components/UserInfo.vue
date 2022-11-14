@@ -3,6 +3,10 @@
     class="bg-white rounded border border-gray-200 mb-5 flex"
     v-if="!isUserInfoLoading"
   >
+    <BaseModal :isModalOpen="isModalOpen" @closeModal="closeModal">
+      modal
+    </BaseModal>
+    <!-- pic -->
     <div class="w-1/2 p-5 relative">
       <div class="rounded-full overflow-hidden relative">
         <img
@@ -37,8 +41,18 @@
         </div>
       </transition>
     </div>
-    <div class="p-5 flex flex-col justify-around align-center">
-      <div class="font-bold text-[24px]">{{ userData.name }}</div>
+    <!-- data -->
+    <div class="w-1/2 p-5 flex flex-col justify-around align-center">
+      <div class="font-bold text-[24px] flex justify-between">
+        <p>{{ userData.name }}</p>
+        <div
+          @click="isModalOpen = true"
+          class="text-[20px] right-5 bottom-16 bg-stone-800 text-white rounded-full p-3 w-10 h-10 flex justify-center align-center hover:bg-stone-600 cursor-pointer"
+        >
+          <i class="fas fa-pen"></i>
+        </div>
+      </div>
+
       <div>
         <i class="fas fa-globe text-black w-[10px] mr-3"></i>
         {{ userData.country }}
@@ -53,6 +67,8 @@
       </div>
     </div>
   </div>
+
+  <!-- skeleton -->
   <div
     class="bg-white rounded border border-gray-200 mb-5 flex animate-pulse"
     v-else
@@ -88,9 +104,13 @@ export default {
   data() {
     return {
       upload: {},
+      isModalOpen: false,
     };
   },
   methods: {
+    closeModal() {
+      this.isModalOpen = false;
+    },
     uploadImg(e) {
       const files = e.dataTransfer
         ? [...e.dataTransfer.files] // for drag
@@ -98,7 +118,10 @@ export default {
 
       files.forEach((file) => {
         if (file.type !== "image/png" && file.type !== "image/jpeg") {
-          console.log("please upload image");
+          this.upload.isMessageShow = true;
+          this.upload.message = "Please upload photos.";
+          this.upload.variant = "bg-red-500";
+          this.upload.icon = "far fa-exclamation-circle";
           return;
         }
         this.upload.isMessageShow = true;
