@@ -1,6 +1,6 @@
 <template>
   <teleport to="body">
-    <transition name="fadeUp" @after-leave="isDeleting = false">
+    <transition name="fadeUp">
       <div
         v-show="isModalOpen"
         class="flex items-center justify-center pt-4 px-4 pb-20 text-center sm:block sm:p-0"
@@ -9,38 +9,24 @@
         <div class="fixed inset-0 transition-opacity" @click="closeModal">
           <div class="absolute inset-0 bg-gray-800 opacity-75"></div>
         </div>
-        <!-- content -->
         <div
           class="content ab-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
         >
           <slot></slot>
-
           <!-- buttons -->
-          <div class="flex justify-end items-center pb-4">
-            <div
-              class="cursor-pointer p-3 rounded text-white mr-5"
-              :class="
-                buttonLeft.classes
-                  ? buttonLeft.classes
-                  : 'bg-blue-500 hover:bg-blue-400'
-              "
+          <div v-if="!isForm" class="flex justify-end items-center pb-4">
+            <!-- left -->
+            <BaseButton
+              @click="closeModal"
+              :type="button"
+              class="mr-5"
+              :blue="true"
+              >Cancel</BaseButton
             >
-              <button @click="closeModal">
-                {{ buttonLeft.title }}
-              </button>
-            </div>
-            <div
-              class="cursor-pointer text-white p-3 rounded"
-              :class="
-                buttonRight.classes
-                  ? buttonLeft.classes
-                  : 'bg-red-500 hover:bg-red-400'
-              "
+            <!-- right -->
+            <BaseButton red="true" type="button" @click="successHandler"
+              >Delete</BaseButton
             >
-              <button @click="successHadnler">
-                {{ buttonRight.title }}
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -49,19 +35,14 @@
 </template>
 
 <script>
-// import useModalStore from "@/stores/modal";
-// import { mapState } from "pinia";
 export default {
-  props: ["isModalOpen", "buttonLeft", "buttonRight", "successHadnler"],
+  props: ["isModalOpen", "successHadnler", "isForm", "successHandler"],
   emits: ["closeModal"],
   methods: {
     closeModal() {
       this.$emit("closeModal", false);
     },
   },
-  // computed: {
-  //   ...mapState(useModalStore, ["isComfirmModalOpen", "song", "index"]),
-  // },
 };
 </script>
 

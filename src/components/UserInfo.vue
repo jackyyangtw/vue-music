@@ -3,8 +3,75 @@
     class="bg-white rounded border border-gray-200 mb-5 flex"
     v-if="!isUserInfoLoading"
   >
-    <BaseModal :isModalOpen="isModalOpen" @closeModal="closeModal">
-      modal
+    <BaseModal
+      :isModalOpen="isModalOpen"
+      @closeModal="closeModal"
+      :isForm="true"
+    >
+      <VeeForm @submit="updateUserInfo">
+        <div class="mb-3">
+          <label class="inline-block mb-2">Name</label>
+          <!-- Name -->
+          <vee-field
+            name="name"
+            type="text"
+            class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+            placeholder="Enter Name"
+          />
+          <ErrorMessage class="text-red-600" name="name"></ErrorMessage>
+        </div>
+        <!-- Age -->
+        <div class="mb-3">
+          <label class="inline-block mb-2">Age</label>
+          <vee-field
+            type="number"
+            name="age"
+            class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+          />
+          <ErrorMessage class="text-red-600" name="age"></ErrorMessage>
+        </div>
+        <!-- Email -->
+        <div class="mb-3">
+          <label class="inline-block mb-2">Email</label>
+          <vee-field
+            type="email"
+            name="email"
+            class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+            placeholder="Enter Email"
+          />
+          <ErrorMessage class="text-red-600" name="email"></ErrorMessage>
+        </div>
+        <!-- Country -->
+        <div class="mb-3">
+          <label class="inline-block mb-2">Country</label>
+          <vee-field
+            as="select"
+            name="country"
+            class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+          >
+            <option
+              v-for="country in allCountry"
+              :key="country.name"
+              :value="country.name"
+            >
+              {{ country.name }}
+            </option>
+          </vee-field>
+          <ErrorMessage class="text-red-600" name="country"></ErrorMessage>
+        </div>
+        <div class="flex justify-end items-center pb-4">
+          <!-- left -->
+          <BaseButton
+            @click="closeModal"
+            type="button"
+            class="mr-5"
+            :blue="true"
+            >Cancel</BaseButton
+          >
+          <!-- right -->
+          <BaseButton red="true" type="submit">Submit</BaseButton>
+        </div>
+      </VeeForm>
     </BaseModal>
     <!-- pic -->
     <div class="w-1/2 p-5 relative">
@@ -20,7 +87,7 @@
       <div>
         <label
           for="image-upload"
-          class="absolute text-[20px] right-5 bottom-16 bg-stone-800 text-white rounded-full p-3 w-10 h-10 flex justify-center align-center hover:bg-stone-600 cursor-pointer"
+          class="absolute text-[20px] right-5 bottom-16 bg-stone-600 hover:bg-stone-500 text-white rounded-full p-3 w-10 h-10 flex justify-center align-center cursor-pointer"
         >
           <i class="fas fa-camera"></i>
         </label>
@@ -41,13 +108,13 @@
         </div>
       </transition>
     </div>
-    <!-- data -->
+    <!-- content -->
     <div class="w-1/2 p-5 flex flex-col justify-around align-center">
       <div class="font-bold text-[24px] flex justify-between">
         <p>{{ userData.name }}</p>
         <div
           @click="isModalOpen = true"
-          class="text-[20px] right-5 bottom-16 bg-stone-800 text-white rounded-full p-3 w-10 h-10 flex justify-center align-center hover:bg-stone-600 cursor-pointer"
+          class="text-[20px] right-5 bottom-16 bg-stone-600 hover:bg-stone-500 text-white rounded-full p-3 w-10 h-10 flex justify-center align-center cursor-pointer"
         >
           <i class="fas fa-pen"></i>
         </div>
@@ -105,6 +172,7 @@ export default {
     return {
       upload: {},
       isModalOpen: false,
+      allCountry: [],
     };
   },
   methods: {
@@ -184,9 +252,29 @@ export default {
 
       console.log(files);
     },
+    async updateUserInfo(value) {
+      const submitedData = {
+        age: value.age ?? this.userData.age,
+        country: value.country ?? this.userData.country,
+        email: value.email ?? this.userData.email,
+        name: value.name ?? this.userData.name,
+      };
+      try {
+        await usersCollection.doc(auth.currentUser.uid).update(submitedData);
+      } catch (err) {
+        console.log(err);
+        return;
+      }
+      this.getUserData();
+      this.closeModal();
+      console.log(submitedData);
+    },
   },
-  created() {
+  async created() {
     console.log(auth.currentUser.uid);
+    const res = await fetch("https://restcountries.com/v2/all");
+    const data = await res.json();
+    data.forEach((data) => this.allCountry.push(data));
   },
 };
 </script>
