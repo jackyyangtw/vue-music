@@ -8,7 +8,29 @@
       @closeModal="closeModal"
       :isForm="true"
     >
-      <VeeForm @submit="updateUserInfo">
+      <p class="font-bold text-2xl py-10 text-center" v-if="isUpdatingUserInfo">
+        <svg
+          class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="black"
+            stroke-width="4"
+          ></circle>
+          <path
+            fill="black"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+        Updateing...
+      </p>
+      <VeeForm @submit="updateUserInfo" :initial-values="userData" v-else>
         <div class="mb-3">
           <label class="inline-block mb-2">Name</label>
           <!-- Name -->
@@ -16,7 +38,7 @@
             name="name"
             type="text"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-            placeholder="Enter Name"
+            :placeholder="userData.name"
           />
           <ErrorMessage class="text-red-600" name="name"></ErrorMessage>
         </div>
@@ -38,6 +60,8 @@
             name="email"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
             placeholder="Enter Email"
+            v-model="userEmail"
+            @change="userEmailChange"
           />
           <ErrorMessage class="text-red-600" name="email"></ErrorMessage>
         </div>
@@ -160,6 +184,7 @@
 
 <script>
 import { storage, auth, usersCollection } from "../includes/firebase";
+// import { getAuth, updateEmail } from "firebase/auth";
 export default {
   props: [
     "userData",
@@ -173,6 +198,12 @@ export default {
       upload: {},
       isModalOpen: false,
       allCountry: [],
+      initialvalues: {
+        name: this.userData.name,
+      },
+      isUpdatingUserInfo: false,
+      userEmail: "",
+      isUserEmailChange: false,
     };
   },
   methods: {
@@ -260,14 +291,41 @@ export default {
         name: value.name ?? this.userData.name,
       };
       try {
+        this.isUpdatingUserInfo = true;
         await usersCollection.doc(auth.currentUser.uid).update(submitedData);
+        if (submitedData.email !== this.userData.email) {
+          // change email
+          // await auth.signInWithEmailAndPassword(
+          //   submitedData.email,
+          //   submitedData.password
+          // );
+        }
       } catch (err) {
         console.log(err);
         return;
       }
       this.getUserData();
       this.closeModal();
+      this.isUpdatingUserInfo = false;
       console.log(submitedData);
+    },
+    userEmailChange() {
+      // console.log(this.userEmail);
+    },
+  },
+  // computed: {
+  //   isEmailInputChange: {
+  //     if()
+  //   }
+  // },
+  watch: {
+    userEmail(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        console.log("email change!");
+        this.isUserEmailChange = true;
+      } else {
+        this.isUserEmailChange = false;
+      }
     },
   },
   async created() {

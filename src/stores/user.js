@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
-import { auth, usersCollection } from "@/includes/firebase";
+import { auth, usersCollection, songsCollection } from "@/includes/firebase";
 
 export default defineStore("user", {
   state: () => ({
     userLoggedIn: false,
+    userData: {},
+    songs: [],
   }),
   actions: {
     async registerAction(values) {
@@ -24,7 +26,7 @@ export default defineStore("user", {
       await userCred.user.updateProfile({
         displayName: values.name,
       });
-      this.userLoggedIn = true;
+      await this.authenticateAction(values);
     },
     async authenticateAction(values) {
       await auth.signInWithEmailAndPassword(values.email, values.password);
@@ -33,6 +35,23 @@ export default defineStore("user", {
     async signoutAction() {
       await auth.signOut();
       this.userLoggedIn = false;
+    },
+    async getUserDataAction() {
+      const userSnapshot = await usersCollection
+        .doc(auth.currentUser.uid)
+        .get();
+      const datas = userSnapshot.data();
+      this.userData = {
+        ...datas,
+      };
+      console.log(this.userData);
+    },
+    async getUserSongDataAction(addSong) {
+      const snapshot = await songsCollection
+        .where("uid", "==", auth.currentUser.uid)
+        .get();
+
+      snapshot.forEach(addSong);
     },
   },
 });

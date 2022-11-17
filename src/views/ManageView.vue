@@ -31,10 +31,10 @@
               :removeSongData="removeSongData"
               :updateUnsavedFlag="updateUnsavedFlag"
             ></CompositionItem>
-            <div class="text-center" v-if="!songs.length && !isContentLoading">
+            <div class="text-center" v-if="!songs.length && !isSongLoading">
               No song found, let's upload song now : )
             </div>
-            <div v-if="isContentLoading">
+            <div v-if="isSongLoading">
               <div
                 v-for="song in 3"
                 :key="song"
@@ -60,39 +60,33 @@
 <script>
 // import useUserStore from "@/stores/user";
 import AppUpload from "@/components/Upload.vue";
-import { songsCollection, auth, usersCollection } from "../includes/firebase";
+// import { songsCollection, auth, usersCollection } from "../includes/firebase";
 import CompositionItem from "../components/CompositionItem.vue";
 import ComfirmModal from "../components/ComfirmModal.vue";
 import UserInfo from "../components/UserInfo.vue";
+import useUserStore from "../stores/user";
+import { mapActions, mapState } from "pinia";
 export default {
   components: { AppUpload, CompositionItem, ComfirmModal, UserInfo },
   name: "manage",
   async created() {
-    this.isContentLoading = true;
-    this.isUserInfoLoading = true;
+    if (
+      Object.keys(this.userData).length !== 0 &&
+      Object.keys(this.songs).length !== 0
+    ) {
+      return;
+    }
 
-    // 取得 song snapshot(copy of firebase document)
-    const snapshot = await songsCollection
-      .where("uid", "==", auth.currentUser.uid)
-      .get();
-
-    const userSnapshot = await usersCollection.doc(auth.currentUser.uid).get();
-    const userData = userSnapshot.data();
-    this.userData = {
-      ...userData,
-    };
-
-    snapshot.forEach(this.addSong);
-    this.isContentLoading = false;
-    this.isUserInfoLoading = false;
+    this.getSongData();
+    this.getUserData();
   },
   data() {
     return {
-      songs: [],
+      // songs: [],
       unsavedFlag: false,
-      isContentLoading: false,
+      isSongLoading: false,
       isUserInfoLoading: false,
-      userData: {},
+      // userData: {},
     };
   },
   // watch: {
@@ -103,21 +97,24 @@ export default {
   //   },
   //   songs(newVal) {
   //     if (newVal) {
-  //       this.isContentLoading = false;
+  //       this.isSongLoading = false;
   //     }
   //   },
   // },
+  computed: {
+    ...mapState(useUserStore, ["userData", "songs"]),
+  },
   methods: {
+    ...mapActions(useUserStore, ["getUserDataAction", "getUserSongDataAction"]),
     async getUserData() {
       this.isUserInfoLoading = true;
-      const userSnapshot = await usersCollection
-        .doc(auth.currentUser.uid)
-        .get();
-      const userData = userSnapshot.data();
-      this.userData = {
-        ...userData,
-      };
+      await this.getUserDataAction();
       this.isUserInfoLoading = false;
+    },
+    async getSongData() {
+      this.isSongLoading = true;
+      await this.getUserSongDataAction(this.addSong);
+      this.isSongLoading = false;
     },
     updateSong(index, values) {
       this.songs[index].modifiedName = values.modifiedName;
@@ -156,13 +153,13 @@ export default {
       next(leave);
     }
   },
-  // beforeRouteEnter(to, from, next) {
-  //   const store = useUserStore();
-  //   if (store.userLoggedIn) {
-  //     next();
-  //   } else {
-  //     next({ name: "home" });
-  //   }
+  // async beforeRouteEnter(to, from, next) {
+  //   // const store = useUserStore();
+  //   // if (store.userLoggedIn) {
+  //   //   next();
+  //   // } else {
+  //   //   next({ name: "home" });
+  //   // }
   // },
 };
 </script>

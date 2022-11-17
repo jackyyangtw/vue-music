@@ -135,7 +135,7 @@ export default {
         tos: "tos",
       },
       userData: {
-        country: "USA",
+        country: "Mexico",
       },
       regInSubmission: false,
       regShowAlert: false,
@@ -155,8 +155,6 @@ export default {
       this.regAlertMsg = "Please wait! Your account is being created.";
 
       try {
-        console.log(values);
-        console.log(this.song);
         await this.createUser(values); // 存使用者帳密
       } catch (err) {
         this.regInSubmission = false;
@@ -168,7 +166,7 @@ export default {
 
       this.regAlertVariant = "bg-green-500";
       this.regAlertMsg = "Success! Your account has been created";
-      // window.location.reload();
+      window.location.reload();
     },
   },
 };

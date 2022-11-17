@@ -1,6 +1,22 @@
-只有一開始會fetch，如果沒有上傳新資料就不會fetch data
 fix 無法切換歌曲的 bug
+
 翻譯中文語系
+
 PWA offline時，上傳檔案的話會出現 error message
+
 優化mobile排版
+
+songItem user 如果有更改名稱，名稱不會變更
+https://stackoverflow.com/questions/38559457/firebase-v3-updateprofile-method
+
 讓user更新user data
+讓user可以更新email
+
+
+完成:
+重新註冊會無法更改userData
+https://medium.com/firebase-tips-tricks/how-to-fix-firestore-error-permission-denied-missing-or-insufficient-permissions-777d591f404
+
+
+
+只有一開始會fetch，如果沒有上傳新資料就不會fetch data
