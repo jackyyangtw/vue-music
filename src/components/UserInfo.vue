@@ -8,7 +8,10 @@
       @closeModal="closeModal"
       :isForm="true"
     >
-      <p class="font-bold text-2xl py-10 text-center" v-if="isUpdatingUserInfo">
+      <p
+        class="font-bold text-2xl py-10 text-center"
+        v-if="isUpdatingUserInfo && !updateInfo.hasError"
+      >
         <svg
           class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block"
           xmlns="http://www.w3.org/2000/svg"
@@ -30,7 +33,15 @@
         </svg>
         Updateing...
       </p>
-      <VeeForm @submit="updateUserInfo" :initial-values="userData" v-else>
+      <p class="red" v-else-if="updateInfo.hasError">
+        {{ updateInfo.hasErrorMsg }}
+      </p>
+      <VeeForm
+        @submit="updateUserInfo"
+        :initial-values="userData"
+        :validation-schema="schema"
+        v-else
+      >
         <div class="mb-3">
           <label class="inline-block mb-2">Name</label>
           <!-- Name -->
@@ -60,10 +71,34 @@
             name="email"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
             placeholder="Enter Email"
-            v-model="userEmail"
-            @change="userEmailChange"
           />
           <ErrorMessage class="text-red-600" name="email"></ErrorMessage>
+        </div>
+        <!-- password -->
+        <div class="mb-3">
+          <label class="inline-block mb-2">Password</label>
+          <vee-field
+            type="text"
+            name="password"
+            class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+            placeholder="Enter password"
+            v-model="userPassword"
+          />
+          <ErrorMessage class="text-red-600" name="password"></ErrorMessage>
+        </div>
+        <!-- Confirm Password -->
+        <div class="mb-3" v-if="isUserPasswordChange">
+          <label class="inline-block mb-2">Confirm Password</label>
+          <vee-field
+            type="password"
+            name="confirm_password"
+            class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+            placeholder="Confirm Password"
+          />
+          <ErrorMessage
+            class="text-red-600"
+            name="confirm_password"
+          ></ErrorMessage>
         </div>
         <!-- Country -->
         <div class="mb-3">
@@ -99,8 +134,11 @@
     </BaseModal>
     <!-- pic -->
     <div class="w-1/2 p-5 relative">
-      <div class="rounded-full overflow-hidden relative">
+      <div
+        class="rounded-full overflow-hidden relative bg-cover bg-center h-52 relative"
+      >
         <img
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           :src="
             userData.imgUrl ||
             'https://teameowdev.files.wordpress.com/2016/04/avatar24-01.png'
@@ -125,10 +163,10 @@
       <transition name="fade">
         <div
           class="mt-3 p-2 text-center text-white rounded transition-all"
-          :class="upload.variant"
-          v-if="upload.isMessageShow"
+          :class="uploadPic.variant"
+          v-if="uploadPic.isMessageShow"
         >
-          <i class="pr-1" :class="upload.icon"></i>{{ upload.message }}
+          <i class="pr-1" :class="uploadPic.icon"></i>{{ uploadPic.message }}
         </div>
       </transition>
     </div>
@@ -183,7 +221,12 @@
 </template>
 
 <script>
-import { storage, auth, usersCollection } from "../includes/firebase";
+import {
+  storage,
+  auth,
+  usersCollection,
+  songsCollection,
+} from "../includes/firebase";
 // import { getAuth, updateEmail } from "firebase/auth";
 export default {
   props: [
@@ -193,19 +236,34 @@ export default {
     "forceUpdate",
     "getUserData",
   ],
+  computed: {
+    userPicUrl() {
+      return `bg-[url('${
+        this.userData.imgUrl ||
+        "https://teameowdev.files.wordpress.com/2016/04/avatar24-01.png"
+      }')]`;
+    },
+  },
   data() {
     return {
-      upload: {},
+      uploadPic: {},
+      updateInfo: {},
       isModalOpen: false,
       allCountry: [],
       initialvalues: {
         name: this.userData.name,
       },
+      schema: {
+        email: "min:3|max:100|email",
+        password: "min:9|max:100|excluded:password",
+        confirm_password: "",
+      },
       isUpdatingUserInfo: false,
-      userEmail: "",
-      isUserEmailChange: false,
+      userPassword: "",
+      isUserPasswordChange: false,
     };
   },
+
   methods: {
     closeModal() {
       this.isModalOpen = false;
@@ -217,16 +275,16 @@ export default {
 
       files.forEach((file) => {
         if (file.type !== "image/png" && file.type !== "image/jpeg") {
-          this.upload.isMessageShow = true;
-          this.upload.message = "Please upload photos.";
-          this.upload.variant = "bg-red-500";
-          this.upload.icon = "far fa-exclamation-circle";
+          this.uploadPic.isMessageShow = true;
+          this.uploadPic.message = "Please upload photos.";
+          this.uploadPic.variant = "bg-red-500";
+          this.uploadPic.icon = "far fa-exclamation-circle";
           return;
         }
-        this.upload.isMessageShow = true;
-        this.upload.message = "Updating...";
-        this.upload.variant = "bg-blue-500";
-        this.upload.icon = null;
+        this.uploadPic.isMessageShow = true;
+        this.uploadPic.message = "Updating...";
+        this.uploadPic.variant = "bg-blue-500";
+        this.uploadPic.icon = null;
 
         // 如果ofline就無法上傳檔案
         if (!navigator.onLine) {
@@ -262,19 +320,19 @@ export default {
             try {
               await usersCollection.doc(auth.currentUser.uid).update(userInfo);
             } catch (err) {
-              this.upload.isMessageShow = true;
-              this.upload.message = "Something went wrong :(";
-              this.upload.variant = "bg-red-500";
-              this.upload.icon = "far fa-exclamation-circle";
+              this.uploadPic.isMessageShow = true;
+              this.uploadPic.message = "Something went wrong :(";
+              this.uploadPic.variant = "bg-red-500";
+              this.uploadPic.icon = "far fa-exclamation-circle";
               return;
             }
 
-            this.upload.isMessageShow = true;
-            this.upload.message = "Upload photo success!";
-            this.upload.icon = "far fa-check-circle";
-            this.upload.variant = "bg-green-500";
+            this.uploadPic.isMessageShow = true;
+            this.uploadPic.message = "upload photo success!";
+            this.uploadPic.icon = "far fa-check-circle";
+            this.uploadPic.variant = "bg-green-500";
             setTimeout(() => {
-              this.upload.isMessageShow = false;
+              this.uploadPic.isMessageShow = false;
               this.getUserData();
             }, 3000);
           }
@@ -288,20 +346,61 @@ export default {
         age: value.age ?? this.userData.age,
         country: value.country ?? this.userData.country,
         email: value.email ?? this.userData.email,
+        password: value.password ?? this.userData.password,
         name: value.name ?? this.userData.name,
       };
       try {
+        let cred;
         this.isUpdatingUserInfo = true;
-        await usersCollection.doc(auth.currentUser.uid).update(submitedData);
-        if (submitedData.email !== this.userData.email) {
-          // change email
-          // await auth.signInWithEmailAndPassword(
-          //   submitedData.email,
-          //   submitedData.password
-          // );
+
+        if (
+          submitedData.email !== this.userData.email ||
+          submitedData.password !== this.userData.password
+        ) {
+          const getcred = async () => {
+            return await auth.signInWithEmailAndPassword(
+              this.userData.email,
+              this.userData.password
+            );
+          };
+          cred = getcred();
         }
+
+        if (submitedData.email !== this.userData.email) {
+          await cred.then((cred) => cred.user.updateEmail(submitedData.email));
+        }
+
+        if (submitedData.password !== this.userData.password) {
+          await cred.then((cred) =>
+            cred.user.updatePassword(submitedData.password)
+          );
+        }
+
+        await usersCollection.doc(auth.currentUser.uid).update(submitedData);
+
+        const songSnapshot = await songsCollection.get();
+
+        let updatedData = [];
+        songSnapshot.forEach((doc) => {
+          const sid = doc.id;
+          const songData = doc.data();
+          if (songData.uid === auth.currentUser.uid) {
+            updatedData.push({ sid, ...songData });
+          }
+        });
+        updatedData.forEach((data) => {
+          const updateSongCollection = async () => {
+            await songsCollection.doc(data.sid).update({
+              ...data,
+              sid: data.sid,
+              displayName: submitedData.name,
+            });
+          };
+          updateSongCollection();
+        });
       } catch (err) {
-        console.log(err);
+        this.updateInfo.hasError = true;
+        this.updateInfo.hasErrorMsg = err;
         return;
       }
       this.getUserData();
@@ -309,22 +408,15 @@ export default {
       this.isUpdatingUserInfo = false;
       console.log(submitedData);
     },
-    userEmailChange() {
-      // console.log(this.userEmail);
-    },
   },
-  // computed: {
-  //   isEmailInputChange: {
-  //     if()
-  //   }
-  // },
   watch: {
-    userEmail(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        console.log("email change!");
-        this.isUserEmailChange = true;
+    userPassword(newVal) {
+      if (newVal !== this.userData.password) {
+        this.isUserPasswordChange = true;
+        this.schema.confirm_password = "passwords_mismatch:@password";
       } else {
-        this.isUserEmailChange = false;
+        this.isUserPasswordChange = false;
+        this.schema.confirm_password = "";
       }
     },
   },

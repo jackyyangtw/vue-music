@@ -18,6 +18,7 @@ export default defineStore("user", {
       await usersCollection.doc(userCred.user.uid).set({
         name: values.name,
         email: values.email,
+        password: values.password,
         age: values.age,
         country: values.country,
       });
@@ -44,7 +45,6 @@ export default defineStore("user", {
       this.userData = {
         ...datas,
       };
-      console.log(this.userData);
     },
     async getUserSongDataAction(addSong) {
       const snapshot = await songsCollection
