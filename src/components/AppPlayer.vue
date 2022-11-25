@@ -46,7 +46,11 @@ import usePlayerStore from "@/stores/player";
 import { songsCollection } from "../includes/firebase";
 export default {
   methods: {
-    ...mapActions(usePlayerStore, ["toggleAudio", "updateSeek"]),
+    ...mapActions(usePlayerStore, [
+      "toggleAudio",
+      "updateSeek",
+      "watchIsDifferentSong",
+    ]),
   },
   data() {
     return {
@@ -66,10 +70,14 @@ export default {
       "seek",
       "playerProgress",
       "currentSong",
+      "isDifferentSong",
     ]),
   },
   watch: {
     $route: async function (to) {
+      if (!this.$route.params.id) {
+        return;
+      }
       const docSnapshot = await songsCollection
         .doc(this.$route.params.id)
         .get();
@@ -77,7 +85,9 @@ export default {
       if (!to.params.id) {
         return;
       }
-      this.song.sid = to.params.id;
+      // this.song.sid = to.params.id;
+      this.watchIsDifferentSong();
+      console.log(this.isDifferentSong);
     },
   },
 };

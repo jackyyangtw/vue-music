@@ -12,6 +12,8 @@ export default defineStore("player", {
     playerProgress: "0%",
     loop: false,
     sid: "",
+    isDifferentSong: false,
+    loopedSong: {},
   }),
   actions: {
     async newSong(song) {
@@ -33,24 +35,35 @@ export default defineStore("player", {
         return;
       }
     },
-    async toggleAudio(song) {
+    toggleAudio(song) {
       // if (!this.sound.playing) {
       //   return;
       // }
+      // const songId = this.router.currentRoute._value.params.id;
 
-      console.log(this.isDifferentSong);
+      // console.log(this.isDifferentSong);
       // this.newSong(song);
-      if (
-        (this.isDifferentSong && !this.sound.playing) ||
-        (this.isDifferentSong && this.sound.playing)
-      ) {
+      if (this.isDifferentSong) {
         this.newSong(song);
+        this.isDifferentSong = false;
+        console.log("play new song");
       } else if (!this.sound.playing() && !this.isDifferentSong) {
         console.log("play same song");
         this.sound.play();
       } else if (this.sound.playing() && !this.isDifferentSong) {
         console.log("pause same song");
         this.sound.pause();
+      }
+    },
+    watchIsDifferentSong() {
+      const songId = this.router.currentRoute._value.params.id;
+      if (!songId) {
+        return;
+      }
+      if (songId !== this.currentSong.sid) {
+        this.isDifferentSong = true;
+      } else {
+        this.isDifferentSong = false;
       }
     },
     progress() {
@@ -75,8 +88,44 @@ export default defineStore("player", {
       this.sound.on("seek", this.progress); // listen seek event
     },
     loopSong() {
-      this.loop = !this.loop;
-      this.sound.loop(this.loop, this.sid);
+      const thisSongId = this.router.currentRoute._value.params.id;
+      // const loopedSong = this.loopSongs.find((song) => {
+      //   return song.sid === thisSongId;
+      // });
+
+      // 如果是同一首歌，並且該首歌沒有loop，該首歌變成loop
+      // 如果是同首歌，該首歌有loop，該首歌取消loop
+
+      if (!this.isDifferentSong && !this.loopedSong) {
+        this.loopedSong = { sid: thisSongId, loop: true };
+        this.sound.loop(true, thisSongId);
+
+        // loopedSong.loop = !loopedSong.loop;
+        // this.sound.loop(true, loopedSong.sid);
+
+        // check loopSongs data 是否存在
+        // const loopedSong = this.loopSongs.find((song) => {
+        //   return song.sid === thisSongId;
+        // });
+        // console.log(loopedSong);
+
+        // if (loopedSong) {
+        //   return;
+        // }
+        // this.loopSongs.push({
+        //   sid: thisSongId,
+        //   loop: true,
+        // });
+      } else if (!this.isDifferentSong && this.loopedSong.loop) {
+        this.loopedSong = null;
+        this.sound.loop(false, thisSongId);
+        // this.sound.loop(false, this.sid);
+        // // 刪除 loop song data
+        // this.loopSongs.filter((song) => {
+        //   return song.sid !== thisSongId;
+        // });
+      } else if (this.isDifferentSong && !this.loopedSong) {
+      }
     },
     onSidChange() {
       console.log("sid change");
@@ -89,12 +138,12 @@ export default defineStore("player", {
       }
       return false;
     },
-    isDifferentSong() {
-      const songId = this.router.currentRoute._value.params.id;
-      if (songId !== this.currentSong.sid) {
-        return true;
-      }
-      return false;
-    },
+    // isDifferentSong() {
+    //   const songId = this.router.currentRoute._value.params.id;
+    //   if (songId !== this.currentSong.sid) {
+    //     return true;
+    //   }
+    //   return false;
+    // },
   },
 });

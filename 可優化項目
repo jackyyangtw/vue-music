@@ -7,10 +7,6 @@ PWA offline時，上傳檔案的話會出現 error message
 優化mobile排版
 
 
-
-更新密碼時，confirm rules會 dynamic change
-
-
 完成:
 重新註冊會無法更改userData
 https://medium.com/firebase-tips-tricks/how-to-fix-firestore-error-permission-denied-missing-or-insufficient-permissions-777d591f404
@@ -21,3 +17,5 @@ https://medium.com/firebase-tips-tricks/how-to-fix-firestore-error-permission-de
 
 songItem user 如果有更改名稱，名稱不會變更 (更新songCollection?)
 https://stackoverflow.com/questions/38559457/firebase-v3-updateprofile-method
+
+更新密碼時，confirm rules會 dynamic change

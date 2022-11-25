@@ -15,7 +15,10 @@
         >
           <i
             class="fas"
-            :class="{ 'fa-play': !playing, 'fa-pause': playing }"
+            :class="{
+              'fa-play': isDifferentSong || !playing,
+              'fa-pause': playing,
+            }"
           ></i>
         </button>
 
@@ -162,7 +165,7 @@ export default {
   },
   computed: {
     ...mapState(userStore, ["userLoggedIn"]),
-    ...mapState(usePlayerStore, ["playing", "loop"]),
+    ...mapState(usePlayerStore, ["playing", "loop", "isDifferentSong"]),
     sortedComments() {
       return this.comments.slice().sort((a, b) => {
         if (this.sort === "1") {

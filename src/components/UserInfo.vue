@@ -421,7 +421,6 @@ export default {
     },
   },
   async created() {
-    console.log(auth.currentUser.uid);
     const res = await fetch("https://restcountries.com/v2/all");
     const data = await res.json();
     data.forEach((data) => this.allCountry.push(data));
