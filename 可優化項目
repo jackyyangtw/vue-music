@@ -1,10 +1,13 @@
-fix 無法切換歌曲的 bug
+
+重播會無法循環撥放
 
 翻譯中文語系
 
 PWA offline時，上傳檔案的話會出現 error message
 
 優化mobile排版
+
+
 
 
 完成:
@@ -19,3 +22,5 @@ songItem user 如果有更改名稱，名稱不會變更 (更新songCollection?)
 https://stackoverflow.com/questions/38559457/firebase-v3-updateprofile-method
 
 更新密碼時，confirm rules會 dynamic change
+
+fix 無法切換歌曲的 bug

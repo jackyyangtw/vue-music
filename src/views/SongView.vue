@@ -41,7 +41,7 @@
           @click.prevent="loopSong"
           type="button"
           class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
-          :class="{ 'text-red-500': loop }"
+          :class="{ 'text-red-500': isLoopingSong }"
         >
           <i class="fas fa-recycle"></i>
         </button>
@@ -160,12 +160,17 @@ export default {
       vm.song.sid = to.params.id;
       console.log("set new song");
       vm.getComments();
-      console.log(auth.currentUser);
+      console.log("route change!");
+      vm.changeLoopingIcon();
     });
   },
   computed: {
     ...mapState(userStore, ["userLoggedIn"]),
-    ...mapState(usePlayerStore, ["playing", "loop", "isDifferentSong"]),
+    ...mapState(usePlayerStore, [
+      "playing",
+      "isLoopingSong",
+      "isDifferentSong",
+    ]),
     sortedComments() {
       return this.comments.slice().sort((a, b) => {
         if (this.sort === "1") {
@@ -191,7 +196,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions(usePlayerStore, ["newSong", "toggleAudio", "loopSong"]),
+    ...mapActions(usePlayerStore, [
+      "newSong",
+      "toggleAudio",
+      "loopSong",
+      "changeLoopingIcon",
+    ]),
     async addComment(values, { resetForm }) {
       this.commentInSubmission = true;
       this.commentShowAlert = true;
