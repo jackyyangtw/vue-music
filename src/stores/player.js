@@ -11,7 +11,7 @@ export default defineStore("player", {
     duration: "00:00",
     playerProgress: "0%",
     isLoopingSong: false,
-    sid: "",
+    sid: "", // created by howl
     isDifferentSong: false,
     loopedSong: {},
   }),
@@ -27,15 +27,23 @@ export default defineStore("player", {
         html5: true, // 用於撥放檔案較大的檔案。直接撥放，不等到全部檔案解析完就開始撥放
       });
 
+      // sid created by howl
       this.sid = this.sound.play();
+
+      // click replay still loop
+      if (!this.isDifferentSong && this.loopedSong.loop) {
+        this.loopedSong.sid = this.sound.play();
+        this.sound.loop(true, this.sid);
+      }
+
+      if (this.isDifferentSong) {
+        this.loopedSong = {};
+      }
 
       this.sound.on("play", () => {
         requestAnimationFrame(this.progress);
       });
-      // if (this.loopedSong.firebaseSid !== this.currentSong.sid) {
-      //   this.loopedSong = {};
-      //   this.isLoopingSong = false;
-      // }
+
       if (!this.sound.playing) {
         return;
       }
@@ -47,7 +55,12 @@ export default defineStore("player", {
         console.log("play new song");
       } else if (!this.sound.playing() && !this.isDifferentSong) {
         console.log("play same song");
-        this.sound.play();
+        // this.sound.play();
+        this.newSong(song);
+        if (this.loopedSong.loop) {
+          this.loopedSong.sid = this.sound.play();
+          this.sound.loop(true, this.sid);
+        }
       } else if (this.sound.playing() && !this.isDifferentSong) {
         console.log("pause same song");
         this.sound.pause();
@@ -58,6 +71,9 @@ export default defineStore("player", {
       if (!songId) {
         return;
       }
+      // if (!this.currentSong.sid) {
+      //   return;
+      // }
       if (songId !== this.currentSong.sid) {
         this.isDifferentSong = true;
       } else {
@@ -86,7 +102,7 @@ export default defineStore("player", {
       this.sound.on("seek", this.progress); // listen seek event
     },
     loopSong() {
-      if (!this.sound.playing() || this.isDifferentSong) {
+      if (!this.sound.playing()) {
         return;
       }
       this.isLoopingSong = !this.isLoopingSong;
@@ -94,17 +110,18 @@ export default defineStore("player", {
         this.sound.loop(false, this.sid);
         this.loopedSong = {};
         return;
+      } else {
+        this.loopedSong = {
+          sid: this.sid,
+          loop: true,
+          firebaseSid: this.currentSong.sid,
+        };
+        this.sound.loop(true, this.sid);
       }
-      this.loopedSong = {
-        sid: this.sid,
-        loop: true,
-        firebaseSid: this.currentSong.sid,
-      };
-      this.sound.loop(true, this.sid);
     },
-    onSidChange() {
-      console.log("sid change");
-    },
+    // onSidChange() {
+    //   console.log("sid change");
+    // },
     changeLoopingIcon() {
       const thisSongId = this.router.currentRoute._value.params.id;
       if (this.loopedSong.loop && thisSongId === this.loopedSong.firebaseSid) {
