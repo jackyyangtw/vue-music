@@ -14,6 +14,7 @@ export default defineStore("player", {
     sid: "", // created by howl
     isDifferentSong: false,
     loopedSong: {},
+    isPLayingSong: false,
   }),
   actions: {
     async newSong(song) {
@@ -49,31 +50,52 @@ export default defineStore("player", {
       }
     },
     toggleAudio(song) {
-      if (this.isDifferentSong) {
-        this.newSong(song);
-        this.isDifferentSong = false;
-        console.log("play new song");
-      } else if (!this.sound.playing() && !this.isDifferentSong) {
-        console.log("play same song");
-        // this.sound.play();
-        this.newSong(song);
-        if (this.loopedSong.loop) {
-          this.loopedSong.sid = this.sound.play();
-          this.sound.loop(true, this.sid);
+      // 當同首歌且沒有歌曲撥放時，點選就會撥放該id的歌
+      // 當同首歌且有歌曲撥放時，點選就會暫停
+      if (!this.isDifferentSong) {
+        if (!this.currentSong.sid) {
+          this.newSong(song);
+          this.isPLayingSong = true;
+        } else {
+          this.sound.pause();
         }
-      } else if (this.sound.playing() && !this.isDifferentSong) {
-        console.log("pause same song");
-        this.sound.pause();
+      } else {
+        // 當不同首歌的時候，且有歌曲正在撥放，點選就會撥放該id的歌
+        // 當不同首歌時，且沒有歌曲撥放，點選就會撥放
+        if (this.currentSong.sid) {
+          this.sound.pause();
+          return;
+        }
+        this.newSong(song);
       }
+
+      // if (this.isDifferentSong) {
+      //   this.newSong(song);
+      //   this.isDifferentSong = false;
+      //   console.log("play new song");
+      // } else if (!this.sound.playing() && !this.isDifferentSong) {
+      //   console.log("play same song");
+      //   // this.sound.play();
+      //   this.newSong(song);
+      //   if (this.loopedSong.loop) {
+      //     this.loopedSong.sid = this.sound.play();
+      //     this.sound.loop(true, this.sid);
+      //   }
+      // } else if (this.sound.playing() && !this.isDifferentSong) {
+      //   console.log("pause same song");
+      //   this.sound.pause();
+      // }
     },
     watchIsDifferentSong() {
       const songId = this.router.currentRoute._value.params.id;
-      if (!songId) {
+
+      // 沒有播放時
+      if (!this.currentSong.sid) {
+        this.isDifferentSong = false;
         return;
       }
-      // if (!this.currentSong.sid) {
-      //   return;
-      // }
+
+      // 有歌曲播放時
       if (songId !== this.currentSong.sid) {
         this.isDifferentSong = true;
       } else {
