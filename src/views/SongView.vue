@@ -9,15 +9,15 @@
       <div class="container mx-auto flex items-center">
         <!-- Play/Pause Button -->
         <button
-          @click.prevent="toggleAudio(song)"
+          @click.prevent="playerStore.toggleAudio(song)"
           type="button"
           class="z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
         >
           <i
             class="fas"
             :class="{
-              'fa-play': isDifferentSong || !playing,
-              'fa-pause': playing,
+              'fa-play': playerStore.isDifferentSong || !playerStore.playing,
+              'fa-pause': playerStore.playing,
             }"
           ></i>
         </button>
@@ -41,7 +41,7 @@
           @click.prevent="loopSong"
           type="button"
           class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
-          :class="{ 'text-red-500': isLoopingSong }"
+          :class="{ 'text-red-500': playerStore.isLoopingSong }"
         >
           <i class="fas fa-recycle"></i>
         </button>
@@ -74,7 +74,7 @@
           <vee-form
             :validation-schema="schema"
             @submit="addComment"
-            v-if="userLoggedIn"
+            v-if="userStore.userLoggedIn"
           >
             <vee-field
               as="textarea"
@@ -125,28 +125,110 @@
 
 <script>
 import { songsCollection, commentCollection, auth } from "../includes/firebase";
-import { mapActions, mapState } from "pinia";
-import usePlayerStore from "@/stores/player";
-import userStore from "@/stores/user";
+import { usePlayerStore } from "../stores/player";
+import { useUserStore } from "../stores/user";
+import { ref, reactive, computed, watch, toRefs } from "vue";
+import { useRoute, useRouter } from "vue-router";
 export default {
-  name: "SongView",
-  data() {
-    return {
-      song: {},
-      comments: [],
-      sort: "1",
-      schema: {
-        comment: "required|min:3",
-      },
+  setup() {
+    const playerStore = usePlayerStore();
+    const userStore = useUserStore();
+    const route = useRoute();
+    const router = useRouter();
+
+    const song = ref({});
+    const comments = ref([]);
+    const sort = ref("1");
+    const schema = reactive({
+      comment: "required|min:3",
+    });
+    const commentState = reactive({
       commentInSubmission: false,
       commentShowAlert: false,
       commentAlertVariant: "bg-blue-500",
       commentAlertMessage: "Please wait! Your comment is being submitted...",
+    });
+
+    const sortedComments = computed(() => {
+      return comments.value.slice().sort((a, b) => {
+        if (sort.value === "1") {
+          // date string ex: Thu Nov 03 2022 08:28:21 GMT+0800 (台北標準時間)
+          // console.log(new Date(b.datePosted));
+          return new Date(b.datePosted) - new Date(a.datePosted); // new -> old，降冪
+        }
+        return new Date(a.datePosted) - new Date(b.datePosted); // old -> new
+      });
+    });
+
+    watch(sort, (newVal) => {
+      if (newVal === route.query.sort) {
+        return;
+      }
+      router.push({
+        query: {
+          sort: newVal,
+        },
+      });
+    });
+
+    const addComment = async (values, { resetForm }) => {
+      commentState.commentInSubmission = true;
+      commentState.commentShowAlert = true;
+      commentState.commentAlertVariant = "bg-blue-500";
+      const comment = {
+        content: values.comment,
+        datePosted: new Date().toString(),
+        sid: route.params.id,
+        name: auth.currentUser.displayName,
+        uid: auth.currentUser.uid, // user更改評論的時候會用到
+      };
+      await commentCollection.add(comment);
+
+      song.value.commentCount += 1;
+      await songsCollection.doc(route.params.id).update({
+        commentCount: song.value.commentCount,
+      });
+
+      getComments();
+      commentState.commentInSubmission = false;
+      commentState.commentAlertVariant = "bg-green-500";
+      commentState.commentAlertMessage = "comment added!";
+
+      resetForm(); // context.resetForm
+    };
+
+    const getComments = async () => {
+      const snapshots = await commentCollection
+        .where("sid", "==", route.params.id)
+        .get();
+
+      comments.value = []; // 確保不會有重複的comment
+
+      snapshots.forEach((doc) => {
+        comments.value.push({
+          docID: doc.id,
+          ...doc.data(),
+        });
+      });
+    };
+
+    return {
+      song,
+      comments,
+      sort,
+      schema,
+      sortedComments,
+      playerStore,
+      userStore,
+      ...toRefs(commentState),
+      addComment,
+      getComments,
     };
   },
-  // 原本是用created，但為了先顯示內容，使用 beforeRouteEnter，先顯示內容邊抓Data
   async beforeRouteEnter(to, from, next) {
     const docSnapshot = await songsCollection.doc(to.params.id).get();
+    const playerStore = usePlayerStore();
+
     next((vm) => {
       if (!docSnapshot.exists) {
         vm.$router.push({ name: "home" });
@@ -161,87 +243,8 @@ export default {
       console.log("set new song");
       vm.getComments();
       console.log("route change!");
-      vm.changeLoopingIcon();
+      playerStore.changeLoopingIcon();
     });
-  },
-  computed: {
-    ...mapState(userStore, ["userLoggedIn"]),
-    ...mapState(usePlayerStore, [
-      "playing",
-      "isLoopingSong",
-      "isDifferentSong",
-    ]),
-    sortedComments() {
-      return this.comments.slice().sort((a, b) => {
-        if (this.sort === "1") {
-          // date string ex: Thu Nov 03 2022 08:28:21 GMT+0800 (台北標準時間)
-          // console.log(new Date(b.datePosted));
-          return new Date(b.datePosted) - new Date(a.datePosted); // new -> old，降冪
-        }
-        return new Date(a.datePosted) - new Date(b.datePosted); // old -> new
-      });
-    },
-  },
-  watch: {
-    // 保留sorting狀態
-    sort(newVal) {
-      if (newVal === this.$route.query.sort) {
-        return;
-      }
-      this.$router.push({
-        query: {
-          sort: newVal,
-        },
-      });
-    },
-  },
-  methods: {
-    ...mapActions(usePlayerStore, [
-      "newSong",
-      "toggleAudio",
-      "loopSong",
-      "changeLoopingIcon",
-    ]),
-    async addComment(values, { resetForm }) {
-      this.commentInSubmission = true;
-      this.commentShowAlert = true;
-      this.commentAlertVariant = "bg-blue-500";
-      // this.commentAlertMessage = "";
-      const comment = {
-        content: values.comment,
-        datePosted: new Date().toString(),
-        sid: this.$route.params.id,
-        name: auth.currentUser.displayName,
-        uid: auth.currentUser.uid, // user更改評論的時候會用到
-      };
-      await commentCollection.add(comment);
-
-      this.song.commentCount += 1;
-      await songsCollection.doc(this.$route.params.id).update({
-        commentCount: this.song.commentCount,
-      });
-
-      this.getComments();
-      this.commentInSubmission = false;
-      this.commentAlertVariant = "bg-green-500";
-      this.commentAlertMessage = "comment added!";
-
-      resetForm(); // context.resetForm
-    },
-    async getComments() {
-      const snapshots = await commentCollection
-        .where("sid", "==", this.$route.params.id)
-        .get();
-
-      this.comments = []; // 確保不會有重複的comment
-
-      snapshots.forEach((doc) => {
-        this.comments.push({
-          docID: doc.id,
-          ...doc.data(),
-        });
-      });
-    },
   },
 };
 </script>

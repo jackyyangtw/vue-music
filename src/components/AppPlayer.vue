@@ -87,7 +87,6 @@ export default {
       }
       // this.song.sid = to.params.id;
       this.watchIsDifferentSong();
-      console.log(this.isDifferentSong);
     },
   },
 };
