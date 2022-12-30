@@ -31,17 +31,17 @@
           <div class="song-price">{{ $n(100000, "currency", "ja") }}</div>
         </div>
         <button
-          @click.prevent="newSong(song)"
+          @click.prevent="playerStore.newSong(song)"
           type="button"
           class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
         >
           <i class="fas fa-redo-alt"></i>
         </button>
         <button
-          @click.prevent="loopSong"
+          @click.prevent="playerStore.loopSong"
           type="button"
           class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
-          :class="{ 'text-red-500': playerStore.isLoopingSong }"
+          :class="{ 'text-red-500': playerStore.loopedSong.loop }"
         >
           <i class="fas fa-recycle"></i>
         </button>
@@ -127,6 +127,7 @@
 import { songsCollection, commentCollection, auth } from "../includes/firebase";
 import { usePlayerStore } from "../stores/player";
 import { useUserStore } from "../stores/user";
+// import useUserStore from "../stores/user";
 import { ref, reactive, computed, watch, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
 export default {
@@ -240,9 +241,9 @@ export default {
 
       vm.song = docSnapshot.data();
       vm.song.sid = to.params.id;
-      console.log("set new song");
+      // console.log("set new song");
       vm.getComments();
-      console.log("route change!");
+      // console.log("route change!");
       playerStore.changeLoopingIcon();
     });
   },
