@@ -41,19 +41,13 @@
 </template>
 
 <script>
-// import { mapActions, mapState } from "pinia";
-// import usePlayerStore from "@/stores/player";
 import { usePlayerStore } from "../stores/player";
-import { songsCollection } from "../includes/firebase";
-import { ref, onBeforeMount } from "vue";
+import { ref } from "vue";
 import { storeToRefs } from "pinia";
-import { useRoute, useRouter } from "vue-router";
 export default {
   setup() {
     const song = ref({});
     const playerStore = usePlayerStore();
-    const route = useRoute();
-    const router = useRouter();
     const {
       playing,
       duration,
@@ -62,29 +56,7 @@ export default {
       currentSong,
       isDifferentSong,
     } = storeToRefs(usePlayerStore());
-    const toggleAudio = playerStore.toggleAudio;
-    const updateSeek = playerStore.updateSeek;
-    const watchIsDifferentSong = playerStore.watchIsDifferentSong;
-
-    onBeforeMount(async () => {
-      const docSnapshot = await songsCollection.doc(route.params.id).get();
-      song.value = docSnapshot.data();
-    });
-    console.log(router);
-
-    // how to access route to
-    // onBeforeRouteUpdate(async (to) => {
-    //   console.log("route change");
-    //   if (!route.params.id) {
-    //     return;
-    //   }
-    //   const docSnapshot = await songsCollection.doc(route.params.id).get();
-    //   this.song = docSnapshot.data();
-    //   if (!to.params.id) {
-    //     return;
-    //   }
-    //   watchIsDifferentSong();
-    // });
+    const { toggleAudio, updateSeek } = playerStore;
 
     return {
       song,
@@ -97,53 +69,8 @@ export default {
       isDifferentSong,
       toggleAudio,
       updateSeek,
-      watchIsDifferentSong,
     };
   },
-  // methods: {
-  //   ...mapActions(usePlayerStore, [
-  //     "toggleAudio",
-  //     "updateSeek",
-  //     "watchIsDifferentSong",
-  //   ]),
-  // },
-  // data() {
-  //   return {
-  //     song: {},
-  //   };
-  // },
-  // async created() {
-  //   const docSnapshot = await songsCollection.doc(this.$route.params.id).get();
-  //   this.song = docSnapshot.data();
-  //   // this.song.sid = this.$route.params.id;
-  //   console.log(this.$route);
-  // },
-  // computed: {
-  //   ...mapState(usePlayerStore, [
-  //     "playing",
-  //     "duration",
-  //     "seek",
-  //     "playerProgress",
-  //     "currentSong",
-  //     "isDifferentSong",
-  //   ]),
-  // },
-  // watch: {
-  //   $route: async function (to) {
-  //     if (!this.$route.params.id) {
-  //       return;
-  //     }
-  //     const docSnapshot = await songsCollection
-  //       .doc(this.$route.params.id)
-  //       .get();
-  //     this.song = docSnapshot.data();
-  //     if (!to.params.id) {
-  //       return;
-  //     }
-  //     // this.song.sid = to.params.id;
-  //     this.watchIsDifferentSong();
-  //   },
-  // },
 };
 </script>
 

@@ -105,24 +105,11 @@ export const usePlayerStore = defineStore("player", () => {
       isDifferentSong.value = false;
     }
   });
-  // const watchIsDifferentSong = () => {
-  //   // const songId = this.router.currentRoute._value.params.id;
-  //   const route = useRoute();
-  //   const songId = route.params.id;
 
-  //   // 沒有播放時
-  //   if (!currentSong.value.sid) {
-  //     isDifferentSong.value = false;
-  //     return;
-  //   }
+  // watch(sid, (newVal, oldVal) => {
+  //   console.log(newVal, oldVal);
+  // });
 
-  //   // 有歌曲播放時
-  //   if (songId !== currentSong.value.sid) {
-  //     isDifferentSong.value = true;
-  //   } else {
-  //     isDifferentSong.value = false;
-  //   }
-  // };
   const progress = () => {
     seek.value = helper.formatTime(sound.value.seek());
     duration.value = helper.formatTime(sound.value.duration());
@@ -146,37 +133,20 @@ export const usePlayerStore = defineStore("player", () => {
   };
   const loopSong = () => {
     // 有播放的歌曲，視同首歌時才能loop
+    if (!playing.value) {
+      return;
+    }
     if (loopedSong.loop) {
+      console.log("disable loop");
       loopedSong.loop = false;
-      sound.value.loop(false, sid);
+      sound.value.loop(false, sid.value);
     } else if (sound.value.playing() && !isDifferentSong.value) {
-      sound.value.loop(true, sid);
-      loopedSong.sid = sid;
+      console.log("enable loop");
+      loopedSong.sid = sid.value;
       loopedSong.loop = true;
       loopedSong.firebaseSid = currentSong.value.sid;
+      sound.value.loop(true, sid.value);
     }
-    // if (sound.value.playing() && !isDifferentSong.value) {
-    // } else if (loopedSong.loop) {
-    //   loopedSong.loop = false;
-    //   sound.value.loop(false, sid);
-    // }
-    console.log(loopedSong.loop);
-    // if (!sound.value.playing()) {
-    //   return;
-    // }
-    // isLoopingSong.value = !isLoopingSong.value;
-    // if (loopedSong.value.loop) {
-    //   sound.value.loop(false, sid);
-    //   loopedSong.value = {};
-    //   return;
-    // } else {
-    //   loopedSong.value = {
-    //     sid: sid,
-    //     loop: true,
-    //     firebaseSid: currentSong.value.sid,
-    //   };
-    //   sound.value.loop(true, sid);
-    // }
   };
   const changeLoopingIcon = () => {
     // const thisSongId = this.router.currentRoute._value.params.id;
