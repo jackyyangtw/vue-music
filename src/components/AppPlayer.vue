@@ -47,12 +47,13 @@ import { usePlayerStore } from "../stores/player";
 import { songsCollection } from "../includes/firebase";
 import { ref, onBeforeMount } from "vue";
 import { storeToRefs } from "pinia";
-import { useRoute, onBeforeRouteUpdate } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 export default {
   setup() {
     const song = ref({});
     const playerStore = usePlayerStore();
     const route = useRoute();
+    const router = useRouter();
     const {
       playing,
       duration,
@@ -69,20 +70,21 @@ export default {
       const docSnapshot = await songsCollection.doc(route.params.id).get();
       song.value = docSnapshot.data();
     });
+    console.log(router);
 
     // how to access route to
-    onBeforeRouteUpdate(async (to) => {
-      console.log("route change");
-      if (!route.params.id) {
-        return;
-      }
-      const docSnapshot = await songsCollection.doc(route.params.id).get();
-      this.song = docSnapshot.data();
-      if (!to.params.id) {
-        return;
-      }
-      watchIsDifferentSong();
-    });
+    // onBeforeRouteUpdate(async (to) => {
+    //   console.log("route change");
+    //   if (!route.params.id) {
+    //     return;
+    //   }
+    //   const docSnapshot = await songsCollection.doc(route.params.id).get();
+    //   this.song = docSnapshot.data();
+    //   if (!to.params.id) {
+    //     return;
+    //   }
+    //   watchIsDifferentSong();
+    // });
 
     return {
       song,
