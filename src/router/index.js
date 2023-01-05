@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import useUserStore from "@/stores/user";
 import { usePlayerStore } from "../stores/player";
-import { watch, ref } from "vue";
 import { storeToRefs } from "pinia";
 
 const HomeView = () => import("@/views/HomeView.vue");
@@ -65,35 +64,19 @@ router.beforeEach((to, from, next) => {
 });
 
 // loop功能重置與保持原樣
-router.afterEach((to) => {
-  const { sid, loopedSong, isDifferentSong } = storeToRefs(usePlayerStore());
+router.beforeEach((to) => {
+  const playerStore = usePlayerStore();
+  const { loopedSong, currentSong } = storeToRefs(playerStore);
+  console.log(currentSong.value.sid);
+
   if (to.params.id) {
-    if (!isDifferentSong.value) {
-      console.log("same song");
-      // loopedSong.value.sid = newSid.value;
-      // loopedSong.value.loop = true;
-      // loopedSong.value.firebaseSid = to.params.id;
-      // return;
+    if (currentSong.value.sid === to.params.id) {
+      loopedSong.value.sid = to.params.id;
+      loopedSong.value.loop = true;
     } else {
-      console.log("different song");
       loopedSong.value.sid = "";
       loopedSong.value.loop = false;
-      loopedSong.value.firebaseSid = "";
     }
-
-    // watch(sid, (newVal) => {
-    //   newSid.value = newVal;
-    // });
-
-    // const newSid = ref("");
-
-    // watch(sid, (newVal, oldVal) => {
-    //   console.log(newVal, oldVal);
-    //   // if (newVal && newVal !== oldVal) {
-    //   //   loopedSong.value.loop = false;
-    //   // }
-    //   // console.log(loopedSong.value.loop);
-    // });
   }
 });
 

@@ -3,7 +3,7 @@ import { Howl } from "howler";
 import helper from "@/includes/helper";
 // import { watch, toRef } from "vue";
 // import { useRoute } from "vue-router";
-import { ref, reactive, computed, watchEffect } from "vue";
+import { ref, reactive, computed, watchEffect, watch } from "vue";
 import { useRoute } from "vue-router";
 
 export const usePlayerStore = defineStore("player", () => {
@@ -14,7 +14,7 @@ export const usePlayerStore = defineStore("player", () => {
   const playerProgress = ref("0%");
   const isLoopingSong = ref(false);
   const sid = ref("");
-  const isDifferentSong = ref(false);
+
   const loopedSong = reactive({
     sid: "",
     loop: false,
@@ -65,6 +65,8 @@ export const usePlayerStore = defineStore("player", () => {
     }
   };
 
+  // 須修正在有撥放歌曲的時候進到其他音樂頁面，下方player點選後就會停止撥放
+  // 看是否寫一個專屬播放列的function不跟toggle重複
   const toggleAudio = (song) => {
     // 如果目前沒有撥放並且沒有在歌曲頁面的時候就return
     if (!currentSong.value.sid && !route.params.id) {
@@ -90,25 +92,31 @@ export const usePlayerStore = defineStore("player", () => {
     }
   };
 
-  watchEffect(() => {
+  // const isDifferentSong = ref(false);
+  const isDifferentSong = computed(() => {
     const songId = route.params.id;
+
+    // 在主頁的時候
+    if (!songId) {
+      return false;
+    }
     // 沒有播放時
     if (!currentSong.value.sid) {
-      isDifferentSong.value = false;
-      return;
+      // console.log("detact different song");
+      return true;
     }
 
     // 有歌曲播放時
     if (songId !== currentSong.value.sid) {
-      isDifferentSong.value = true;
-    } else {
-      isDifferentSong.value = false;
+      // console.log("detact different song");
+      return true;
+    } else if (songId === currentSong.value.sid) {
+      // console.log("detact same song");
+      return false;
     }
-  });
 
-  // watch(sid, (newVal, oldVal) => {
-  //   console.log(newVal, oldVal);
-  // });
+    return true;
+  });
 
   const progress = () => {
     seek.value = helper.formatTime(sound.value.seek());
