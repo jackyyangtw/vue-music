@@ -20,7 +20,6 @@ export const usePlayerStore = defineStore("player", () => {
     loop: false,
     firebaseSid: "",
   });
-  const isPLayingSong = ref(false);
   const route = useRoute();
 
   const playing = computed(() => {
@@ -50,12 +49,6 @@ export const usePlayerStore = defineStore("player", () => {
       sound.value.loop(true, sid);
     }
 
-    if (isDifferentSong.value) {
-      loopedSong.sid = "";
-      // loopedSong.loop = false;
-      loopedSong.firebaseSid = "";
-    }
-
     sound.value.on("play", () => {
       requestAnimationFrame(progress);
     });
@@ -73,22 +66,34 @@ export const usePlayerStore = defineStore("player", () => {
       return;
     }
 
-    if (!isDifferentSong.value) {
-      if (!currentSong.value.sid) {
-        newSong(song);
-        isPLayingSong.value = true;
-      }
-    } else if (isDifferentSong.value && route.path !== "/") {
-      newSong(song);
-    }
-
-    // 新增"新歌是否撥放的state"
+    // 暫停、撥放切換
     if (currentSong.value.sid) {
       if (sound.value.playing()) {
         sound.value.pause();
       } else {
         sound.value.play();
       }
+    }
+
+    // if (!currentSong.value.sid) {
+    //   newSong(song);
+    // }
+
+    // 如果目前沒有撥放的音樂、並且是不同首歌就撥放
+    // 如果目前有撥放的音樂，並且是不同首歌就撥放
+    // if (!isDifferentSong.value) {
+    //   if (!currentSong.value.sid) {
+    //     console.log("同首歌，並且沒有歌曲撥放");
+    //     newSong(song);
+    //     isPLayingSong.value = true;
+    //   }
+    // } else if (isDifferentSong.value && route.path !== "/") {
+    //   console.log("不同首歌並且不在主頁");
+    //   newSong(song);
+    // }
+    if (isDifferentSong.value && route.path !== "/") {
+      console.log("不同首歌並且不在主頁");
+      newSong(song);
     }
   };
 
@@ -175,7 +180,6 @@ export const usePlayerStore = defineStore("player", () => {
     sid,
     isDifferentSong,
     loopedSong,
-    isPLayingSong,
     playing,
     newSong,
     toggleAudio,
@@ -184,163 +188,3 @@ export const usePlayerStore = defineStore("player", () => {
     changeLoopingIcon,
   };
 });
-
-// export default defineStore("player", {
-//   state: () => ({
-//     currentSong: {}, // song info
-//     sound: {}, // song instance created by Howl
-//     seek: "00:00",
-//     duration: "00:00",
-//     playerProgress: "0%",
-//     isLoopingSong: false,
-//     sid: "", // created by howl
-//     isDifferentSong: false,
-//     loopedSong: {},
-//     isPLayingSong: false,
-//   }),
-//   actions: {
-//     async newSong(song) {
-//       if (this.sound instanceof Howl) {
-//         this.sound.unload(); // song pause and delete instance from memory
-//       }
-//       this.currentSong = song;
-
-//       this.sound = new Howl({
-//         src: [song.url],
-//         html5: true, // 用於撥放檔案較大的檔案。直接撥放，不等到全部檔案解析完就開始撥放
-//       });
-
-//       // sid created by howl
-//       this.sid = this.sound.play();
-
-//       // click replay still loop
-//       if (!this.isDifferentSong && this.loopedSong.loop) {
-//         this.loopedSong.sid = this.sound.play();
-//         this.sound.loop(true, this.sid);
-//       }
-
-//       if (this.isDifferentSong) {
-//         this.loopedSong = {};
-//       }
-
-//       this.sound.on("play", () => {
-//         requestAnimationFrame(this.progress);
-//       });
-
-//       if (!this.sound.playing) {
-//         return;
-//       }
-//     },
-//     toggleAudio(song) {
-//       // 當同首歌且沒有歌曲撥放時，點選就會撥放該id的歌
-//       // 當同首歌且有歌曲撥放時，點選就會暫停
-//       // console.log("clicked");
-//       if (!this.isDifferentSong) {
-//         if (!this.currentSong.sid) {
-//           this.newSong(song);
-//           this.isPLayingSong = true;
-//         } else {
-//           this.sound.pause();
-//         }
-//       } else {
-//         // 當不同首歌的時候，且有歌曲正在撥放，點選就會撥放該id的歌
-//         // 當不同首歌時，且沒有歌曲撥放，點選就會撥放
-//         if (this.currentSong.sid) {
-//           this.sound.pause();
-//           return;
-//         }
-//         this.newSong(song);
-//       }
-
-//       // if (this.isDifferentSong) {
-//       //   this.newSong(song);
-//       //   this.isDifferentSong = false;
-//       //   console.log("play new song");
-//       // } else if (!this.sound.playing() && !this.isDifferentSong) {
-//       //   console.log("play same song");
-//       //   // this.sound.play();
-//       //   this.newSong(song);
-//       //   if (this.loopedSong.loop) {
-//       //     this.loopedSong.sid = this.sound.play();
-//       //     this.sound.loop(true, this.sid);
-//       //   }
-//       // } else if (this.sound.playing() && !this.isDifferentSong) {
-//       //   console.log("pause same song");
-//       //   this.sound.pause();
-//       // }
-//     },
-//     watchIsDifferentSong() {
-//       const songId = this.router.currentRoute._value.params.id;
-
-//       // 沒有播放時
-//       if (!this.currentSong.sid) {
-//         this.isDifferentSong = false;
-//         return;
-//       }
-
-//       // 有歌曲播放時
-//       if (songId !== this.currentSong.sid) {
-//         this.isDifferentSong = true;
-//       } else {
-//         this.isDifferentSong = false;
-//       }
-//     },
-//     progress() {
-//       this.seek = helper.formatTime(this.sound.seek());
-//       this.duration = helper.formatTime(this.sound.duration());
-//       this.playerProgress = `${
-//         (this.sound.seek() / this.sound.duration()) * 100
-//       }%`;
-//       if (this.sound.playing()) {
-//         requestAnimationFrame(this.progress);
-//       }
-//     },
-//     updateSeek(event) {
-//       if (!this.sound.playing) {
-//         return;
-//       }
-//       const { x, width } = event.currentTarget.getBoundingClientRect();
-//       const clickX = event.clientX - x;
-//       const percentage = clickX / width;
-//       const seconds = this.sound.duration() * percentage;
-//       this.sound.seek(seconds); // update progress bar position
-//       this.sound.on("seek", this.progress); // listen seek event
-//     },
-//     loopSong() {
-//       if (!this.sound.playing()) {
-//         return;
-//       }
-//       this.isLoopingSong = !this.isLoopingSong;
-//       if (this.loopedSong.loop) {
-//         this.sound.loop(false, this.sid);
-//         this.loopedSong = {};
-//         return;
-//       } else {
-//         this.loopedSong = {
-//           sid: this.sid,
-//           loop: true,
-//           firebaseSid: this.currentSong.sid,
-//         };
-//         this.sound.loop(true, this.sid);
-//       }
-//     },
-//     // onSidChange() {
-//     //   console.log("sid change");
-//     // },
-//     changeLoopingIcon() {
-//       const thisSongId = this.router.currentRoute._value.params.id;
-//       if (this.loopedSong.loop && thisSongId === this.loopedSong.firebaseSid) {
-//         this.isLoopingSong = true;
-//       }
-//       this.isLoopingSong = false;
-//     },
-//   },
-//   getters: {
-//     playing: (state) => {
-//       if (state.sound.playing) {
-//         return state.sound.playing();
-//       }
-//       return false;
-//     },
-//   },
-// });

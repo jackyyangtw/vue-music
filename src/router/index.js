@@ -70,7 +70,7 @@ router.beforeEach((to) => {
   console.log(currentSong.value.sid);
 
   if (to.params.id) {
-    if (currentSong.value.sid === to.params.id) {
+    if (currentSong.value.sid === to.params.id && loopedSong.value.loop) {
       loopedSong.value.sid = to.params.id;
       loopedSong.value.loop = true;
     } else {

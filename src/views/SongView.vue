@@ -32,6 +32,7 @@
         </div>
         <button
           @click.prevent="playerStore.newSong(song)"
+          v-if="showFunctionIcons"
           type="button"
           class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
         >
@@ -39,6 +40,7 @@
         </button>
         <button
           @click.prevent="playerStore.loopSong"
+          v-if="showFunctionIcons"
           type="button"
           class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
           :class="{ 'text-red-500': playerStore.loopedSong.loop }"
@@ -161,6 +163,16 @@ export default {
       });
     });
 
+    const showFunctionIcons = computed(() => {
+      if (
+        playerStore.currentSong.sid &&
+        playerStore.currentSong.sid === route.params.id
+      ) {
+        return true;
+      }
+      return false;
+    });
+
     watch(sort, (newVal) => {
       if (newVal === route.query.sort) {
         return;
@@ -221,6 +233,7 @@ export default {
       sortedComments,
       playerStore,
       userStore,
+      showFunctionIcons,
       ...toRefs(commentState),
       addComment,
       getComments,

@@ -1,5 +1,9 @@
-loop功能:
-換頁的時候要重置
+不同首歌的狀況下，點選下方player會直接重播目前歌曲
+可能解法:
+watch currentSong sid，有變動就傳新的sid，toggleAudio要判斷是否為同首歌，同首歌執行toggle，不同首歌執行newsong
+
+寫新的 app player toggleAudio function，跟song view分開
+
 
 
 
