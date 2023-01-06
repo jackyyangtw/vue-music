@@ -1,9 +1,7 @@
 import { defineStore } from "pinia";
 import { Howl } from "howler";
 import helper from "@/includes/helper";
-// import { watch, toRef } from "vue";
-// import { useRoute } from "vue-router";
-import { ref, reactive, computed, watchEffect, watch } from "vue";
+import { ref, reactive, computed } from "vue";
 import { useRoute } from "vue-router";
 
 export const usePlayerStore = defineStore("player", () => {
@@ -43,12 +41,6 @@ export const usePlayerStore = defineStore("player", () => {
     // sid created by howl
     sid.value = sound.value.play();
 
-    // click replay still loop
-    if (!isDifferentSong.value && loopedSong.loop) {
-      loopedSong.sid = sound.value.play();
-      sound.value.loop(true, sid);
-    }
-
     sound.value.on("play", () => {
       requestAnimationFrame(progress);
     });
@@ -58,8 +50,15 @@ export const usePlayerStore = defineStore("player", () => {
     }
   };
 
-  // 須修正在有撥放歌曲的時候進到其他音樂頁面，下方player點選後就會停止撥放
-  // 看是否寫一個專屬播放列的function不跟toggle重複
+  const replaySong = (song) => {
+    newSong(song);
+    // click replay still loop
+    if (!isDifferentSong.value && loopedSong.loop) {
+      loopedSong.sid = sound.value.play();
+      sound.value.loop(true, sid.value);
+    }
+  };
+
   const toggleAudio = (song) => {
     // 如果目前沒有撥放並且沒有在歌曲頁面的時候就return
     if (!currentSong.value.sid && !route.params.id) {
@@ -75,29 +74,27 @@ export const usePlayerStore = defineStore("player", () => {
       }
     }
 
-    // if (!currentSong.value.sid) {
-    //   newSong(song);
-    // }
-
-    // 如果目前沒有撥放的音樂、並且是不同首歌就撥放
-    // 如果目前有撥放的音樂，並且是不同首歌就撥放
-    // if (!isDifferentSong.value) {
-    //   if (!currentSong.value.sid) {
-    //     console.log("同首歌，並且沒有歌曲撥放");
-    //     newSong(song);
-    //     isPLayingSong.value = true;
-    //   }
-    // } else if (isDifferentSong.value && route.path !== "/") {
-    //   console.log("不同首歌並且不在主頁");
-    //   newSong(song);
-    // }
     if (isDifferentSong.value && route.path !== "/") {
-      console.log("不同首歌並且不在主頁");
       newSong(song);
     }
   };
 
-  // const isDifferentSong = ref(false);
+  const toggleAppPlayerAudio = () => {
+    // 如果目前沒有撥放並且沒有在歌曲頁面的時候就return
+    if (!currentSong.value.sid && !route.params.id) {
+      return;
+    }
+
+    // 暫停、撥放切換
+    if (currentSong.value.sid) {
+      if (sound.value.playing()) {
+        sound.value.pause();
+      } else {
+        sound.value.play();
+      }
+    }
+  };
+
   const isDifferentSong = computed(() => {
     const songId = route.params.id;
 
@@ -107,19 +104,15 @@ export const usePlayerStore = defineStore("player", () => {
     }
     // 沒有播放時
     if (!currentSong.value.sid) {
-      // console.log("detact different song");
       return true;
     }
 
     // 有歌曲播放時
     if (songId !== currentSong.value.sid) {
-      // console.log("detact different song");
       return true;
     } else if (songId === currentSong.value.sid) {
-      // console.log("detact same song");
       return false;
     }
-
     return true;
   });
 
@@ -145,20 +138,19 @@ export const usePlayerStore = defineStore("player", () => {
     sound.value.on("seek", progress); // listen seek event
   };
   const loopSong = () => {
-    // 有播放的歌曲，視同首歌時才能loop
-    if (!playing.value) {
+    if (isDifferentSong.value) {
       return;
     }
-    if (loopedSong.loop) {
-      console.log("disable loop");
-      loopedSong.loop = false;
-      sound.value.loop(false, sid.value);
-    } else if (sound.value.playing() && !isDifferentSong.value) {
-      console.log("enable loop");
-      loopedSong.sid = sid.value;
-      loopedSong.loop = true;
-      loopedSong.firebaseSid = currentSong.value.sid;
-      sound.value.loop(true, sid.value);
+    if (!isDifferentSong.value) {
+      if (loopedSong.loop) {
+        loopedSong.loop = false;
+        sound.value.loop(false, sid.value);
+      } else {
+        loopedSong.sid = sid.value;
+        loopedSong.loop = true;
+        loopedSong.firebaseSid = currentSong.value.sid;
+        sound.value.loop(true, sid.value);
+      }
     }
   };
   const changeLoopingIcon = () => {
@@ -186,5 +178,7 @@ export const usePlayerStore = defineStore("player", () => {
     updateSeek,
     loopSong,
     changeLoopingIcon,
+    toggleAppPlayerAudio,
+    replaySong,
   };
 });

@@ -8,7 +8,9 @@
       ></div>
       <div class="container mx-auto">
         <div class="text-white main-header-content">
-          <h1 class="font-bold text-5xl mb-5">{{ $t("home.listen") }}</h1>
+          <h1 class="font-bold text-3xl md:text-5xl mb-5">
+            {{ $t("home.listen") }}
+          </h1>
           <p class="w-full md:w-8/12 mx-auto">
             {{ $t("home.desc") }}
           </p>
@@ -16,7 +18,7 @@
       </div>
 
       <img
-        class="relative block mx-auto mt-5 -mb-20 w-auto max-w-full"
+        class="relative block p-5 mx-auto mt-5 -mb-20 w-auto max-w-full"
         src="/assets/img/introduction-music.png"
       />
     </section>
@@ -24,7 +26,7 @@
     <!-- Main Content -->
     <section class="container mx-auto">
       <div
-        class="bg-white rounded border border-gray-200 relative flex flex-col"
+        class="bg-white rounded border border-gray-200 relative flex flex-col mx-5"
       >
         <div
           class="px-6 pt-6 pb-5 font-bold border-b border-gray-200"
@@ -44,13 +46,13 @@
           <!-- skeleton -->
           <div v-if="isContentLoading">
             <div
-              class="p-3 pl-6 rounded animate-pulse flex justify-between align-center"
+              class="p-3 pl-6 rounded animate-pulse flex justify-between align-center w-full"
               v-for="i in maxPerPage"
               :key="i"
             >
               <div>
                 <div
-                  class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[360px] max-w-[360px] my-3"
+                  class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[200px] max-w-[200px] md:w-[360px] md:max-w-[360px] my-3"
                 ></div>
                 <div
                   class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[150px] max-w-[360px]"

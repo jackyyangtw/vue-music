@@ -31,7 +31,7 @@
           <div class="song-price">{{ $n(100000, "currency", "ja") }}</div>
         </div>
         <button
-          @click.prevent="playerStore.newSong(song)"
+          @click.prevent="playerStore.replaySong(song)"
           v-if="showFunctionIcons"
           type="button"
           class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
@@ -129,7 +129,6 @@
 import { songsCollection, commentCollection, auth } from "../includes/firebase";
 import { usePlayerStore } from "../stores/player";
 import { useUserStore } from "../stores/user";
-// import useUserStore from "../stores/user";
 import { ref, reactive, computed, watch, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
 export default {

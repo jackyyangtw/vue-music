@@ -8,7 +8,7 @@
     </div>
     <div class="flex flex-nowrap gap-4 items-center">
       <!-- Play/Pause Button -->
-      <button type="button" @click.prevent="toggleAudio(song)">
+      <button type="button" @click.prevent="toggleAppPlayerAudio">
         <i
           class="fa text-gray-500 text-xl"
           :class="{ 'fa-play': !playing, 'fa-pause': playing }"
@@ -42,16 +42,11 @@
 
 <script>
 import { usePlayerStore } from "../stores/player";
-import { ref } from "vue";
 import { storeToRefs } from "pinia";
-import { useRoute } from "vue-router";
-import { songsCollection } from "../includes/firebase";
-import { watchEffect } from "vue";
 export default {
   setup() {
-    const song = ref({});
     const playerStore = usePlayerStore();
-    const route = useRoute();
+
     const {
       playing,
       duration,
@@ -60,31 +55,10 @@ export default {
       currentSong,
       isDifferentSong,
     } = storeToRefs(playerStore);
-    const { toggleAudio, updateSeek } = playerStore;
-    watchEffect(() => {
-      song.value = currentSong.value;
-    });
-    // watch route不同給予不同首歌
-    // watchEffect(() => {
-    //   if (route.params.id) {
-    //     // 如果目前有歌曲撥放，並且是同一首歌
-    //     if (currentSong.sid && !isDifferentSong) {
-    //       song.value = currentSong.value;
-    //     } else if (currentSong.sid && isDifferentSong) {
-    //       const getNewSongData = async () => {
-    //         const docSnapshot = await songsCollection
-    //           .doc(route.params.id)
-    //           .get();
-    //         return docSnapshot.data();
-    //       };
-    //       song.value = getNewSongData();
-    //     }
-    //     // 如果目前有歌曲撥放，並且是不同首歌
-    //   }
-    // });
+
+    const { toggleAppPlayerAudio, updateSeek } = playerStore;
 
     return {
-      song,
       playerStore,
       playing,
       duration,
@@ -92,7 +66,7 @@ export default {
       playerProgress,
       currentSong,
       isDifferentSong,
-      toggleAudio,
+      toggleAppPlayerAudio,
       updateSeek,
     };
   },
