@@ -1,8 +1,9 @@
 <template>
   <section class="container mx-auto mt-6 rel">
-    <div class="md:grid md:grid-cols-3 md:gap-4 mx-5 xl:mx-0">
+    <div class="md:grid md:grid-cols-2 2xl:grid-cols-3 md:gap-4 mx-5 xl:mx-0">
       <div class="col-span-1">
         <UserInfo
+          class="hidden lg:flex"
           :userData="userData"
           :isUserInfoLoading="isUserInfoLoading"
           :addUserInfo="addUserInfo"
@@ -11,7 +12,7 @@
         ></UserInfo>
         <AppUpload ref="upload" :addSong="addSong"></AppUpload>
       </div>
-      <div class="col-span-2">
+      <div class="md:col-span-1 2xl:col-span-2 mt-5 md:mt-0">
         <div
           class="bg-white rounded border border-gray-200 relative flex flex-col"
         >
@@ -58,9 +59,7 @@
 </template>
 
 <script>
-// import useUserStore from "@/stores/user";
 import AppUpload from "@/components/Upload.vue";
-// import { songsCollection, auth, usersCollection } from "../includes/firebase";
 import CompositionItem from "../components/CompositionItem.vue";
 import ComfirmModal from "../components/ComfirmModal.vue";
 import UserInfo from "../components/UserInfo.vue";
@@ -82,25 +81,11 @@ export default {
   },
   data() {
     return {
-      // songs: [],
       unsavedFlag: false,
       isSongLoading: false,
       isUserInfoLoading: false,
-      // userData: {},
     };
   },
-  // watch: {
-  //   userData(newVal) {
-  //     if (newVal) {
-  //       this.isUserInfoLoading = false;
-  //     }
-  //   },
-  //   songs(newVal) {
-  //     if (newVal) {
-  //       this.isSongLoading = false;
-  //     }
-  //   },
-  // },
   computed: {
     ...mapState(useUserStore, ["userData", "songs"]),
   },
@@ -153,13 +138,5 @@ export default {
       next(leave);
     }
   },
-  // async beforeRouteEnter(to, from, next) {
-  //   // const store = useUserStore();
-  //   // if (store.userLoggedIn) {
-  //   //   next();
-  //   // } else {
-  //   //   next({ name: "home" });
-  //   // }
-  // },
 };
 </script>

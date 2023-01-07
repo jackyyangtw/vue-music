@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white rounded border border-gray-200 mb-5 flex"
+    class="bg-white rounded border border-gray-200 mb-5"
     v-if="!isUserInfoLoading"
   >
     <BaseModal
@@ -133,9 +133,9 @@
       </VeeForm>
     </BaseModal>
     <!-- pic -->
-    <div class="w-1/2 p-5 relative">
+    <div class="w-full lg:w-1/2 p-5 relative">
       <div
-        class="rounded-full overflow-hidden relative bg-cover bg-center h-52 relative"
+        class="rounded-full overflow-hidden relative bg-cover bg-center h-48 w-48 lg:h-52 lg:h-52 relative border mx-auto"
       >
         <img
           class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
@@ -145,20 +145,20 @@
           "
           :alt="userData.name"
         />
-      </div>
-      <div>
-        <label
-          for="image-upload"
-          class="absolute text-[20px] right-5 bottom-16 bg-stone-600 hover:bg-stone-500 text-white rounded-full p-3 w-10 h-10 flex justify-center align-center cursor-pointer"
-        >
-          <i class="fas fa-camera"></i>
-        </label>
-        <input
-          class="hidden"
-          id="image-upload"
-          type="file"
-          @change="uploadImg"
-        />
+        <div class="absolute right-1 bottom-16">
+          <label
+            for="image-upload"
+            class="text-[20px] bg-stone-600 hover:bg-stone-500 text-white rounded-full p-3 w-10 h-10 flex justify-center align-center cursor-pointer"
+          >
+            <i class="fas fa-camera"></i>
+          </label>
+          <input
+            class="hidden"
+            id="image-upload"
+            type="file"
+            @change="uploadImg"
+          />
+        </div>
       </div>
       <transition name="fade">
         <div
@@ -171,7 +171,9 @@
       </transition>
     </div>
     <!-- content -->
-    <div class="w-1/2 p-5 flex flex-col justify-around align-center">
+    <div
+      class="w-full lg:w-1/2 p-5 pt-0 flex flex-col justify-around align-center"
+    >
       <div class="font-bold text-[24px] flex justify-between">
         <p>{{ userData.name }}</p>
         <div
@@ -181,12 +183,11 @@
           <i class="fas fa-pen"></i>
         </div>
       </div>
-
-      <div>
+      <div class="my-3">
         <i class="fas fa-globe text-black w-[10px] mr-3"></i>
         {{ userData.country }}
       </div>
-      <div>
+      <div class="mb-3">
         <i class="far fa-envelope text-black w-[10px] mr-3"></i>
         {{ userData.email }}
       </div>

@@ -3,17 +3,27 @@ import { createRouter, createWebHistory } from "vue-router";
 import useUserStore from "@/stores/user";
 import { usePlayerStore } from "../stores/player";
 import { storeToRefs } from "pinia";
+import { useWindowSize } from "@vueuse/core";
 
 const HomeView = () => import("@/views/HomeView.vue");
 const ManageView = () => import("@/views/ManageView.vue");
 const SongView = () => import("@/views/SongView.vue");
 const AboutView = () => import("@/views/AboutView.vue");
+const ManageUserInfo = () => import("@/views/UserInfoView.vue");
 
 const routes = [
   {
     path: "/",
     name: "home",
     component: HomeView,
+  },
+  {
+    path: "/user-info",
+    name: "UserInfo",
+    component: ManageUserInfo,
+    meta: {
+      requireMobile: true,
+    },
   },
   {
     path: "/about",
@@ -56,15 +66,14 @@ router.beforeEach((to, from, next) => {
     next();
     return;
   }
+
   if (userStore.userLoggedIn) {
     next();
   } else {
     next({ name: "home" });
   }
-});
 
-// loop功能重置與保持原樣
-router.beforeEach((to) => {
+  // loop功能重置與保持原樣
   const playerStore = usePlayerStore();
   const { loopedSong, currentSong } = storeToRefs(playerStore);
   console.log(currentSong.value.sid);
@@ -78,6 +87,21 @@ router.beforeEach((to) => {
       loopedSong.value.loop = false;
     }
   }
+});
+
+const { width } = useWindowSize();
+router.afterEach((to) => {
+  if (to.path !== "/user-info" && to.path !== "/manage-music") {
+    return;
+  }
+  if (to.path === "/user-info" && width.value >= 1024) {
+    router.replace("/manage-music");
+  }
+  window.addEventListener("resize", () => {
+    if (to.path === "/user-info" && width.value >= 1024) {
+      router.replace("/manage-music");
+    }
+  });
 });
 
 export default router;

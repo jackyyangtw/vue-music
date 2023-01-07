@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@vee-validate/rules": "^4.7.1",
+    "@vueuse/core": "^9.10.0",
     "firebase": "^8.10.1",
     "howler": "^2.2.3",
     "nprogress": "^0.2.0",

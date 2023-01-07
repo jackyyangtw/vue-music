@@ -96,6 +96,11 @@ export default {
   async created() {
     this.getSongs();
     window.addEventListener("scroll", this.scrollHandler);
+
+    // all song data
+    const snapshot = await songsCollection.get();
+    const allSongs = snapshot.docs.map((doc) => doc.data());
+    console.log(allSongs);
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.scrollHandler);
@@ -103,6 +108,12 @@ export default {
   computed: {
     isFetchingComplete() {
       if (this.fetchCount * this.maxPerPage >= this.songs.length) {
+        return true;
+      }
+      return false;
+    },
+    hasSong() {
+      if (Object.keys(this.songs).length !== 0) {
         return true;
       }
       return false;
@@ -116,7 +127,7 @@ export default {
         Math.round(scrollTop) + innerHeight === offsetHeight;
 
       if (isBottomOfWindow) {
-        console.log("bottom of window");
+        console.log(this.songs.length);
         this.getSongs();
       }
     },
@@ -124,10 +135,18 @@ export default {
       if (this.pendingRequest) {
         return;
       }
+      // if (Object.keys(this.songs).length !== 0) {
+      //   return;
+      // }
+      console.log(await songsCollection.doc().get());
 
       this.pendingRequest = true;
       let snapshot;
-      this.isContentLoading = true;
+      if (!this.isFetchingComplete) {
+        this.isContentLoading = false;
+      } else {
+        this.isContentLoading = true;
+      }
 
       if (this.songs.length) {
         // 最後一筆data
@@ -142,7 +161,6 @@ export default {
         this.fetchCount += 1;
       } else {
         // 第一次載入頁面的時候
-
         snapshot = await songsCollection
           .orderBy("modifiedName")
           .limit(this.maxPerPage)

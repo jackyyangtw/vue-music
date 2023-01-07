@@ -9,22 +9,24 @@
         exact-active-class="no-active"
         >Music</router-link
       >
-
-      <div class="flex flex-grow items-center">
+      <div class="hidden lg:flex flex-grow items-center">
         <!-- Primary Navigation -->
         <ul class="flex flex-row mt-1">
           <!-- Navigation Links -->
-          <li>
+          <!-- <li>
             <router-link class="px-2 text-white" :to="{ name: 'about' }">{{
               $t("header.about")
             }}</router-link>
-          </li>
-          <!-- userStore => 使用mapStore才要這樣用 -->
+          </li> -->
+
+          <!-- login button -->
           <li v-if="!userStore.userLoggedIn">
             <a @click.prevent="toggleModal" class="px-2 text-white" href="#">{{
               $t("header.login")
             }}</a>
           </li>
+
+          <!-- manage & logout -->
           <template v-else>
             <li>
               <router-link class="px-2 text-white" :to="{ name: 'manage' }">{{
