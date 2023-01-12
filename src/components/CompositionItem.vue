@@ -77,7 +77,7 @@
 
 <script>
 import { ErrorMessage } from "vee-validate";
-import { songsCollection, storage } from "../includes/firebase";
+import { songsCollection } from "../includes/firebase";
 import useModalStore from "@/stores/modal";
 import { mapActions } from "pinia";
 export default {
@@ -139,16 +139,16 @@ export default {
       this.alertVariant = "bg-green-500";
       this.alertMessage = "Success!";
     },
-    async deleteSong() {
-      // delete storage file
-      const storeRef = storage.ref();
-      const songRef = storeRef.child(`song/${this.song.originialName}`);
-      await songRef.delete();
+    // async deleteSong() {
+    //   // delete storage file
+    //   const storeRef = storage.ref();
+    //   const songRef = storeRef.child(`song/${this.song.originialName}`);
+    //   await songRef.delete();
 
-      // delete data
-      await songsCollection.doc(this.song.docID).delete();
-      this.removeSongData(this.index);
-    },
+    //   // delete data
+    //   await songsCollection.doc(this.song.docID).delete();
+    //   this.removeSongData(this.index);
+    // },
   },
 };
 </script>

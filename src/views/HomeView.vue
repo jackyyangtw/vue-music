@@ -74,6 +74,8 @@
 import { songsCollection } from "../includes/firebase";
 import SongItem from "../components/SongItem.vue";
 import IconSecondary from "../directives/icon-secondary";
+import useSongStore from "../stores/song";
+import { mapActions, mapState } from "pinia";
 export default {
   name: "Home",
   components: {
@@ -94,18 +96,16 @@ export default {
     "icon-secondary": IconSecondary,
   },
   async created() {
-    this.getSongs();
     window.addEventListener("scroll", this.scrollHandler);
-
-    // all song data
-    const snapshot = await songsCollection.get();
-    const allSongs = snapshot.docs.map((doc) => doc.data());
-    console.log(allSongs);
+    this.getSongs();
+    console.log(this.allSongsChange);
   },
+
   beforeUnmount() {
     window.removeEventListener("scroll", this.scrollHandler);
   },
   computed: {
+    ...mapState(useSongStore, ["allSongs"]),
     isFetchingComplete() {
       if (this.fetchCount * this.maxPerPage >= this.songs.length) {
         return true;
@@ -118,8 +118,12 @@ export default {
       }
       return false;
     },
+    allSongsLength() {
+      return this.allSongs.length;
+    },
   },
   methods: {
+    ...mapActions(useSongStore, ["getAllSongs"]),
     async scrollHandler() {
       const { scrollTop, offsetHeight } = document.documentElement; // scrollTop: view以上的總高度，offsetHeight: 頁面總高度
       const { innerHeight } = window; // view的高度
@@ -127,7 +131,6 @@ export default {
         Math.round(scrollTop) + innerHeight === offsetHeight;
 
       if (isBottomOfWindow) {
-        console.log(this.songs.length);
         this.getSongs();
       }
     },
@@ -135,10 +138,6 @@ export default {
       if (this.pendingRequest) {
         return;
       }
-      // if (Object.keys(this.songs).length !== 0) {
-      //   return;
-      // }
-      console.log(await songsCollection.doc().get());
 
       this.pendingRequest = true;
       let snapshot;
@@ -183,5 +182,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped></style>

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import useUserStore from "@/stores/user";
+import { useUserStore } from "@/stores/user";
 import { usePlayerStore } from "../stores/player";
 import { storeToRefs } from "pinia";
 import { useWindowSize } from "@vueuse/core";
@@ -76,7 +76,6 @@ router.beforeEach((to, from, next) => {
   // loop功能重置與保持原樣
   const playerStore = usePlayerStore();
   const { loopedSong, currentSong } = storeToRefs(playerStore);
-  console.log(currentSong.value.sid);
 
   if (to.params.id) {
     if (currentSong.value.sid === to.params.id && loopedSong.value.loop) {

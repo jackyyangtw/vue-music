@@ -58,7 +58,7 @@
           <!-- Comment Count -->
           <span class="card-title"
             >{{
-              $tc("song.commentCount", song.commentCount, {
+              t("song.commentCount", song.commentCount, {
                 count: song.commentCount,
               })
             }}
@@ -131,8 +131,10 @@ import { usePlayerStore } from "../stores/player";
 import { useUserStore } from "../stores/user";
 import { ref, reactive, computed, watch, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 export default {
   setup() {
+    const { t } = useI18n();
     const playerStore = usePlayerStore();
     const userStore = useUserStore();
     const route = useRoute();
@@ -236,6 +238,7 @@ export default {
       ...toRefs(commentState),
       addComment,
       getComments,
+      t,
     };
   },
   async beforeRouteEnter(to, from, next) {

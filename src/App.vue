@@ -19,9 +19,11 @@
 import AppHeader from "./components/AppHeader.vue";
 import AppAuth from "./components/AppAuth.vue";
 import AppPlayer from "./components/AppPlayer.vue";
-import { mapWritableState } from "pinia";
-import useUserStore from "@/stores/user";
+// import { mapWritableState } from "pinia";
+// import useUserStore from "@/stores/user";
 import { auth } from "./includes/firebase";
+import { useUserStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
 
 export default {
   components: {
@@ -30,16 +32,22 @@ export default {
     AppPlayer,
   },
   name: "app",
-  computed: {
-    ...mapWritableState(useUserStore, ["userLoggedIn"]),
-  },
-  created() {
-    // firebase check 是否有currrentUser
+  setup() {
+    const userStore = useUserStore();
+    const { userLoggedIn } = storeToRefs(userStore);
     if (auth.currentUser) {
-      this.userLoggedIn = true;
+      userLoggedIn.value = true;
     }
-
   },
+  // computed: {
+  //   ...mapWritableState(useUserStore, ["userLoggedIn"]),
+  // },
+  // created() {
+  //   // firebase check 是否有currrentUser
+  //   if (auth.currentUser) {
+  //     this.userLoggedIn = true;
+  //   }
+  // },
 };
 </script>
 

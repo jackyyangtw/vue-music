@@ -230,13 +230,7 @@ import {
 } from "../includes/firebase";
 // import { getAuth, updateEmail } from "firebase/auth";
 export default {
-  props: [
-    "userData",
-    "isUserInfoLoading",
-    "addUserInfo",
-    "forceUpdate",
-    "getUserData",
-  ],
+  props: ["userData", "isUserInfoLoading", "addUserInfo", "getUserData"],
   computed: {
     userPicUrl() {
       return `bg-[url('${

@@ -2,10 +2,10 @@
   <!-- Registration Form Message -->
   <div
     class="text-white text-center font-bold p-4 rounded mb-4"
-    v-if="regShowAlert"
-    :class="regAlertVariant"
+    v-if="regState.regShowAlert"
+    :class="regState.regAlertVariant"
   >
-    {{ regAlertMsg }}
+    {{ regState.regAlertMsg }}
   </div>
   <!-- Registration Form -->
   <vee-form
@@ -106,7 +106,7 @@
     <button
       type="submit"
       class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
-      :disabled="regInSubmission"
+      :disabled="regState.regInSubmission"
     >
       Submit
     </button>
@@ -116,58 +116,108 @@
 <script>
 // import firebase from "../includes/firebase";
 import { ErrorMessage } from "vee-validate";
-import { mapActions } from "pinia";
-import useUserStore from "@/stores/user";
+// import { mapActions } from "pinia";
+// import useUserStore from "@/stores/user";
+import { useUserStore } from "../stores/user";
+import { reactive } from "vue";
 
 export default {
   components: {
     ErrorMessage,
   },
-  data() {
-    return {
-      schema: {
-        name: "required|min:3|max:100|alpha_spaces",
-        email: "required|min:3|max:100|email",
-        age: "required|min_value:18|max_value:100",
-        password: "required|min:9|max:100|excluded:password",
-        confirm_password: "passwords_mismatch:@password",
-        country: "required|country_excluded:Antarctica",
-        tos: "tos",
-      },
-      userData: {
-        country: "Mexico",
-      },
+  setup() {
+    const schema = {
+      name: "required|min:3|max:100|alpha_spaces",
+      email: "required|min:3|max:100|email",
+      age: "required|min_value:18|max_value:100",
+      password: "required|min:9|max:100|excluded:password",
+      confirm_password: "passwords_mismatch:@password",
+      country: "required|country_excluded:Antarctica",
+      tos: "tos",
+    };
+    const userData = {
+      country: "Mexico",
+    };
+    const regState = reactive({
       regInSubmission: false,
       regShowAlert: false,
       regAlertVariant: "bg-blue-500",
       regAlertMsg: "Please wait! Your account is being created.",
-    };
-  },
-  methods: {
-    // map store action function
-    ...mapActions(useUserStore, {
-      createUser: "registerAction",
-    }),
-    async register(values) {
-      this.regShowAlert = true;
-      this.regInSubmission = true;
-      this.regAlertVariant = "bg-blue-500";
-      this.regAlertMsg = "Please wait! Your account is being created.";
+    });
+
+    const userStore = useUserStore();
+    const { registerAction: createUser } = userStore;
+    const register = async (values) => {
+      regState.regShowAlert = true;
+      regState.regInSubmission = true;
+      regState.regAlertVariant = "bg-blue-500";
+      regState.regAlertMsg = "Please wait! Your account is being created.";
 
       try {
-        await this.createUser(values); // 存使用者帳密
+        await createUser(values); // 存使用者帳密
       } catch (err) {
-        this.regInSubmission = false;
-        this.regAlertVariant = "bg-red-500";
-        this.regAlertMsg =
+        console.log(err);
+        regState.regInSubmission = false;
+        regState.regAlertVariant = "bg-red-500";
+        regState.regAlertMsg =
           "An unexpected error occured. Please try again later.";
         return;
       }
 
-      this.regAlertVariant = "bg-green-500";
-      this.regAlertMsg = "Success! Your account has been created";
+      regState.regAlertVariant = "bg-green-500";
+      regState.regAlertMsg = "Success! Your account has been created";
       window.location.reload();
-    },
+    };
+    return {
+      schema,
+      userData,
+      register,
+      regState,
+    };
+  },
+  // data() {
+  //   return {
+  //     schema: {
+  //       name: "required|min:3|max:100|alpha_spaces",
+  //       email: "required|min:3|max:100|email",
+  //       age: "required|min_value:18|max_value:100",
+  //       password: "required|min:9|max:100|excluded:password",
+  //       confirm_password: "passwords_mismatch:@password",
+  //       country: "required|country_excluded:Antarctica",
+  //       tos: "tos",
+  //     },
+  //     userData: {
+  //       country: "Mexico",
+  //     },
+  //     regInSubmission: false,
+  //     regShowAlert: false,
+  //     regAlertVariant: "bg-blue-500",
+  //     regAlertMsg: "Please wait! Your account is being created.",
+  //   };
+  // },
+  methods: {
+    // map store action function
+    // ...mapActions(useUserStore, {
+    //   createUser: "registerAction",
+    // }),
+    // async register(values) {
+    //   this.regShowAlert = true;
+    //   this.regInSubmission = true;
+    //   this.regAlertVariant = "bg-blue-500";
+    //   this.regAlertMsg = "Please wait! Your account is being created.";
+    //   try {
+    //     await this.createUser(values); // 存使用者帳密
+    //   } catch (err) {
+    //     this.regInSubmission = false;
+    //     this.regAlertVariant = "bg-red-500";
+    //     this.regAlertMsg =
+    //       "An unexpected error occured. Please try again later.";
+    //     return;
+    //   }
+    //   this.regAlertVariant = "bg-green-500";
+    //   this.regAlertMsg = "Success! Your account has been created";
+    //   window.location.reload();
+    // },
   },
 };
 </script>

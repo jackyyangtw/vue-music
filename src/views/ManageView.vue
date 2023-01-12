@@ -7,7 +7,6 @@
           :userData="userData"
           :isUserInfoLoading="isUserInfoLoading"
           :addUserInfo="addUserInfo"
-          :forceUpdate="forceUpdate"
           :getUserData="getUserData"
         ></UserInfo>
         <AppUpload ref="upload" :addSong="addSong"></AppUpload>
@@ -23,17 +22,19 @@
             ></i>
           </div>
           <div class="p-6">
-            <CompositionItem
-              v-for="(song, index) in songs"
-              :key="song.docID"
-              :song="song"
-              :updateSong="updateSong"
-              :index="index"
-              :removeSongData="removeSongData"
-              :updateUnsavedFlag="updateUnsavedFlag"
-            ></CompositionItem>
-            <div class="text-center" v-if="!songs.length && !isSongLoading">
-              No song found, let's upload song now : )
+            <div>
+              <CompositionItem
+                v-for="(song, index) in songs"
+                :key="song.docID"
+                :song="song"
+                :updateSong="updateSong"
+                :index="index"
+                :removeSongData="removeSongData"
+                :updateUnsavedFlag="updateUnsavedFlag"
+              ></CompositionItem>
+              <div class="text-center" v-if="!songs.length && !isSongLoading">
+                No song found, let's upload song now : )
+              </div>
             </div>
             <div v-if="isSongLoading">
               <div
@@ -63,70 +64,133 @@ import AppUpload from "@/components/Upload.vue";
 import CompositionItem from "../components/CompositionItem.vue";
 import ComfirmModal from "../components/ComfirmModal.vue";
 import UserInfo from "../components/UserInfo.vue";
-import useUserStore from "../stores/user";
-import { mapActions, mapState } from "pinia";
+// import useUserStore from "../stores/user";
+// import { mapActions, mapState } from "pinia";
+import { useUserStore } from "../stores/user";
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
 export default {
   components: { AppUpload, CompositionItem, ComfirmModal, UserInfo },
   name: "manage",
-  async created() {
-    if (
-      Object.keys(this.userData).length !== 0 &&
-      Object.keys(this.songs).length !== 0
-    ) {
-      return;
-    }
+  setup() {
+    const userStore = useUserStore();
+    const { getUserDataAction, getUserSongDataAction } = userStore;
+    const { userData, songs } = storeToRefs(userStore);
 
-    this.getSongData();
-    this.getUserData();
-  },
-  data() {
-    return {
-      unsavedFlag: false,
-      isSongLoading: false,
-      isUserInfoLoading: false,
+    const unsavedFlag = ref(false);
+    const isSongLoading = ref(false);
+    const isUserInfoLoading = ref(false);
+
+    const getUserData = async () => {
+      isUserInfoLoading.value = true;
+      await getUserDataAction();
+      isUserInfoLoading.value = false;
     };
-  },
-  computed: {
-    ...mapState(useUserStore, ["userData", "songs"]),
-  },
-  methods: {
-    ...mapActions(useUserStore, ["getUserDataAction", "getUserSongDataAction"]),
-    async getUserData() {
-      this.isUserInfoLoading = true;
-      await this.getUserDataAction();
-      this.isUserInfoLoading = false;
-    },
-    async getSongData() {
-      this.isSongLoading = true;
-      await this.getUserSongDataAction(this.addSong);
-      this.isSongLoading = false;
-    },
-    updateSong(index, values) {
-      this.songs[index].modifiedName = values.modifiedName;
-      this.songs[index].genre = values.genre;
-    },
-    removeSongData(index) {
-      this.songs.splice(index, 1);
-    },
-    addSong(document) {
+    const getSongData = async () => {
+      isSongLoading.value = true;
+      await getUserSongDataAction(addSong);
+      isSongLoading.value = false;
+    };
+    const updateSong = (index, values) => {
+      songs.value[index].modifiedName = values.modifiedName;
+      songs.value[index].genre = values.genre;
+    };
+
+    const removeSongData = (index) => {
+      songs.value.splice(index, 1);
+    };
+
+    const addSong = (document) => {
       const song = {
         ...document.data(), // get firebase document data
         docID: document.id,
       };
-      this.songs.push(song);
-    },
-    addUserInfo(document) {
+      songs.value.push(song);
+    };
+
+    const addUserInfo = (document) => {
       const userInfo = {
         ...document.data(),
       };
-      this.userData = userInfo;
-    },
-    updateUnsavedFlag(value) {
-      this.unsavedFlag = value;
-    },
-    forceUpdate() {
-      this.$forceUpdate();
-    },
+      userData.value = userInfo;
+    };
+
+    const updateUnsavedFlag = (value) => {
+      unsavedFlag.value = value;
+    };
+    return {
+      isUserInfoLoading,
+      songs,
+      userData,
+      isSongLoading,
+      getUserData,
+      getSongData,
+      updateSong,
+      removeSongData,
+      addSong,
+      addUserInfo,
+      updateUnsavedFlag,
+    };
+  },
+  // async created() {
+  //   if (
+  //     Object.keys(this.userData).length !== 0 &&
+  //     Object.keys(this.songs).length !== 0
+  //   ) {
+  //     return;
+  //   }
+
+  //   this.getSongData();
+  //   this.getUserData();
+  // },
+  // data() {
+  //   return {
+  //     unsavedFlag: false,
+  //     isSongLoading: false,
+  //     isUserInfoLoading: false,
+  //   };
+  // },
+  // computed: {
+  //   ...mapState(useUserStore, ["userData", "songs"]),
+  // },
+  methods: {
+    // ...mapActions(useUserStore, ["getUserDataAction", "getUserSongDataAction"]),
+    // async getUserData() {
+    //   this.isUserInfoLoading = true;
+    //   await this.getUserDataAction();
+    //   this.isUserInfoLoading = false;
+    // },
+    // async getSongData() {
+    //   this.isSongLoading = true;
+    //   await this.getUserSongDataAction(this.addSong);
+    //   this.isSongLoading = false;
+    // },
+    // updateSong(index, values) {
+    //   this.songs[index].modifiedName = values.modifiedName;
+    //   this.songs[index].genre = values.genre;
+    // },
+    // removeSongData(index) {
+    //   this.songs.splice(index, 1);
+    // },
+    // addSong(document) {
+    //   const song = {
+    //     ...document.data(), // get firebase document data
+    //     docID: document.id,
+    //   };
+    //   this.songs.push(song);
+    // },
+    // addUserInfo(document) {
+    //   const userInfo = {
+    //     ...document.data(),
+    //   };
+    //   this.userData = userInfo;
+    // },
+    // updateUnsavedFlag(value) {
+    //   this.unsavedFlag = value;
+    // },
+    // forceUpdate() {
+    //   this.$forceUpdate();
+    // },
   },
   beforeRouteLeave(to, from, next) {
     if (!this.unsavedFlag) {
@@ -137,6 +201,18 @@ export default {
       );
       next(leave);
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if (
+        Object.keys(vm.userData).length !== 0 &&
+        Object.keys(vm.songs).length !== 0
+      ) {
+        return;
+      }
+      vm.getSongData();
+      vm.getUserData();
+    });
   },
 };
 </script>

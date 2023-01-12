@@ -19,7 +19,6 @@
         :userData="userData"
         :isUserInfoLoading="isUserInfoLoading"
         :addUserInfo="addUserInfo"
-        :forceUpdate="forceUpdate"
         :getUserData="getUserData"
       ></UserInfo>
       <div class="grid grid-rows-1 grid-flow-col gap-4">
@@ -42,75 +41,75 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "pinia";
+import { mapActions } from "pinia";
 // import { useWindowSize } from "@vueuse/core";
-import useUserStore from "../stores/user";
+// import useUserStore from "../stores/user";
 import useModalStore from "../stores/modal";
 import UserInfo from "../components/UserInfo.vue";
+import { useUserStore } from "../stores/user";
+import { watch, ref } from "vue";
+import { storeToRefs } from "pinia";
+import { useRoute, useRouter } from "vue-router";
 export default {
   components: {
     UserInfo,
   },
-  async created() {
-    if (Object.keys(this.userData).length !== 0) {
-      return;
-    }
-    if (this.userLoggedIn) {
-      this.getUserData();
-    }
-  },
-  watch: {
-    userLoggedIn(newVal) {
-      setTimeout(() => {
-        if (newVal === true) {
-          this.getUserData();
-        }
-      }, 3000);
-    },
-  },
-  data() {
-    return {
-      isUserInfoLoading: false,
+  setup() {
+    const userStore = useUserStore();
+    const route = useRoute();
+    const router = useRouter();
+    const { getUserDataAction, signoutAction } = userStore;
+    const { userData, userLoggedIn } = storeToRefs(userStore);
+    const isUserInfoLoading = ref(false);
+
+    const getUserData = async () => {
+      isUserInfoLoading.value = true;
+      await getUserDataAction();
+      isUserInfoLoading.value = false;
     };
-  },
-  computed: {
-    ...mapState(useUserStore, ["userData", "userLoggedIn"]),
-  },
-  methods: {
-    ...mapActions(useUserStore, ["getUserDataAction", "signoutAction"]),
-    ...mapActions(useModalStore, ["toggleModal"]),
-    async getUserData() {
-      this.isUserInfoLoading = true;
-      await this.getUserDataAction();
-      this.isUserInfoLoading = false;
-    },
-    addUserInfo(document) {
+    const addUserInfo = (document) => {
       const userInfo = {
         ...document.data(),
       };
-      this.userData = userInfo;
-    },
-    forceUpdate() {
-      this.$forceUpdate();
-    },
-    signOut() {
-      this.signoutAction();
-      if (this.$route.meta.requiresAuth) {
-        this.$router.push({ name: "home" });
+      userData.value = userInfo;
+    };
+    const signOut = async () => {
+      signoutAction();
+      if (route.meta.requiresAuth) {
+        router.push({ name: "home" });
       }
-    },
-    // redirectManagePage() {
-    //   const { width } = useWindowSize();
-    //   if (width.value >= 1024) {
-    //     this.$router.replcae("/manage");
-    //   } else {
-    //     return;
-    //   }
-    // },
+    };
+
+    watch(userLoggedIn, (newVal) => {
+      setTimeout(() => {
+        if (newVal === true) {
+          getUserData();
+        }
+      }, 3000);
+    });
+
+    return {
+      userData,
+      isUserInfoLoading,
+      userLoggedIn,
+      addUserInfo,
+      getUserData,
+      signOut,
+    };
   },
-  // beforeRouteEnter() {
-  //   this.redirectManagePage();
-  // },
+  async beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if (Object.keys(vm.userData).length !== 0) {
+        return;
+      }
+      if (vm.userLoggedIn) {
+        vm.getUserData();
+      }
+    });
+  },
+  methods: {
+    ...mapActions(useModalStore, ["toggleModal"]),
+  },
 };
 </script>
 

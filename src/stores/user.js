@@ -25,7 +25,7 @@ export const useUserStore = defineStore("user", () => {
     await userCred.user.updateProfile({
       displayName: values.name,
     });
-    await this.authenticateAction(values);
+    await authenticateAction(values);
   };
   const authenticateAction = async (values) => {
     await auth.signInWithEmailAndPassword(values.email, values.password);
@@ -61,57 +61,57 @@ export const useUserStore = defineStore("user", () => {
   };
 });
 
-export default defineStore("user", {
-  state: () => ({
-    userLoggedIn: false,
-    userData: {},
-    songs: [],
-  }),
-  actions: {
-    async registerAction(values) {
-      const userCred = await auth.createUserWithEmailAndPassword(
-        values.email,
-        values.password
-      );
+// export default defineStore("user", {
+//   state: () => ({
+//     userLoggedIn: false,
+//     userData: {},
+//     songs: [],
+//   }),
+//   actions: {
+//     async registerAction(values) {
+//       const userCred = await auth.createUserWithEmailAndPassword(
+//         values.email,
+//         values.password
+//       );
 
-      // add document to collection，將uid 存入document
-      await usersCollection.doc(userCred.user.uid).set({
-        name: values.name,
-        email: values.email,
-        password: values.password,
-        age: values.age,
-        country: values.country,
-      });
+//       // add document to collection，將uid 存入document
+//       await usersCollection.doc(userCred.user.uid).set({
+//         name: values.name,
+//         email: values.email,
+//         password: values.password,
+//         age: values.age,
+//         country: values.country,
+//       });
 
-      // storing profile in firebase
-      await userCred.user.updateProfile({
-        displayName: values.name,
-      });
-      await this.authenticateAction(values);
-    },
-    async authenticateAction(values) {
-      await auth.signInWithEmailAndPassword(values.email, values.password);
-      this.userLoggedIn = true;
-    },
-    async signoutAction() {
-      await auth.signOut();
-      this.userLoggedIn = false;
-    },
-    async getUserDataAction() {
-      const userSnapshot = await usersCollection
-        .doc(auth.currentUser.uid)
-        .get();
-      const datas = userSnapshot.data();
-      this.userData = {
-        ...datas,
-      };
-    },
-    async getUserSongDataAction(addSong) {
-      const snapshot = await songsCollection
-        .where("uid", "==", auth.currentUser.uid)
-        .get();
+//       // storing profile in firebase
+//       await userCred.user.updateProfile({
+//         displayName: values.name,
+//       });
+//       await this.authenticateAction(values);
+//     },
+//     async authenticateAction(values) {
+//       await auth.signInWithEmailAndPassword(values.email, values.password);
+//       this.userLoggedIn = true;
+//     },
+//     async signoutAction() {
+//       await auth.signOut();
+//       this.userLoggedIn = false;
+//     },
+//     async getUserDataAction() {
+//       const userSnapshot = await usersCollection
+//         .doc(auth.currentUser.uid)
+//         .get();
+//       const datas = userSnapshot.data();
+//       this.userData = {
+//         ...datas,
+//       };
+//     },
+//     async getUserSongDataAction(addSong) {
+//       const snapshot = await songsCollection
+//         .where("uid", "==", auth.currentUser.uid)
+//         .get();
 
-      snapshot.forEach(addSong);
-    },
-  },
-});
+//       snapshot.forEach(addSong);
+//     },
+//   },
+// });
