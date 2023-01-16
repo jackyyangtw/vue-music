@@ -29,7 +29,6 @@
                 :song="song"
                 :updateSong="updateSong"
                 :index="index"
-                :removeSongData="removeSongData"
                 :updateUnsavedFlag="updateUnsavedFlag"
               ></CompositionItem>
               <div class="text-center" v-if="!songs.length && !isSongLoading">

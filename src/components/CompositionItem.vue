@@ -78,8 +78,9 @@
 <script>
 import { ErrorMessage } from "vee-validate";
 import { songsCollection } from "../includes/firebase";
-import useModalStore from "@/stores/modal";
-import { mapActions } from "pinia";
+import { useModalStore } from "@/stores/modal";
+// import { mapActions } from "pinia";
+import { ref } from "vue";
 export default {
   name: "CompositionItem",
   components: { ErrorMessage },
@@ -96,59 +97,87 @@ export default {
       type: Number,
       required: true,
     },
-    removeSongData: {
-      type: Function,
-      required: true,
-    },
     updateUnsavedFlag: {
       type: Function,
     },
   },
-  data() {
-    return {
-      showForm: false,
-      schema: {
-        modifiedName: "required",
-        genre: "alpha_spaces",
-      },
-      isSubmission: false,
-      showAlert: false,
-      alertVariant: "bg-blue-500",
-      alertMessage: "Please wait ! Updating song info...",
+  setup(props) {
+    const showForm = ref(false);
+    const schema = {
+      modifiedName: "required",
+      genre: "alpha_spaces",
     };
-  },
-  methods: {
-    ...mapActions(useModalStore, ["openComfirmModal"]),
-    async editForm(values) {
+    const isSubmission = ref(false);
+    const showAlert = ref(false);
+    const alertVariant = ref("bg-blue-500");
+    const alertMessage = ref("Please wait ! Updating song info...");
+    const modalStore = useModalStore();
+    const { openComfirmModal } = modalStore;
+    const editForm = async (values) => {
       console.log(values);
-      this.isSubmission = true;
-      this.showAlert = true;
+      isSubmission.value = true;
+      showAlert.value = true;
 
       try {
-        await songsCollection.doc(this.song.docID).update(values);
+        await songsCollection.doc(props.song.docID).update(values);
       } catch (err) {
-        this.isSubmission = false;
-        this.alertVariant = "bg-red-500";
-        this.alertMessage = "Something went wrong! Try again later";
-        console.log(err);
+        isSubmission.value = false;
+        alertVariant.value = "bg-red-500";
+        alertMessage.value = "Something went wrong! Try again later";
         return;
       }
-      this.updateUnsavedFlag(false);
-      this.updateSong(this.index, values);
-      this.isSubmission = false;
-      this.alertVariant = "bg-green-500";
-      this.alertMessage = "Success!";
-    },
-    // async deleteSong() {
-    //   // delete storage file
-    //   const storeRef = storage.ref();
-    //   const songRef = storeRef.child(`song/${this.song.originialName}`);
-    //   await songRef.delete();
-
-    //   // delete data
-    //   await songsCollection.doc(this.song.docID).delete();
-    //   this.removeSongData(this.index);
-    // },
+      props.updateUnsavedFlag(false);
+      props.updateSong(props.index, values);
+      isSubmission.value = false;
+      alertVariant.value = "bg-green-500";
+      alertMessage.value = "Success!";
+    };
+    return {
+      showForm,
+      schema,
+      isSubmission,
+      showAlert,
+      alertVariant,
+      alertMessage,
+      openComfirmModal,
+      editForm,
+    };
   },
+  // data() {
+  //   return {
+  //     showForm: false,
+  //     schema: {
+  //       modifiedName: "required",
+  //       genre: "alpha_spaces",
+  //     },
+  //     isSubmission: false,
+  //     showAlert: false,
+  //     alertVariant: "bg-blue-500",
+  //     alertMessage: "Please wait ! Updating song info...",
+  //   };
+  // },
+  // methods: {
+  //   ...mapActions(useModalStore, ["openComfirmModal"]),
+  //   async editForm(values) {
+  //     console.log(values);
+  //     this.isSubmission = true;
+  //     this.showAlert = true;
+
+  //     try {
+  //       await songsCollection.doc(this.song.docID).update(values);
+  //     } catch (err) {
+  //       this.isSubmission = false;
+  //       this.alertVariant = "bg-red-500";
+  //       this.alertMessage = "Something went wrong! Try again later";
+  //       console.log(err);
+  //       return;
+  //     }
+  //     this.updateUnsavedFlag(false);
+  //     this.updateSong(this.index, values);
+  //     this.isSubmission = false;
+  //     this.alertVariant = "bg-green-500";
+  //     this.alertMessage = "Success!";
+  //   },
+  // },
 };
 </script>

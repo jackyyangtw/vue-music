@@ -72,10 +72,11 @@
 </template>
 
 <script>
-import { mapActions } from "pinia";
-import useModalStore from "@/stores/modal";
+// import { mapActions } from "pinia";
+// import useModalStore from "@/stores/modal";
 // import useUserStore from "@/stores/user";
 import { useUserStore } from "@/stores/user";
+import { useModalStore } from "../stores/modal";
 // import useModal
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
@@ -90,6 +91,7 @@ export default {
     const userStore = useUserStore();
     const { signoutAction } = userStore;
     const { userLoggedIn } = storeToRefs(userStore);
+    const { toggleModal } = useModalStore();
 
     const router = useRouter();
     const route = useRoute();
@@ -138,6 +140,7 @@ export default {
       signOut,
       changeLocale,
       showLanguageBox,
+      toggleModal,
     };
   },
 
@@ -152,7 +155,7 @@ export default {
   //   ...mapStores(useUserStore), // 可直接使用action、state
   // },
   methods: {
-    ...mapActions(useModalStore, ["toggleModal"]),
+    // ...mapActions(useModalStore, ["toggleModal"]),
     // signOut() {
     //   this.userStore.signoutAction();
     //   if (this.$route.meta.requiresAuth) {

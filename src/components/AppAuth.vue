@@ -68,27 +68,45 @@
 </template>
 
 <script>
-import useModalStore from "@/stores/modal";
-import { mapState, mapWritableState, mapActions } from "pinia";
+// import useModalStore from "@/stores/modal";
+// import { mapState, mapWritableState, mapActions } from "pinia";
 import LoginForm from "./LoginForm.vue";
 import RegisterForm from "./RegisterForm.vue";
+import { ref } from "vue";
+// import { useUserStore } from "../stores/user";
+import { storeToRefs } from "pinia";
+import { useModalStore } from "../stores/modal";
 export default {
   name: "AppAuth",
-  data() {
+  setup() {
+    const tab = ref("login");
+    const isModalOpen = ref(false);
+    const modalStore = useModalStore();
+    const { hiddenClass, modalIsOpen } = storeToRefs(modalStore);
+    const { toggleModal } = modalStore;
     return {
-      tab: "login",
-      isModalOpen: false,
+      tab,
+      isModalOpen,
+      hiddenClass,
+      modalIsOpen,
+      toggleModal,
     };
   },
-  computed: {
-    ...mapState(useModalStore, ["hiddenClass"]),
-    ...mapWritableState(useModalStore, {
-      modalIsOpen: "isOpen",
-    }),
-  },
+  // data() {
+  //   return {
+  //     tab: "login",
+  //     isModalOpen: false,
+  //   };
+  // },
+  // computed: {
+  //   ...mapState(useModalStore, ["hiddenClass"]),
+  //   ...mapWritableState(useModalStore, {
+  //     modalIsOpen: "isOpen",
+  //   }),
+  // },
   components: { LoginForm, RegisterForm },
-  methods: {
-    ...mapActions(useModalStore, ["toggleModal"]),
-  },
+  // methods: {
+  //   ...mapActions(useModalStore, ["toggleModal"]),
+  // },
 };
 </script>

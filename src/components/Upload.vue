@@ -112,9 +112,10 @@ export default {
           },
           async () => {
             // success
+            console.log(task.snapshot);
             const song = {
               uid: auth.currentUser.uid,
-              displayName: auth.currentUser.displayName, // !!!!!!!!!!!!!!!!!! this is null
+              displayName: auth.currentUser.displayName,
               originialName: task.snapshot.ref.name,
               modifiedName: task.snapshot.ref.name,
               genre: "",
@@ -129,6 +130,11 @@ export default {
 
             // get song snapshot to access .data()
             const songSnapshot = await songRef.get();
+            const docID = songSnapshot.id;
+            console.log(docID);
+
+            // update docID to collection
+            // ...
 
             // add song data to ManageView songs array to display song
             this.addSong(songSnapshot);

@@ -74,8 +74,8 @@
 import { songsCollection } from "../includes/firebase";
 import SongItem from "../components/SongItem.vue";
 import IconSecondary from "../directives/icon-secondary";
-import useSongStore from "../stores/song";
-import { mapActions, mapState } from "pinia";
+import { useSongStore } from "../stores/song";
+import { mapState } from "pinia";
 export default {
   name: "Home",
   components: {
@@ -98,7 +98,7 @@ export default {
   async created() {
     window.addEventListener("scroll", this.scrollHandler);
     this.getSongs();
-    console.log(this.allSongsChange);
+    // this.getAllSongs();
   },
 
   beforeUnmount() {
@@ -123,7 +123,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(useSongStore, ["getAllSongs"]),
+    // ...mapActions(useSongStore, ["getAllSongs"]),
     async scrollHandler() {
       const { scrollTop, offsetHeight } = document.documentElement; // scrollTop: view以上的總高度，offsetHeight: 頁面總高度
       const { innerHeight } = window; // view的高度
@@ -172,6 +172,7 @@ export default {
           ...document.data(),
         });
       });
+      
       if (this.isFetchingComplete) {
         this.isContentLoading = false;
         return;

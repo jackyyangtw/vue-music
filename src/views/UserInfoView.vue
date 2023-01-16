@@ -41,10 +41,7 @@
 </template>
 
 <script>
-import { mapActions } from "pinia";
-// import { useWindowSize } from "@vueuse/core";
-// import useUserStore from "../stores/user";
-import useModalStore from "../stores/modal";
+import { useModalStore } from "../stores/modal";
 import UserInfo from "../components/UserInfo.vue";
 import { useUserStore } from "../stores/user";
 import { watch, ref } from "vue";
@@ -56,6 +53,8 @@ export default {
   },
   setup() {
     const userStore = useUserStore();
+    const modalStore = useModalStore();
+    const { toggleModal } = modalStore;
     const route = useRoute();
     const router = useRouter();
     const { getUserDataAction, signoutAction } = userStore;
@@ -95,6 +94,7 @@ export default {
       addUserInfo,
       getUserData,
       signOut,
+      toggleModal,
     };
   },
   async beforeRouteEnter(to, from, next) {
@@ -106,9 +106,6 @@ export default {
         vm.getUserData();
       }
     });
-  },
-  methods: {
-    ...mapActions(useModalStore, ["toggleModal"]),
   },
 };
 </script>

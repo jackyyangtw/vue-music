@@ -4,6 +4,8 @@ import { useUserStore } from "@/stores/user";
 import { usePlayerStore } from "../stores/player";
 import { storeToRefs } from "pinia";
 import { useWindowSize } from "@vueuse/core";
+// import { useSongStore } from "../stores/song";
+// import { watch } from "vue";
 
 const HomeView = () => import("@/views/HomeView.vue");
 const ManageView = () => import("@/views/ManageView.vue");
@@ -62,6 +64,22 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
+  // const songStore = useSongStore();
+
+  // const { allSongs, needToFetch } = storeToRefs(songStore);
+  // const { getAllSongs } = songStore;
+
+  // // needToFetch.value = true;
+  // watch(allSongs.value, (newVal, oldVal) => {
+  //   if (newVal === oldVal) {
+  //     needToFetch.value = false;
+  //   } else {
+  //     needToFetch.value = true;
+  //     getAllSongs();
+  //     console.log("all song array change");
+  //   }
+  // });
+
   if (!to.meta.requiresAuth) {
     next();
     return;

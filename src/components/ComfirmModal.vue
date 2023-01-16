@@ -60,35 +60,44 @@
 </template>
 
 <script>
-import useModalStore from "@/stores/modal";
-import { mapActions, mapState } from "pinia";
+import { useModalStore } from "../stores/modal";
 import { storage, songsCollection } from "../includes/firebase";
+import { ref } from "vue";
+import { storeToRefs } from "pinia";
 export default {
-  data() {
-    return {
-      isDeleting: false,
-      delete: {},
-    };
-  },
-  computed: {
-    ...mapState(useModalStore, ["isComfirmModalOpen", "song", "index"]),
-  },
   props: ["removeSongData"],
-  methods: {
-    ...mapActions(useModalStore, ["closeComfirmModal"]),
-    async deleteSong() {
+  setup(props) {
+    const isDeleting = ref(false);
+
+    const modalStore = useModalStore();
+    const { isComfirmModalOpen, song, index } = storeToRefs(modalStore);
+    const { closeComfirmModal } = modalStore;
+
+    const deleteSong = async () => {
       // delete storage file
       const storeRef = storage.ref();
-      const songRef = storeRef.child(`song/${this.song.originialName}`);
-      this.isDeleting = true;
+      const songRef = storeRef.child(`song/${song.value.originialName}`);
+      isDeleting.value = true;
 
-      await songRef.delete();
-      // delete data
-      await songsCollection.doc(this.song.docID).delete();
+      try {
+        await songRef.delete();
+        // delete data
+        await songsCollection.doc(song.value.docID).delete();
+      } catch (err) {
+        console.log(err);
+      }
 
-      this.removeSongData(this.index);
-      this.closeComfirmModal();
-    },
+      props.removeSongData(index.value);
+      closeComfirmModal();
+    };
+
+    return {
+      isDeleting,
+      isComfirmModalOpen,
+      deleteSong,
+      closeComfirmModal,
+      song,
+    };
   },
 };
 </script>
