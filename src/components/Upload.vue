@@ -42,20 +42,26 @@
 
 <script>
 import { storage, auth, songsCollection } from "@/includes/firebase";
+import { onBeforeUnmount, ref } from "vue";
+import { useSongStore } from "../stores/song";
+import { storeToRefs } from "pinia";
 export default {
   props: ["addSong"],
-  data() {
-    return {
-      isDragover: false,
-      uploads: [],
-    };
-  },
-  mounted() {
-    // console.log("user data:", auth.currentUser);
-  },
-  methods: {
-    uploadFile(e) {
-      this.isDragover = false;
+  setup(props) {
+    const isDragover = ref(false);
+    const uploads = ref([]);
+
+    const songStore = useSongStore();
+    const { needToFetchAllSong } = storeToRefs(songStore);
+
+    onBeforeUnmount(() => {
+      uploads.value.forEach((upload) => {
+        upload.task.cancel();
+      });
+    });
+
+    const uploadFile = (e) => {
+      isDragover.value = false;
 
       const files = e.dataTransfer
         ? [...e.dataTransfer.files] // for drag
@@ -69,7 +75,7 @@ export default {
 
         // 如果ofline就無法上傳檔案
         if (!navigator.onLine) {
-          this.uploads.push({
+          uploads.value.push({
             task: {},
             currentProgress: 100,
             name: file.name,
@@ -85,7 +91,7 @@ export default {
 
         // push method return "pushed data" index
         const uploadIndex =
-          this.uploads.push({
+          uploads.value.push({
             task,
             currentProgress: 0,
             name: file.name,
@@ -101,18 +107,17 @@ export default {
             // progressing
             const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100; // upload到多少%
-            this.uploads[uploadIndex].currentProgress = progress;
+            uploads.value[uploadIndex].currentProgress = progress;
           },
           (err) => {
             // error
-            this.uploads[uploadIndex].variant = "bg-red-400";
-            this.uploads[uploadIndex].icon = "fas fa-times";
-            this.uploads[uploadIndex].textClass = "text-red-400";
+            uploads.value[uploadIndex].variant = "bg-red-400";
+            uploads.value[uploadIndex].icon = "fas fa-times";
+            uploads.value[uploadIndex].textClass = "text-red-400";
             console.log(err);
           },
           async () => {
             // success
-            console.log(task.snapshot);
             const song = {
               uid: auth.currentUser.uid,
               displayName: auth.currentUser.displayName,
@@ -122,43 +127,45 @@ export default {
               commentCount: 0,
             };
 
-            // 取得download URL
-            song.url = await task.snapshot.ref.getDownloadURL();
+            try {
+              // 取得download URL
+              song.url = await task.snapshot.ref.getDownloadURL();
 
-            // song add to collection (return reference)
-            const songRef = await songsCollection.add(song);
+              // song add to collection (return reference)
+              const songRef = await songsCollection.add(song);
 
-            // get song snapshot to access .data()
-            const songSnapshot = await songRef.get();
-            const docID = songSnapshot.id;
-            console.log(docID);
+              // get doc ID
+              const songSnapshot = await songRef.get();
+              const docID = songSnapshot.id;
 
-            // update docID to collection
-            // ...
+              // set docID to collection
+              await songsCollection.doc(docID).set(
+                {
+                  docID,
+                },
+                { merge: true }
+              );
 
-            // add song data to ManageView songs array to display song
-            this.addSong(songSnapshot);
+              // add song data to ManageView songs array to display song
+              props.addSong(songSnapshot);
+              needToFetchAllSong.value = true;
+            } catch (err) {
+              console.log(err);
+            }
 
-            this.uploads[uploadIndex].variant = "bg-green-400";
-            this.uploads[uploadIndex].icon = "fas fa-check";
-            this.uploads[uploadIndex].textClass = "text-green-400";
+            uploads.value[uploadIndex].variant = "bg-green-400";
+            uploads.value[uploadIndex].icon = "fas fa-check";
+            uploads.value[uploadIndex].textClass = "text-green-400";
           }
         );
       });
+    };
 
-      console.log(files);
-    },
-    cancelUploads() {
-      this.uploads.forEach((upload) => {
-        upload.task.cancel();
-      });
-    },
-  },
-  beforeUnmount() {
-    // 換頁前cancel uploading
-    this.uploads.forEach((upload) => {
-      upload.task.cancel();
-    });
+    return {
+      isDragover,
+      uploads,
+      uploadFile,
+    };
   },
 };
 </script>

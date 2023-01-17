@@ -333,8 +333,6 @@ export default {
           }
         );
       });
-
-      console.log(files);
     },
     async updateUserInfo(value) {
       const submitedData = {

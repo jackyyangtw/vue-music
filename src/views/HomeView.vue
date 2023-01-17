@@ -36,34 +36,40 @@
           <!-- Icon -->
         </div>
         <!-- Playlist -->
-        <ol id="playlist">
+        <ol id="playlist" v-if="!needToFetchAllSong">
+          <SongItem
+            v-for="song in allSongs"
+            :key="song.docID"
+            :song="song"
+          ></SongItem>
+        </ol>
+        <ol v-else>
           <SongItem
             v-for="song in songs"
             :key="song.docID"
             :song="song"
           ></SongItem>
-
-          <!-- skeleton -->
-          <div v-if="isContentLoading">
-            <div
-              class="p-3 pl-6 rounded animate-pulse flex justify-between align-center w-full"
-              v-for="i in maxPerPage"
-              :key="i"
-            >
-              <div>
-                <div
-                  class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[200px] max-w-[200px] md:w-[360px] md:max-w-[360px] my-3"
-                ></div>
-                <div
-                  class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[150px] max-w-[360px]"
-                ></div>
-              </div>
-              <div class="flex text-[18px]">
-                <i class="fa fa-comments text-gray-600 mr-2"></i>0
-              </div>
+        </ol>
+        <!-- skeleton -->
+        <div v-if="isContentLoading">
+          <div
+            class="p-3 pl-6 rounded animate-pulse flex justify-between align-center w-full"
+            v-for="i in maxPerPage"
+            :key="i"
+          >
+            <div>
+              <div
+                class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[200px] max-w-[200px] md:w-[360px] md:max-w-[360px] my-3"
+              ></div>
+              <div
+                class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[150px] max-w-[360px]"
+              ></div>
+            </div>
+            <div class="flex text-[18px]">
+              <i class="fa fa-comments text-gray-600 mr-2"></i>0
             </div>
           </div>
-        </ol>
+        </div>
         <!-- .. end Playlist -->
       </div>
     </section>
@@ -75,111 +81,123 @@ import { songsCollection } from "../includes/firebase";
 import SongItem from "../components/SongItem.vue";
 import IconSecondary from "../directives/icon-secondary";
 import { useSongStore } from "../stores/song";
-import { mapState } from "pinia";
+import { storeToRefs } from "pinia";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 export default {
   name: "Home",
   components: {
     SongItem,
   },
-  data() {
-    return {
-      songs: [],
-      maxPerPage: 5,
-      pendingRequest: false,
-      isContentLoading: false,
-      fetchCount: 0,
-    };
-  },
+  setup() {
+    const songStore = useSongStore();
+    const { needToFetchAllSong, allSongs } = storeToRefs(songStore);
+    const { getAllSongs } = songStore;
 
-  // local directive
-  directives: {
-    "icon-secondary": IconSecondary,
-  },
-  async created() {
-    window.addEventListener("scroll", this.scrollHandler);
-    this.getSongs();
-    // this.getAllSongs();
-  },
+    const songs = ref([]);
+    const pendingRequest = ref(false);
+    const isContentLoading = ref(false);
+    const fetchCount = ref(0);
 
-  beforeUnmount() {
-    window.removeEventListener("scroll", this.scrollHandler);
-  },
-  computed: {
-    ...mapState(useSongStore, ["allSongs"]),
-    isFetchingComplete() {
-      if (this.fetchCount * this.maxPerPage >= this.songs.length) {
-        return true;
-      }
-      return false;
-    },
-    hasSong() {
-      if (Object.keys(this.songs).length !== 0) {
-        return true;
-      }
-      return false;
-    },
-    allSongsLength() {
-      return this.allSongs.length;
-    },
-  },
-  methods: {
-    // ...mapActions(useSongStore, ["getAllSongs"]),
-    async scrollHandler() {
+    const maxPerPage = 5;
+
+    const scrollHandler = async () => {
       const { scrollTop, offsetHeight } = document.documentElement; // scrollTop: view以上的總高度，offsetHeight: 頁面總高度
       const { innerHeight } = window; // view的高度
       const isBottomOfWindow =
         Math.round(scrollTop) + innerHeight === offsetHeight;
 
       if (isBottomOfWindow) {
-        this.getSongs();
+        getSongs();
       }
-    },
-    async getSongs() {
-      if (this.pendingRequest) {
+    };
+
+    onMounted(async () => {
+      window.addEventListener("scroll", scrollHandler);
+
+      getAllSongs();
+      if (needToFetchAllSong) {
+        getSongs();
+      }
+    });
+
+    onBeforeUnmount(async () => {
+      window.removeEventListener("scroll", scrollHandler);
+    });
+
+    const isFetchingComplete = computed(() => {
+      if (fetchCount.value * maxPerPage >= songs.value.length) {
+        return true;
+      }
+      return false;
+    });
+
+    // const hasSong = computed(() => {
+    //   if (Object.keys(songs.value).length !== 0) {
+    //     return true;
+    //   }
+    //   return false;
+    // });
+
+    const getSongs = async () => {
+      if (pendingRequest.value) {
         return;
       }
 
-      this.pendingRequest = true;
+      pendingRequest.value = true;
       let snapshot;
-      if (!this.isFetchingComplete) {
-        this.isContentLoading = false;
+      if (!isFetchingComplete.value) {
+        isContentLoading.value = false;
       } else {
-        this.isContentLoading = true;
+        isContentLoading.value = true;
       }
 
-      if (this.songs.length) {
+      if (songs.value.length) {
         // 最後一筆data
         const lastDoc = await songsCollection
-          .doc(this.songs[this.songs.length - 1].docID)
+          .doc(songs.value[songs.value.length - 1].docID)
           .get();
         snapshot = await songsCollection
           .orderBy("modifiedName")
           .startAfter(lastDoc)
-          .limit(this.maxPerPage) // 限制取得的data數
+          .limit(maxPerPage) // 限制取得的data數
           .get();
-        this.fetchCount += 1;
+        fetchCount.value += 1;
       } else {
         // 第一次載入頁面的時候
         snapshot = await songsCollection
           .orderBy("modifiedName")
-          .limit(this.maxPerPage)
+          .limit(maxPerPage)
           .get();
       }
 
       snapshot.forEach((document) => {
-        this.songs.push({
-          docID: document.id,
+        songs.value.push({
           ...document.data(),
         });
       });
-      
-      if (this.isFetchingComplete) {
-        this.isContentLoading = false;
+
+      if (isFetchingComplete.value) {
+        isContentLoading.value = false;
         return;
       }
-      this.isContentLoading = false;
-      this.pendingRequest = false;
-    },
+      isContentLoading.value = false;
+      pendingRequest.value = false;
+    };
+
+    return {
+      songs,
+      isContentLoading,
+      fetchCount,
+      maxPerPage,
+      needToFetchAllSong,
+      allSongs,
+      isFetchingComplete,
+    };
+  },
+
+  // local directive
+  directives: {
+    "icon-secondary": IconSecondary,
   },
 };
 </script>

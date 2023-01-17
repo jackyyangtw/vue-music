@@ -14,7 +14,7 @@
         </div>
         <!-- content -->
         <div
-          class="content fixed-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          class="content fixed-center flex justify-center align-center flex-col inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full min-h-[100px]"
         >
           <div class="text-2xl font-bold pb-5" v-if="!isDeleting">
             <svg
@@ -37,10 +37,12 @@
               {{ song.modifiedName }}
             </div>
           </div>
-          <div class="text-2xl font-bold" v-else>Deleting song...</div>
+          <div class="text-2xl font-bold text-center" v-else>
+            Deleting song...
+          </div>
 
           <!-- buttons -->
-          <div class="flex justify-end items-center pb-4">
+          <div class="flex justify-end items-center pb-4" v-if="!isDeleting">
             <div
               class="cursor-pointer bg-blue-500 hover:bg-blue-400 p-3 rounded text-white mr-5"
             >
