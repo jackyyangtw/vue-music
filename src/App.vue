@@ -52,8 +52,8 @@ export default {
 .fade-leave-to {
   transition: 0.5s linear;
 }
-.ab-center {
-  position: absolute;
+.fixed-center {
+  position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);

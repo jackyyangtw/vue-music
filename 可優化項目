@@ -1,19 +1,4 @@
-第一次載入後如果歌曲>6、如有更新歌曲回主頁後，往下滑也不會進行fetch，往上滑再往下滑才會。
-
-重新fetch完後應要把needToFetchAllSong = false
-
-
-如果歌曲的總數有變manage view、home view 應該要重新fetch
-
-當重新回到首頁時，沒有新增的歌曲的話就不重新fetch data
-
-
-
-
-
-
-
-先確保 isDifferentSong 功能正常
+首頁歌曲 < 5 的話就不要執行infinit scroll
 
 翻譯中文語系
 
@@ -21,9 +6,6 @@ PWA offline時，上傳檔案的話會出現 error message
 
 優化mobile排版
 
-循環取消後，點播放再點循環會無法循環，重播沒事
-
-暫停後點選撥放會直接重播
 
 
 

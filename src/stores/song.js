@@ -7,7 +7,8 @@ import { useRoute } from "vue-router";
 export const useSongStore = defineStore("song", () => {
   const route = useRoute();
   const allSongs = ref([]);
-  const needToFetchAllSong = ref(false);
+  const needToFetchAllSong = ref(true);
+  const fetchAllSongCount = ref(0);
   const needToFetchUserSong = ref(false);
   const userSongs = ref([]);
 
@@ -26,6 +27,7 @@ export const useSongStore = defineStore("song", () => {
       }
       allSongs.value.push(doc.data());
     });
+    fetchAllSongCount.value += 1;
   };
 
   const getUserSongs = async () => {
@@ -61,6 +63,7 @@ export const useSongStore = defineStore("song", () => {
     allSongLength,
     userSongs,
     needToFetchUserSong,
+    fetchAllSongCount,
     getAllSongs,
     getSingleSong,
     getUserSongs,

@@ -40,8 +40,6 @@
             </div>
             <div v-if="isSongLoading">
               <div
-                v-for="song in 3"
-                :key="song"
                 class="border border-gray-200 p-3 mb-4 rounded animate-pulse flex justify-between align-center"
               >
                 <div

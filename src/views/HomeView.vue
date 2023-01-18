@@ -51,7 +51,7 @@
           ></SongItem>
         </ol>
         <!-- skeleton -->
-        <div v-if="isContentLoading">
+        <div v-if="isContentLoading && needToFetchAllSong">
           <div
             class="p-3 pl-6 rounded animate-pulse flex justify-between align-center w-full"
             v-for="i in maxPerPage"
@@ -82,7 +82,7 @@ import SongItem from "../components/SongItem.vue";
 import IconSecondary from "../directives/icon-secondary";
 import { useSongStore } from "../stores/song";
 import { storeToRefs } from "pinia";
-import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, watchEffect } from "vue";
 export default {
   name: "Home",
   components: {
@@ -95,8 +95,9 @@ export default {
 
     const songs = ref([]);
     const pendingRequest = ref(false);
-    const isContentLoading = ref(false);
+    const isContentLoading = ref(true);
     const fetchCount = ref(0);
+    const isFetchingComplete = ref(false);
 
     const maxPerPage = 5;
 
@@ -104,9 +105,10 @@ export default {
       const { scrollTop, offsetHeight } = document.documentElement; // scrollTop: view以上的總高度，offsetHeight: 頁面總高度
       const { innerHeight } = window; // view的高度
       const isBottomOfWindow =
-        Math.round(scrollTop) + innerHeight === offsetHeight;
+        Math.round(scrollTop) + innerHeight >= offsetHeight;
 
       if (isBottomOfWindow) {
+        console.log("bottom");
         getSongs();
       }
     };
@@ -115,28 +117,12 @@ export default {
       window.addEventListener("scroll", scrollHandler);
 
       getAllSongs();
-      if (needToFetchAllSong) {
-        getSongs();
-      }
+      getSongs();
     });
 
     onBeforeUnmount(async () => {
       window.removeEventListener("scroll", scrollHandler);
     });
-
-    const isFetchingComplete = computed(() => {
-      if (fetchCount.value * maxPerPage >= songs.value.length) {
-        return true;
-      }
-      return false;
-    });
-
-    // const hasSong = computed(() => {
-    //   if (Object.keys(songs.value).length !== 0) {
-    //     return true;
-    //   }
-    //   return false;
-    // });
 
     const getSongs = async () => {
       if (pendingRequest.value) {
@@ -145,12 +131,6 @@ export default {
 
       pendingRequest.value = true;
       let snapshot;
-      if (!isFetchingComplete.value) {
-        isContentLoading.value = false;
-      } else {
-        isContentLoading.value = true;
-      }
-
       if (songs.value.length) {
         // 最後一筆data
         const lastDoc = await songsCollection
@@ -162,6 +142,16 @@ export default {
           .limit(maxPerPage) // 限制取得的data數
           .get();
         fetchCount.value += 1;
+        watchEffect(() => {
+          if (allSongs.value.length === songs.value.length) {
+            isFetchingComplete.value = true;
+            isContentLoading.value = false;
+            needToFetchAllSong.value = false;
+          } else {
+            isFetchingComplete.value = false;
+            isContentLoading.value = true;
+          }
+        });
       } else {
         // 第一次載入頁面的時候
         snapshot = await songsCollection
@@ -175,12 +165,6 @@ export default {
           ...document.data(),
         });
       });
-
-      if (isFetchingComplete.value) {
-        isContentLoading.value = false;
-        return;
-      }
-      isContentLoading.value = false;
       pendingRequest.value = false;
     };
 

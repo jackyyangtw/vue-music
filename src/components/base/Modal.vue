@@ -10,7 +10,7 @@
           <div class="absolute inset-0 bg-gray-800 opacity-75"></div>
         </div>
         <div
-          class="content ab-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          class="content fixed-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
         >
           <slot></slot>
           <!-- buttons -->
