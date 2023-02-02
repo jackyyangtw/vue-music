@@ -1,11 +1,15 @@
 import { defineStore } from "pinia";
 import { Howl } from "howler";
 import helper from "@/includes/helper";
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 
 export const usePlayerStore = defineStore("player", () => {
-  const currentSong = ref({});
+  const route = useRoute();
+  const currentSong = ref({
+    docID: "",
+  });
+
   const sound = ref({});
   const seek = ref("00:00");
   const duration = ref("00:00");
@@ -18,7 +22,35 @@ export const usePlayerStore = defineStore("player", () => {
     loop: false,
     firebaseSid: "",
   });
-  const route = useRoute();
+  const isDifferentSong = computed(() => {
+    const songId = route.params.id;
+
+    // 在主頁的時候
+    if (!songId) {
+      return false;
+    }
+    // 沒有播放時
+    if (!currentSong.value.sid) {
+      return true;
+    }
+
+    // 有歌曲播放時
+    if (songId !== currentSong.value.sid) {
+      return true;
+    } else if (songId === currentSong.value.sid) {
+      return false;
+    }
+    return true;
+  });
+
+  watch(isDifferentSong, (newVal, oldVal) => {
+    if (newVal === true) {
+      loopedSong.loop = false;
+    }
+    if (newVal === oldVal) {
+      loopedSong.loop = true;
+    }
+  });
 
   const playing = computed(() => {
     if (sound.value.playing) {
@@ -94,27 +126,6 @@ export const usePlayerStore = defineStore("player", () => {
       }
     }
   };
-
-  const isDifferentSong = computed(() => {
-    const songId = route.params.id;
-
-    // 在主頁的時候
-    if (!songId) {
-      return false;
-    }
-    // 沒有播放時
-    if (!currentSong.value.sid) {
-      return true;
-    }
-
-    // 有歌曲播放時
-    if (songId !== currentSong.value.sid) {
-      return true;
-    } else if (songId === currentSong.value.sid) {
-      return false;
-    }
-    return true;
-  });
 
   const progress = () => {
     seek.value = helper.formatTime(sound.value.seek());

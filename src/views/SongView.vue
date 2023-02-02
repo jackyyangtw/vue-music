@@ -34,7 +34,7 @@
           @click.prevent="playerStore.replaySong(song)"
           v-if="showFunctionIcons"
           type="button"
-          class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
+          class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none mr-3"
         >
           <i class="fas fa-redo-alt"></i>
         </button>
