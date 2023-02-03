@@ -23,19 +23,40 @@
       ></UserInfo>
       <div class="grid grid-rows-1 grid-flow-col gap-4">
         <div
-          class="block py-1 rounded mx-auto text-center flex flex-col justify-center items-center w-full h-48 border"
+          class="block py-1 rounded mx-auto text-center flex flex-col justify-center items-center w-full h-48 border bg-white"
+          @click="isLangModalOpen = true"
         >
           <i class="fas fa-language text-4xl"></i>
-          <p class="">更改語言</p>
+          <p>更改語言</p>
         </div>
         <a
-          class="block py-1 rounded mx-auto text-center flex flex-col justify-center items-center w-full h-48 border"
+          class="block py-1 rounded mx-auto text-center flex flex-col justify-center items-center w-full h-48 border bg-white"
           href="#"
           @click.prevent="signOut"
         >
           <i class="fas fa-sign-out-alt text-4xl"></i>{{ $t("header.logout") }}
         </a>
       </div>
+      <BaseModal
+        :isModalOpen="isLangModalOpen"
+        @closeModal="isLangModalOpen = false"
+        :showButton="false"
+      >
+        <ul class="mt-2">
+          <li
+            class="cursor-pointer text-center p-2 hover:text-yellow-500"
+            :class="{
+              'text-yellow-500':
+                currentLocale.displayName === locale.displayName,
+            }"
+            v-for="locale in locales"
+            :key="locale.locale"
+            @click.prevent="changeLocale(locale)"
+          >
+            {{ locale.displayName }}
+          </li>
+        </ul>
+      </BaseModal>
     </div>
   </div>
 </template>
@@ -47,6 +68,7 @@ import { useUserStore } from "../stores/user";
 import { watch, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 export default {
   components: {
     UserInfo,
@@ -60,6 +82,7 @@ export default {
     const { getUserDataAction, signoutAction } = userStore;
     const { userData, userLoggedIn } = storeToRefs(userStore);
     const isUserInfoLoading = ref(false);
+    const isLangModalOpen = ref(false);
 
     const getUserData = async () => {
       isUserInfoLoading.value = true;
@@ -87,14 +110,37 @@ export default {
       }, 3000);
     });
 
+    const currentLocale = ref({});
+    const changeLocale = (localObj) => {
+      currentLocale.value = localObj;
+      localStorage.setItem("currentLanguage", JSON.stringify(localObj));
+      location.reload();
+    };
+
+    const locales = ref([]);
+    const i18n = useI18n();
+    Object.keys(i18n.messages.value).forEach((key) => {
+      let displayName;
+      if (key === "en") displayName = "English";
+      if (key === "tw") displayName = "繁體中文";
+      locales.value.push({
+        locale: key,
+        displayName,
+      });
+    });
+
     return {
       userData,
       isUserInfoLoading,
       userLoggedIn,
+      isLangModalOpen,
+      locales,
+      currentLocale,
       addUserInfo,
       getUserData,
       signOut,
       toggleModal,
+      changeLocale,
     };
   },
   async beforeRouteEnter(to, from, next) {

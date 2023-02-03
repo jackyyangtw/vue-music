@@ -12,9 +12,7 @@
         <AppUpload ref="upload" :addSong="addSong"></AppUpload>
       </div>
       <div class="md:col-span-1 2xl:col-span-2 mt-5 md:mt-0">
-        <div
-          class="bg-white rounded border border-gray-200 relative flex flex-col"
-        >
+        <div class="rounded border border-gray-200 relative flex flex-col">
           <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
             <span class="card-title">{{ $t("manage.my_song") }}</span>
             <i
@@ -43,11 +41,11 @@
                 class="border border-gray-200 p-3 mb-4 rounded animate-pulse flex justify-between align-center"
               >
                 <div
-                  class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[320px] max-w-[360px] my-3"
+                  class="h-2 bg-gray-200 rounded-full dark:bg-white w-[320px] max-w-[360px] my-3"
                 ></div>
                 <div class="flex">
-                  <div class="rounded w-6 h-6 dark:bg-gray-700 mr-2"></div>
-                  <div class="rounded w-6 h-6 dark:bg-gray-700"></div>
+                  <div class="rounded w-6 h-6 dark:bg-white mr-2"></div>
+                  <div class="rounded w-6 h-6 dark:bg-white"></div>
                 </div>
               </div>
             </div>

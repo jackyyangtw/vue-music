@@ -2,7 +2,9 @@
   <!-- Composition Items -->
   <div class="border border-gray-200 p-3 mb-4 rounded">
     <div class="flex justify-between" v-show="!showForm">
-      <h4 class="block text-l md:text-xl xl:text-2xl font-bold w-[60%]">
+      <h4
+        class="block text-white text-l md:text-xl xl:text-2xl font-bold w-[60%]"
+      >
         {{ song.modifiedName }}
       </h4>
       <div>
@@ -32,8 +34,9 @@
         @submit="editForm"
         :validation-schema="schema"
         :initial-values="song"
+        class="text-white"
       >
-        <div class="mb-3">
+        <div class="mb-3 text-white">
           <label class="inline-block mb-2">Song Title</label>
           <vee-field
             type="text"

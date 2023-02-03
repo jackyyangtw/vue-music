@@ -25,9 +25,7 @@
 
     <!-- Main Content -->
     <section class="container mx-auto">
-      <div
-        class="bg-white rounded border border-gray-200 relative flex flex-col mx-5"
-      >
+      <div class="rounded border border-gray-200 relative flex flex-col mx-5">
         <div
           class="px-6 pt-6 pb-5 font-bold border-b border-gray-200"
           v-icon-secondary="{ icon: 'headphones-alt', right: true }"
@@ -59,14 +57,14 @@
           >
             <div>
               <div
-                class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[200px] max-w-[200px] md:w-[360px] md:max-w-[360px] my-3"
+                class="h-2 rounded-full dark:bg-white w-[200px] max-w-[200px] md:w-[360px] md:max-w-[360px] my-3"
               ></div>
               <div
-                class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[150px] max-w-[360px]"
+                class="h-2 rounded-full dark:bg-white w-[150px] max-w-[360px]"
               ></div>
             </div>
-            <div class="flex text-[18px]">
-              <i class="fa fa-comments text-gray-600 mr-2"></i>0
+            <div class="flex text-[18px] text-white">
+              <i class="fa fa-comments mr-2"></i>0
             </div>
           </div>
         </div>

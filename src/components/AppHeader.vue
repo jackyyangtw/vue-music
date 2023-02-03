@@ -1,5 +1,5 @@
 <template>
-  <header id="header" class="bg-gray-700">
+  <header id="header" class="bg-gray-800">
     <nav class="container mx-auto flex justify-start items-center py-5 px-4">
       <!-- App Name -->
       <!-- exact-active-class="no-active" 讓此router-link不會加上active class -->

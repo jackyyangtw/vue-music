@@ -22,6 +22,8 @@ import AppPlayer from "./components/AppPlayer.vue";
 import { auth } from "./includes/firebase";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import { usePlayerStore } from "./stores/player";
+import { useEventListener } from "@vueuse/core";
 // import { watch } from "vue";
 // import { useSongStore } from "./stores/song";
 
@@ -34,10 +36,20 @@ export default {
   name: "app",
   setup() {
     const userStore = useUserStore();
+    const playerStore = usePlayerStore();
+    const { toggleAppPlayerAudio } = playerStore;
+    const { currentSong } = storeToRefs(playerStore);
     const { userLoggedIn } = storeToRefs(userStore);
     if (auth.currentUser) {
       userLoggedIn.value = true;
     }
+
+    useEventListener(document, "keydown", (e) => {
+      e.preventDefault();
+      if (e.key === " ") {
+        toggleAppPlayerAudio(currentSong.value);
+      }
+    });
   },
 };
 </script>
@@ -57,5 +69,8 @@ export default {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+}
+.card-title {
+  color: white;
 }
 </style>

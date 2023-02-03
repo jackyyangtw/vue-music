@@ -10,7 +10,7 @@
           <div class="absolute inset-0 bg-gray-800 opacity-75"></div>
         </div>
         <div
-          class="content fixed-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          class="content fixed-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg w-[80%]"
         >
           <slot></slot>
           <!-- buttons -->
@@ -21,10 +21,15 @@
               :type="button"
               class="mr-5"
               :blue="true"
+              v-if="showButton"
               >Cancel</BaseButton
             >
             <!-- right -->
-            <BaseButton red="true" type="button" @click="successHandler"
+            <BaseButton
+              red="true"
+              type="button"
+              @click="successHandler"
+              v-if="showButton"
               >Delete</BaseButton
             >
           </div>
@@ -36,7 +41,23 @@
 
 <script>
 export default {
-  props: ["isModalOpen", "successHadnler", "isForm", "successHandler"],
+  // props: ["isModalOpen", "isForm", "successHandler"],
+  props: {
+    isModalOpen: {
+      type: Boolean,
+    },
+    isForm: {
+      type: Boolean,
+      default: false,
+    },
+    successHandler: {
+      type: Function,
+    },
+    showButton: {
+      type: Boolean,
+      default: true,
+    },
+  },
   emits: ["closeModal"],
   methods: {
     closeModal() {

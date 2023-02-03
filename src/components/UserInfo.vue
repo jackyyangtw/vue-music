@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="bg-white rounded border border-gray-200 mb-5"
-    v-if="!isUserInfoLoading"
-  >
+  <div class="rounded border border-gray-200 mb-5" v-if="!isUserInfoLoading">
     <BaseModal
       :isModalOpen="isModalOpen"
       @closeModal="closeModal"
@@ -138,7 +135,7 @@
         class="rounded-full overflow-hidden relative bg-cover bg-center h-48 w-48 lg:h-52 lg:h-52 relative border mx-auto"
       >
         <img
-          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px]"
           :src="
             userData.imgUrl ||
             'https://teameowdev.files.wordpress.com/2016/04/avatar24-01.png'
@@ -172,37 +169,34 @@
     </div>
     <!-- content -->
     <div
-      class="w-full lg:w-1/2 p-5 pt-0 flex flex-col justify-around align-center"
+      class="w-full lg:w-1/2 p-5 pt-0 flex flex-col justify-around align-center text-white"
     >
       <div class="font-bold text-[24px] flex justify-between">
         <p>{{ userData.name }}</p>
         <div
           @click="isModalOpen = true"
-          class="text-[20px] right-5 bottom-16 bg-stone-600 hover:bg-stone-500 text-white rounded-full p-3 w-10 h-10 flex justify-center align-center cursor-pointer"
+          class="text-[20px] right-5 bottom-16 hover:bg-white/[0.1] text-white rounded-full p-3 w-10 h-10 flex justify-center align-center cursor-pointer"
         >
           <i class="fas fa-pen"></i>
         </div>
       </div>
       <div class="my-3">
-        <i class="fas fa-globe text-black w-[10px] mr-3"></i>
+        <i class="text-white fas fa-globe w-[10px] mr-3"></i>
         {{ userData.country }}
       </div>
       <div class="mb-3">
-        <i class="far fa-envelope text-black w-[10px] mr-3"></i>
+        <i class="far fa-envelope text-white w-[10px] mr-3"></i>
         {{ userData.email }}
       </div>
       <div>
-        <i class="fas fa-user-circle text-black w-[10px] mr-3"></i>
+        <i class="fas fa-user-circle text-white w-[10px] mr-3"></i>
         {{ userData.age }}
       </div>
     </div>
   </div>
 
   <!-- skeleton -->
-  <div
-    class="bg-white rounded border border-gray-200 mb-5 flex animate-pulse"
-    v-else
-  >
+  <div class="rounded border border-gray-200 mb-5 flex animate-pulse" v-else>
     <div class="w-1/2 p-5">
       <div class="rounded-full overflow-hidden">
         <img
@@ -215,7 +209,7 @@
       <div
         v-for="i in 4"
         :key="i"
-        class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-40 mb-2"
+        class="h-2.5 bg-white rounded-full w-40 mb-2"
       ></div>
     </div>
   </div>

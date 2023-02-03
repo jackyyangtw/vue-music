@@ -1,9 +1,9 @@
 <template>
   <div class="fixed bottom-0 left-0 bg-white w-full">
     <!-- Track Info -->
-    <div class="px-2 lg:px-4 py-2 bg-gray-600 relative">
-      <!-- Scrub Container  -->
-      <div class="lg:hidden absolute w-full left-0 bottom-[0px]">
+    <div class="px-2 lg:px-4 py-3 bg-gray-700 relative" v-if="isPlayingSong">
+      <!-- mobile player bar -->
+      <div class="lg:hidden absolute w-full left-0 top-[0px]">
         <div
           @click.prevent="updateSeek"
           class="w-full h-[3px] rounded bg-gray-200 relative cursor-pointer"
@@ -15,19 +15,22 @@
           ></span>
         </div>
       </div>
-      <div class="flex">
+      <!-- song info -->
+      <div class="flex max-w-[400px] lg:max-w-full lg:text-center mx-auto">
         <div
-          class="text-white flex flex-col w-full max-w-full lg:max-w-[400px] mx-auto lg:py-2"
+          class="text-white flex flex-col lg:flex-row lg:justify-center w-full max-w-full mx-auto"
           v-if="currentSong.modifiedName"
         >
-          <span class="song-title font-bold text-white">{{
-            currentSong.modifiedName
-          }}</span>
+          <router-link
+            :to="{ name: 'song', params: { id: currentSong.docID } }"
+            class="song-title font-bold text-white lg:mr-3"
+            >{{ currentSong.modifiedName }}</router-link
+          >
           <span class="song-artist text-gray-400 font-extrabold inline-block">{{
             currentSong.displayName
           }}</span>
         </div>
-        <!-- Play/Pause Button -->
+        <!-- mobile play/pause button -->
         <button
           type="button"
           @click.prevent="toggleAppPlayerAudio"
@@ -39,6 +42,7 @@
           ></i>
         </button>
       </div>
+      <!-- PC player -->
       <div class="hidden lg:flex flex-nowrap gap-4 items-center">
         <!-- Play/Pause Button -->
         <button type="button" @click.prevent="toggleAppPlayerAudio">
@@ -79,6 +83,7 @@
 import AppFooter from "./AppFooter.vue";
 import { usePlayerStore } from "../stores/player";
 import { storeToRefs } from "pinia";
+import { computed } from "vue";
 export default {
   components: {
     AppFooter,
@@ -97,6 +102,13 @@ export default {
 
     const { toggleAppPlayerAudio, updateSeek } = playerStore;
 
+    const isPlayingSong = computed(() => {
+      if (playerStore.currentSong.docID) {
+        return true;
+      }
+      return false;
+    });
+
     return {
       playerStore,
       playing,
@@ -105,6 +117,7 @@ export default {
       playerProgress,
       currentSong,
       isDifferentSong,
+      isPlayingSong,
       toggleAppPlayerAudio,
       updateSeek,
     };
