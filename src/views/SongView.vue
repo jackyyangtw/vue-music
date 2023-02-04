@@ -129,9 +129,11 @@
 import { songsCollection, commentCollection, auth } from "../includes/firebase";
 import { usePlayerStore } from "../stores/player";
 import { useUserStore } from "../stores/user";
+// import { toRef } from "vue";
 import { ref, reactive, computed, watch, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+// import { storeToRefs } from "pinia";
 export default {
   setup() {
     const { t } = useI18n();
@@ -139,6 +141,8 @@ export default {
     const userStore = useUserStore();
     const route = useRoute();
     const router = useRouter();
+    // const instance = getCurrentInstance();
+    // const { currentSong } = storeToRefs(playerStore);
 
     const song = ref({});
     const comments = ref([]);
@@ -240,6 +244,28 @@ export default {
       getComments,
       t,
     };
+  },
+  async beforeRouteUpdate(to) {
+    const playerStore = usePlayerStore();
+    // this.song = null;
+    // this.sort = null;
+    try {
+      const docSnapshot = await songsCollection.doc(to.params.id).get();
+      if (!docSnapshot.exists) {
+        this.$router.push({ name: "home" });
+        return;
+      }
+
+      const { sort } = this.$route.query;
+      this.sort = sort === "1" || sort === "2" ? sort : "1"; // 確保sort 是有效的值才 assign 否則sort by default(new to old)
+
+      this.song = docSnapshot.data();
+      this.song.sid = to.params.id;
+      this.getComments();
+      playerStore.changeLoopingIcon();
+    } catch (err) {
+      console.log(err);
+    }
   },
   async beforeRouteEnter(to, from, next) {
     const docSnapshot = await songsCollection.doc(to.params.id).get();
