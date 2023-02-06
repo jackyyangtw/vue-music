@@ -1,17 +1,19 @@
 <template>
   <main>
     <!-- Music Header -->
-    <section class="w-full mb-8 py-14 text-center text-white relative">
+    <section
+      class="w-full mb-8 py-14 px-3 xl:px-0 text-center text-white relative"
+    >
       <div
         class="absolute inset-0 w-full h-full box-border bg-contain music-bg"
         style="background-image: url(/assets/img/song-header.png)"
       ></div>
-      <div class="container mx-auto flex items-center">
+      <div class="container mx-auto flex flex-wrap items-center">
         <!-- Play/Pause Button -->
         <button
           @click.prevent="playerStore.toggleAudio(song)"
           type="button"
-          class="z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
+          class="hidden lg:block z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
         >
           <i
             class="fas"
@@ -21,53 +23,83 @@
             }"
           ></i>
         </button>
-
-        <div class="z-50 text-left ml-8 mr-8">
+        <div class="z-50 text-left lg:ml-8 lg:mr-8">
           <!-- Song Info -->
-          <div class="text-3xl font-bold">{{ song.modifiedName }}</div>
+          <div class="text-2xl lg:text-3xl font-bold">
+            {{ song.modifiedName }}
+          </div>
           <div>{{ song.genre }}</div>
           <!-- n => number -->
           <!-- $n(price,translation,locale) -->
-          <div class="song-price">{{ $n(100000, "currency", "ja") }}</div>
+          <!-- <div class="song-price">{{ $n(100000, "currency", "ja") }}</div> -->
         </div>
-        <button
-          @click.prevent="playerStore.replaySong(song)"
-          v-if="showFunctionIcons"
-          type="button"
-          class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none mr-3"
-        >
-          <i class="fas fa-redo-alt"></i>
-        </button>
-        <button
-          @click.prevent="playerStore.loopSong"
-          v-if="showFunctionIcons"
-          type="button"
-          class="z-50 h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
-          :class="{ 'text-red-500': playerStore.loopedSong.loop }"
-        >
-          <i class="fas fa-recycle"></i>
-        </button>
+        <div class="flex w-full lg:w-auto justify-between items-center mt-5">
+          <button
+            @click.prevent="playerStore.toggleAudio(song)"
+            type="button"
+            class="lg:hidden z-50 h-20 mr-5 w-20 text-3xl bg-white text-black rounded-full focus:outline-none"
+          >
+            <i
+              class="fas"
+              :class="{
+                'fa-play': playerStore.isDifferentSong || !playerStore.playing,
+                'fa-pause': playerStore.playing,
+              }"
+            ></i>
+          </button>
+          <div class="z-50">
+            <button
+              @click.prevent="playerStore.replaySong(song)"
+              v-if="showFunctionIcons"
+              type="button"
+              class="h-12 w-12 text-xl bg-white text-black rounded focus:outline-none mr-3"
+            >
+              <i class="fas fa-redo-alt"></i>
+            </button>
+            <button
+              @click.prevent="playerStore.loopSong"
+              v-if="showFunctionIcons"
+              type="button"
+              class="h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
+              :class="{ 'text-red-500': playerStore.loopedSong.loop }"
+            >
+              <i class="fas fa-recycle"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
     <!-- Form -->
     <section class="container mx-auto mt-6" id="comments">
-      <div
-        class="bg-white rounded border border-gray-200 relative flex flex-col"
-      >
-        <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
-          <!-- Comment Count -->
-          <span class="card-title"
-            >{{
-              t("song.commentCount", song.commentCount, {
-                count: song.commentCount,
-              })
-            }}
-          </span>
-          <i class="fa fa-comments float-right text-green-400 text-2xl"></i>
+      <div class="rounded relative flex flex-col mx-3 lg:mx-0">
+        <div
+          class="pt-6 pb-5 font-bold text-white flex justify-between items-center"
+        >
+          <div class="flex justify-center items-center">
+            <i
+              class="fa fa-comments float-right text-green-400 text-2xl mr-3"
+            ></i>
+            <!-- Comment Count -->
+            <span
+              >{{
+                t("song.commentCount", song.commentCount, {
+                  count: song.commentCount,
+                })
+              }}
+            </span>
+          </div>
+          <!-- Sort Comments -->
+          <select
+            v-model="sort"
+            class="block py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
+          >
+            <option value="1">Latest</option>
+            <option value="2">Oldest</option>
+          </select>
         </div>
-        <div class="p-6">
+        <div>
           <div
-            class="text-white text-center font-bold p-4 mb-4"
+            class="text-white text-center font-bold p-4 mb-4 max-w-[200px]"
             v-show="commentShowAlert"
             :class="commentAlertVariant"
           >
@@ -93,35 +125,36 @@
               Submit
             </button>
           </vee-form>
-          <!-- Sort Comments -->
-          <select
-            v-model="sort"
-            class="block mt-4 py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-          >
-            <option value="1">Latest</option>
-            <option value="2">Oldest</option>
-          </select>
         </div>
       </div>
     </section>
     <!-- Comments -->
-    <ul class="container mx-auto">
-      <li
-        class="p-6 bg-gray-50 border border-gray-200"
-        v-for="comment in sortedComments"
-        :key="comment.docID"
+    <div class="mx-3 lg:mx-0">
+      <ul
+        class="container mx-auto py-3 mt-5 m-5 rounded"
+        v-if="comments.length > 0"
       >
-        <!-- Comment Author -->
-        <div class="mb-5">
-          <div class="font-bold">{{ comment.name }}</div>
-          <time>{{ comment.datePosted }}</time>
-        </div>
+        <li
+          class="text-white mb-5"
+          v-for="comment in sortedComments"
+          :key="comment.docID"
+        >
+          <!-- Comment Author -->
+          <div class="mb-1">
+            <div class="font-extrabold">
+              <span class="text-sm">{{ comment.name }}</span
+              ><time class="text-neutral-400 ml-2 text-xs"
+                >{{ comment.datePosted }}
+              </time>
+            </div>
+          </div>
 
-        <p>
-          {{ comment.content }}
-        </p>
-      </li>
-    </ul>
+          <p>
+            {{ comment.content }}
+          </p>
+        </li>
+      </ul>
+    </div>
   </main>
 </template>
 
@@ -215,9 +248,9 @@ export default {
       resetForm(); // context.resetForm
     };
 
-    const getComments = async () => {
+    const getComments = async (sid) => {
       const snapshots = await commentCollection
-        .where("sid", "==", route.params.id)
+        .where("sid", "==", sid || route.params.id)
         .get();
 
       comments.value = []; // 確保不會有重複的comment
@@ -261,7 +294,7 @@ export default {
 
       this.song = docSnapshot.data();
       this.song.sid = to.params.id;
-      this.getComments();
+      await this.getComments(to.params.id);
       playerStore.changeLoopingIcon();
     } catch (err) {
       console.log(err);

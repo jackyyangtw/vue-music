@@ -14,7 +14,7 @@
         </div>
         <!-- content -->
         <div
-          class="content fixed-center flex justify-center align-center flex-col inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full min-h-[100px]"
+          class="min-w-[300px] content fixed-center flex justify-center align-center flex-col inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg sm:w-full min-h-[100px]"
         >
           <div class="text-2xl font-bold pb-5" v-if="!isDeleting">
             <svg

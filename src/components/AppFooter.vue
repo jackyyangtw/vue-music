@@ -4,7 +4,7 @@
       首頁<i class="block fas fa-home text-white"></i>
     </router-link>
     <router-link
-      to="/manage"
+      to="/manage-music"
       class="w-[33.333%] py-1 text-white text-center m-0"
     >
       上傳音樂<i class="block fas fa-upload text-white"></i>

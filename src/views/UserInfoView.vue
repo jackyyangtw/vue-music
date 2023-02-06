@@ -21,16 +21,16 @@
         :addUserInfo="addUserInfo"
         :getUserData="getUserData"
       ></UserInfo>
-      <div class="grid grid-rows-1 grid-flow-col gap-4">
+      <div class="grid grid-cols-2 gap-4">
         <div
-          class="block py-1 rounded mx-auto text-center flex flex-col justify-center items-center w-full h-48 border bg-white"
+          class="block py-1 rounded mx-auto text-center flex flex-col justify-center items-center w-full h-40 border text-white"
           @click="isLangModalOpen = true"
         >
           <i class="fas fa-language text-4xl"></i>
           <p>更改語言</p>
         </div>
         <a
-          class="block py-1 rounded mx-auto text-center flex flex-col justify-center items-center w-full h-48 border bg-white"
+          class="block py-1 rounded mx-auto text-center flex flex-col justify-center items-center w-full h-40 border text-white"
           href="#"
           @click.prevent="signOut"
         >

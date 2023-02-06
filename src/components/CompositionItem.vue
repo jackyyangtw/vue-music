@@ -1,21 +1,21 @@
 <template>
   <!-- Composition Items -->
-  <div class="border border-gray-200 p-3 mb-4 rounded">
+  <div class="p-3 mb-4 rounded hover:bg-white/[0.1] transition">
     <div class="flex justify-between" v-show="!showForm">
       <h4
         class="block text-white text-l md:text-xl xl:text-2xl font-bold w-[60%]"
       >
         {{ song.modifiedName }}
       </h4>
-      <div>
+      <div class="flex justify-center items-center">
         <button
-          class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600"
+          class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 w-8 h-8"
           @click="openComfirmModal(song, index)"
         >
           <i class="fa fa-times"></i>
         </button>
         <button
-          class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600"
+          class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 w-8 h-8"
           @click="showForm = !showForm"
         >
           <i class="fa fa-pencil-alt"></i>
@@ -60,7 +60,7 @@
         </div>
         <button
           type="submit"
-          class="py-1.5 px-3 rounded text-white bg-green-600"
+          class="py-1.5 px-3 mr-3 rounded text-white bg-green-600"
           :disabled="isSubmission"
         >
           Submit

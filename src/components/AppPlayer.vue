@@ -23,7 +23,7 @@
         >
           <router-link
             :to="{ name: 'song', params: { id: currentSong.docID } }"
-            class="song-title font-bold text-white lg:mr-3"
+            class="song-link song-title font-bold text-white lg:mr-3"
             >{{ currentSong.modifiedName }}</router-link
           >
           <span class="song-artist text-gray-400 font-extrabold inline-block">{{
@@ -125,4 +125,8 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.song-link.router-link-active {
+  color: white;
+}
+</style>
