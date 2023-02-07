@@ -45,8 +45,8 @@ export default {
     }
 
     useEventListener(document, "keydown", (e) => {
-      e.preventDefault();
       if (e.key === " ") {
+        e.preventDefault();
         toggleAppPlayerAudio(currentSong.value);
       }
     });

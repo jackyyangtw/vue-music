@@ -6,6 +6,7 @@
   >
     {{ loginState.loginAlertMsg }}
   </div>
+  <input type="text" id="test" />
   <vee-form :validation-schema="loginSchema" @submit="login">
     <!-- Email -->
     <div class="mb-3">
@@ -15,6 +16,7 @@
         name="email"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Enter Email"
+        v-model="email_field"
       />
       <ErrorMessage class="text-red-600" name="email"></ErrorMessage>
     </div>
@@ -41,16 +43,14 @@
 
 <script>
 import { ErrorMessage } from "vee-validate";
-// import useUserStore from "@/stores/user";
-// import { mapActions } from "pinia";
 import { useUserStore } from "../stores/user";
-// import { storeToRefs } from "pinia";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 export default {
   components: {
     ErrorMessage,
   },
   setup() {
+    const email_field = ref("");
     const userStore = useUserStore();
     const { authenticateAction } = userStore;
     const loginSchema = {
@@ -82,39 +82,7 @@ export default {
       }
     };
 
-    return { loginSchema, loginState, login };
+    return { email_field, loginSchema, loginState, login };
   },
-  // data() {
-  //   return {
-  //     loginSchema: {
-  //       email: "required|min:3|max:100|email",
-  //       password: "required|min:9|max:100",
-  //     },
-  //     loginInSubmission: false,
-  //     loginShowAlert: false,
-  //     loginAlertVariant: "bg-blue-500",
-  //     loginAlertMsg: "Please wait! We are logging you in.",
-  //   };
-  // },
-  // methods: {
-  //   // ...mapActions(useUserStore, ["authenticateAction"]),
-  //   async login(values) {
-  //     this.loginInSubmission = true;
-  //     this.loginShowAlert = true;
-  //     this.loginAlertVariant = "bg-blue-500";
-  //     this.loginAlertMsg = "Please wait! We are logging you in.";
-
-  //     try {
-  //       await this.authenticateAction(values);
-  //       this.loginAlertVariant = "bg-green-500";
-  //       this.loginAlertMsg = "Success! You are now logged in!";
-  //       window.location.reload();
-  //     } catch (err) {
-  //       this.loginInSubmission = false;
-  //       this.loginAlertVariant = "bg-red-500";
-  //       this.loginAlertMsg = "Invalid login details.";
-  //     }
-  //   },
-  // },
 };
 </script>
