@@ -46,9 +46,7 @@
             class="px-2 text-white text-yellow-500"
             @mouseenter="showLanguageBox"
           >
-            {{
-              currentLocale.displayName ? currentLocale.displayName : "English"
-            }}
+            {{ currentLocale ? currentLocale.displayName : "English" }}
           </a>
           <ul
             class="absolute z-10 bg-gray-700 w-40 mt-2"

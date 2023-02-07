@@ -27,7 +27,7 @@
             <p class="text-2xl font-bold">Your Account</p>
             <!-- Modal Close Button -->
             <div class="modal-close cursor-pointer z-50">
-              <i class="fas fa-times" @click.prevent="modalIsOpen = false"></i>
+              <i class="fas fa-times" @click.prevent="isOpen = false"></i>
             </div>
           </div>
 
@@ -68,12 +68,9 @@
 </template>
 
 <script>
-// import useModalStore from "@/stores/modal";
-// import { mapState, mapWritableState, mapActions } from "pinia";
 import LoginForm from "./LoginForm.vue";
 import RegisterForm from "./RegisterForm.vue";
 import { ref } from "vue";
-// import { useUserStore } from "../stores/user";
 import { storeToRefs } from "pinia";
 import { useModalStore } from "../stores/modal";
 export default {
@@ -82,31 +79,16 @@ export default {
     const tab = ref("login");
     const isModalOpen = ref(false);
     const modalStore = useModalStore();
-    const { hiddenClass, modalIsOpen } = storeToRefs(modalStore);
+    const { hiddenClass, isOpen } = storeToRefs(modalStore);
     const { toggleModal } = modalStore;
     return {
       tab,
       isModalOpen,
       hiddenClass,
-      modalIsOpen,
+      isOpen,
       toggleModal,
     };
   },
-  // data() {
-  //   return {
-  //     tab: "login",
-  //     isModalOpen: false,
-  //   };
-  // },
-  // computed: {
-  //   ...mapState(useModalStore, ["hiddenClass"]),
-  //   ...mapWritableState(useModalStore, {
-  //     modalIsOpen: "isOpen",
-  //   }),
-  // },
   components: { LoginForm, RegisterForm },
-  // methods: {
-  //   ...mapActions(useModalStore, ["toggleModal"]),
-  // },
 };
 </script>
