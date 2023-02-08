@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { songsCollection } from "../includes/firebase";
 import { auth } from "@/includes/firebase";
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 
 export const useSongStore = defineStore("song", () => {
@@ -50,12 +50,20 @@ export const useSongStore = defineStore("song", () => {
     }
   });
 
+  // 如果任一歌曲資料有變更，needToFetchAllSong set to true
+  // song.modifiedName
+  // allSongs.value.some((song) => {
+  //   watchEffect(() => {
+  //     console.log(song.modifiedName);
+  //     needToFetchAllSong.value = true;
+  //     console.log(needToFetchAllSong.value);
+  //   });
+  // });
+
   const routePath = computed(() => route.path);
   watch(routePath, () => {
     console.log("route change");
   });
-
-  const getSingleSong = async () => {};
 
   return {
     allSongs,
@@ -65,7 +73,6 @@ export const useSongStore = defineStore("song", () => {
     needToFetchUserSong,
     fetchAllSongCount,
     getAllSongs,
-    getSingleSong,
     getUserSongs,
     removeUserSong,
   };

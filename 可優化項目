@@ -1,6 +1,6 @@
-"mobile" songView 多一條 Bar 可以去控歌曲時間，並且隱藏app player
+如果更新歌曲名稱，需要同時更新主頁歌曲名稱，並請主頁要重新fetch song data
 
-如果第一次使用似乎有BUG，清除快取試試看
+"mobile" songView 多一條 Bar 可以去控歌曲時間，並且隱藏app player
 
 翻譯中文語系
 
@@ -44,3 +44,13 @@ user info 圖片希望改成背景
 解決: dynamic style
 
 優化mobile排版
+
+
+
+errors:
+Error enabling offline persistence. Falling back to persistence disabled: FirebaseError: [code=failed-precondition]: Failed to obtain exclusive access to the persistence layer. To allow shared access, multi-tab synchronization has to be enabled in all tabs. If you are using `experimentalForceOwningTab:true`, make sure that only one tab has persistence enabled at any given time.
+Firebase persistance error failed-precondition
+
+https://stackoverflow.com/questions/60189243/vue-cli-3-pwa-deploying-to-production-netlify-gives-workbox-error-bad-precachin
+
+https://answers.netlify.com/t/workbox-error-precachecontroller-mjs-194-uncaught-in-promise-bad-precaching-response-redirects-wb-revision-404/8865

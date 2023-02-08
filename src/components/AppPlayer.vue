@@ -79,50 +79,25 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import AppFooter from "./AppFooter.vue";
 import { usePlayerStore } from "../stores/player";
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
-export default {
-  components: {
-    AppFooter,
-  },
-  setup() {
-    const playerStore = usePlayerStore();
 
-    const {
-      playing,
-      duration,
-      seek,
-      playerProgress,
-      currentSong,
-      isDifferentSong,
-    } = storeToRefs(playerStore);
+const playerStore = usePlayerStore();
 
-    const { toggleAppPlayerAudio, updateSeek } = playerStore;
+const { playing, duration, seek, playerProgress, currentSong } =
+  storeToRefs(playerStore);
 
-    const isPlayingSong = computed(() => {
-      if (playerStore.currentSong.docID) {
-        return true;
-      }
-      return false;
-    });
+const { toggleAppPlayerAudio, updateSeek } = playerStore;
 
-    return {
-      playerStore,
-      playing,
-      duration,
-      seek,
-      playerProgress,
-      currentSong,
-      isDifferentSong,
-      isPlayingSong,
-      toggleAppPlayerAudio,
-      updateSeek,
-    };
-  },
-};
+const isPlayingSong = computed(() => {
+  if (playerStore.currentSong.docID) {
+    return true;
+  }
+  return false;
+});
 </script>
 
 <style scoped>

@@ -223,7 +223,6 @@ import {
   usersCollection,
   songsCollection,
 } from "../includes/firebase";
-// import { getAuth, updateEmail } from "firebase/auth";
 export default {
   props: ["userData", "isUserInfoLoading", "addUserInfo", "getUserData"],
   computed: {

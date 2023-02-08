@@ -67,28 +67,15 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import LoginForm from "./LoginForm.vue";
 import RegisterForm from "./RegisterForm.vue";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useModalStore } from "../stores/modal";
-export default {
-  name: "AppAuth",
-  setup() {
-    const tab = ref("login");
-    const isModalOpen = ref(false);
-    const modalStore = useModalStore();
-    const { hiddenClass, isOpen } = storeToRefs(modalStore);
-    const { toggleModal } = modalStore;
-    return {
-      tab,
-      isModalOpen,
-      hiddenClass,
-      isOpen,
-      toggleModal,
-    };
-  },
-  components: { LoginForm, RegisterForm },
-};
+
+const tab = ref("login");
+const modalStore = useModalStore();
+const { hiddenClass, isOpen } = storeToRefs(modalStore);
+const { toggleModal } = modalStore;
 </script>

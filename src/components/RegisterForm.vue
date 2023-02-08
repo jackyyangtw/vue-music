@@ -114,10 +114,7 @@
 </template>
 
 <script>
-// import firebase from "../includes/firebase";
 import { ErrorMessage } from "vee-validate";
-// import { mapActions } from "pinia";
-// import useUserStore from "@/stores/user";
 import { useUserStore } from "../stores/user";
 import { reactive } from "vue";
 
@@ -174,50 +171,6 @@ export default {
       register,
       regState,
     };
-  },
-  // data() {
-  //   return {
-  //     schema: {
-  //       name: "required|min:3|max:100|alpha_spaces",
-  //       email: "required|min:3|max:100|email",
-  //       age: "required|min_value:18|max_value:100",
-  //       password: "required|min:9|max:100|excluded:password",
-  //       confirm_password: "passwords_mismatch:@password",
-  //       country: "required|country_excluded:Antarctica",
-  //       tos: "tos",
-  //     },
-  //     userData: {
-  //       country: "Mexico",
-  //     },
-  //     regInSubmission: false,
-  //     regShowAlert: false,
-  //     regAlertVariant: "bg-blue-500",
-  //     regAlertMsg: "Please wait! Your account is being created.",
-  //   };
-  // },
-  methods: {
-    // map store action function
-    // ...mapActions(useUserStore, {
-    //   createUser: "registerAction",
-    // }),
-    // async register(values) {
-    //   this.regShowAlert = true;
-    //   this.regInSubmission = true;
-    //   this.regAlertVariant = "bg-blue-500";
-    //   this.regAlertMsg = "Please wait! Your account is being created.";
-    //   try {
-    //     await this.createUser(values); // 存使用者帳密
-    //   } catch (err) {
-    //     this.regInSubmission = false;
-    //     this.regAlertVariant = "bg-red-500";
-    //     this.regAlertMsg =
-    //       "An unexpected error occured. Please try again later.";
-    //     return;
-    //   }
-    //   this.regAlertVariant = "bg-green-500";
-    //   this.regAlertMsg = "Success! Your account has been created";
-    //   window.location.reload();
-    // },
   },
 };
 </script>

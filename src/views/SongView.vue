@@ -13,7 +13,7 @@
         <button
           @click.prevent="playerStore.toggleAudio(song)"
           type="button"
-          class="hidden lg:block z-50 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
+          class="hidden lg:block z-10 h-24 w-24 text-3xl bg-white text-black rounded-full focus:outline-none"
         >
           <i
             class="fas"
@@ -23,7 +23,7 @@
             }"
           ></i>
         </button>
-        <div class="z-50 text-left lg:ml-8 lg:mr-8">
+        <div class="z-10 text-left lg:ml-8 lg:mr-8">
           <!-- Song Info -->
           <div class="text-2xl lg:text-3xl font-bold">
             {{ song.modifiedName }}
@@ -37,7 +37,7 @@
           <button
             @click.prevent="playerStore.toggleAudio(song)"
             type="button"
-            class="lg:hidden z-50 h-20 mr-5 w-20 text-3xl bg-white text-black rounded-full focus:outline-none"
+            class="lg:hidden z-10 h-20 mr-5 w-20 text-3xl bg-white text-black rounded-full focus:outline-none"
           >
             <i
               class="fas"
@@ -47,7 +47,7 @@
               }"
             ></i>
           </button>
-          <div class="z-50">
+          <div class="z-10">
             <button
               @click.prevent="playerStore.replaySong(song)"
               v-if="showFunctionIcons"
@@ -69,7 +69,8 @@
         </div>
       </div>
     </section>
-    <!-- Form -->
+
+    <!-- content & form -->
     <section class="container mx-auto mt-6" id="comments">
       <div class="rounded relative flex flex-col mx-3 lg:mx-0">
         <div
@@ -88,14 +89,29 @@
               }}
             </span>
           </div>
+
           <!-- Sort Comments -->
           <select
+            v-if="song.commentCount > 0"
             v-model="sort"
             class="block py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
           >
             <option value="1">Latest</option>
             <option value="2">Oldest</option>
           </select>
+        </div>
+        <!-- login button -->
+        <div
+          class="bg-gray-700 rounded py-10 flex justify-center items-center"
+          v-if="!userLoggedIn"
+        >
+          <div
+            v-cloak
+            @click="toggleModal"
+            class="cursor-pointer text-gray-700 transition bg-green-400 hover:bg-green-500 max-w-xs text-center inline-block rounded py-3 px-3"
+          >
+            login to leave a comment : )
+          </div>
         </div>
         <div>
           <div
@@ -105,6 +121,7 @@
           >
             {{ commentAlertMessage }}
           </div>
+          <!-- Form -->
           <vee-form
             :validation-schema="schema"
             @submit="addComment"
@@ -162,20 +179,21 @@
 import { songsCollection, commentCollection, auth } from "../includes/firebase";
 import { usePlayerStore } from "../stores/player";
 import { useUserStore } from "../stores/user";
-// import { toRef } from "vue";
+import { useModalStore } from "../stores/modal";
 import { ref, reactive, computed, watch, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-// import { storeToRefs } from "pinia";
+import { storeToRefs } from "pinia";
 export default {
   setup() {
     const { t } = useI18n();
     const playerStore = usePlayerStore();
     const userStore = useUserStore();
+    const { userLoggedIn } = storeToRefs(userStore);
+    const modalstore = useModalStore();
+    const { toggleModal } = modalstore;
     const route = useRoute();
     const router = useRouter();
-    // const instance = getCurrentInstance();
-    // const { currentSong } = storeToRefs(playerStore);
 
     const song = ref({});
     const comments = ref([]);
@@ -272,16 +290,16 @@ export default {
       playerStore,
       userStore,
       showFunctionIcons,
+      userLoggedIn,
       ...toRefs(commentState),
       addComment,
       getComments,
+      toggleModal,
       t,
     };
   },
   async beforeRouteUpdate(to) {
     const playerStore = usePlayerStore();
-    // this.song = null;
-    // this.sort = null;
     try {
       const docSnapshot = await songsCollection.doc(to.params.id).get();
       if (!docSnapshot.exists) {
@@ -315,13 +333,15 @@ export default {
 
       vm.song = docSnapshot.data();
       vm.song.sid = to.params.id;
-      // console.log("set new song");
       vm.getComments();
-      // console.log("route change!");
       playerStore.changeLoopingIcon();
     });
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style>
+[v-cloak] {
+  display: none;
+}
+</style>

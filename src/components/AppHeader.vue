@@ -49,7 +49,7 @@
             {{ currentLocale ? currentLocale.displayName : "English" }}
           </a>
           <ul
-            class="absolute z-10 bg-gray-700 w-40 mt-2"
+            class="absolute z-10 bg-gray-800 w-40 right-[-45px] mt-2"
             v-show="isLanguageBoxShow"
           >
             <li
@@ -71,126 +71,62 @@
   </header>
 </template>
 
-<script>
-// import { mapActions } from "pinia";
-// import useModalStore from "@/stores/modal";
-// import useUserStore from "@/stores/user";
+<script setup>
 import { useUserStore } from "@/stores/user";
 import { useModalStore } from "../stores/modal";
-// import useModal
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
-export default {
-  name: "AppHeader",
-  setup() {
-    const locales = ref([]);
-    const currentLocale = ref({});
-    const isLanguageBoxShow = ref(false);
-    const userStore = useUserStore();
-    const { signoutAction } = userStore;
-    const { userLoggedIn } = storeToRefs(userStore);
-    const { toggleModal } = useModalStore();
 
-    const router = useRouter();
-    const route = useRoute();
-    const signOut = () => {
-      signoutAction();
-      if (route.meta.requiresAuth) {
-        router.push({ name: "home" });
-      }
-    };
+const locales = ref([]);
+const currentLocale = ref({});
+const isLanguageBoxShow = ref(false);
 
-    const changeLocale = (localObj) => {
-      currentLocale.value = localObj;
-      localStorage.setItem("currentLanguage", JSON.stringify(localObj));
-      location.reload();
-    };
+const modalStore = useModalStore();
+const { toggleModal } = modalStore;
 
-    const showLanguageBox = () => {
-      isLanguageBoxShow.value = !isLanguageBoxShow.value;
-    };
+const userStore = useUserStore();
+const { signoutAction } = userStore;
+const { userLoggedIn } = storeToRefs(userStore);
 
-    // created
-    const i18n = useI18n();
-    Object.keys(i18n.messages.value).forEach((key) => {
-      let displayName;
-      if (key === "en") displayName = "English";
-      if (key === "fr") displayName = "Français";
-      if (key === "tw") displayName = "繁體中文";
-      locales.value.push({
-        locale: key,
-        displayName,
-      });
-    });
-    const currentLangueage = localStorage.getItem("currentLanguage");
-    if (!currentLangueage) {
-      return;
-    }
-    const currentLangueageObj = JSON.parse(currentLangueage);
-    i18n.locale.value = currentLangueageObj.locale;
-    currentLocale.value = currentLangueageObj;
-
-    return {
-      locales,
-      currentLocale,
-      isLanguageBoxShow,
-      userLoggedIn,
-      signOut,
-      changeLocale,
-      showLanguageBox,
-      toggleModal,
-    };
-  },
-
-  // data() {
-  //   return {
-  //     locales: [],
-  //     currentLocale: {},
-  //     isLanguageBoxShow: false,
-  //   };
-  // },
-  // computed: {
-  //   ...mapStores(useUserStore), // 可直接使用action、state
-  // },
-  methods: {
-    // ...mapActions(useModalStore, ["toggleModal"]),
-    // signOut() {
-    //   this.userStore.signoutAction();
-    //   if (this.$route.meta.requiresAuth) {
-    //     this.$router.push({ name: "home" });
-    //   }
-    // },
-    // changeLocale(localObj) {
-    //   this.currentLocale = localObj;
-    //   localStorage.setItem("currentLanguage", JSON.stringify(localObj));
-    //   location.reload();
-    // },
-    // showLanguageBox() {
-    //   this.isLanguageBoxShow = !this.isLanguageBoxShow;
-    // },
-  },
-  // created() {
-  //   Object.keys(this.$i18n.messages).forEach((key) => {
-  //     let displayName;
-  //     if (key === "en") displayName = "English";
-  //     if (key === "fr") displayName = "Français";
-  //     if (key === "tw") displayName = "繁體中文";
-  //     this.locales.push({
-  //       locale: key,
-  //       displayName,
-  //     });
-  //   });
-  //   const currentLangueage = localStorage.getItem("currentLanguage");
-  //   if (!currentLangueage) {
-  //     return;
-  //   }
-  //   const currentLangueageObj = JSON.parse(currentLangueage);
-  //   this.$i18n.locale = currentLangueageObj.locale;
-  //   this.currentLocale = currentLangueageObj;
-  // },
+const router = useRouter();
+const route = useRoute();
+const signOut = () => {
+  signoutAction();
+  if (route.meta.requiresAuth) {
+    router.push({ name: "home" });
+  }
 };
-</script>
 
-<style lang="scss" scoped></style>
+const changeLocale = (localObj) => {
+  currentLocale.value = localObj;
+  localStorage.setItem("currentLanguage", JSON.stringify(localObj));
+  location.reload();
+};
+
+const showLanguageBox = () => {
+  isLanguageBoxShow.value = !isLanguageBoxShow.value;
+};
+
+// created
+const i18n = useI18n();
+Object.keys(i18n.messages.value).forEach((key) => {
+  let displayName;
+  if (key === "en") displayName = "English";
+  if (key === "tw") displayName = "繁體中文";
+  locales.value.push({
+    locale: key,
+    displayName,
+  });
+});
+
+const currentLangueage = localStorage.getItem("currentLanguage");
+const currentLangueageObj = currentLangueage
+  ? JSON.parse(currentLangueage)
+  : "";
+if (currentLangueageObj) {
+  i18n.locale.value = currentLangueageObj.locale;
+  currentLocale.value = currentLangueageObj;
+}
+</script>
