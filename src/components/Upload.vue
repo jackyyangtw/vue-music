@@ -37,7 +37,7 @@
       <!-- Progess Bars -->
       <div class="mb-4" v-for="upload in uploads" :key="upload.name">
         <!-- File Name -->
-        <div class="font-bold text-sm" :class="upload.textClass">
+        <div class="font-bold text-sm text-white" :class="upload.textClass">
           <i class="mr-2" :class="upload.icon"></i>{{ upload.name }}
         </div>
         <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
@@ -65,7 +65,7 @@ export default {
     const uploads = ref([]);
 
     const songStore = useSongStore();
-    const { needToFetchAllSong } = storeToRefs(songStore);
+    const { needToFetchAllsong } = storeToRefs(songStore);
 
     onBeforeUnmount(() => {
       uploads.value.forEach((upload) => {
@@ -161,7 +161,7 @@ export default {
 
               // add song data to ManageView songs array to display song
               props.addSong(songSnapshot);
-              needToFetchAllSong.value = true;
+              needToFetchAllsong.value = true;
             } catch (err) {
               console.log(err);
             }

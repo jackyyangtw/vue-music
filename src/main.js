@@ -10,6 +10,7 @@ import { i18n } from "./includes/i18n";
 import { registerSW } from "virtual:pwa-register";
 import GlobalComponents from "./includes/_globals";
 import progressBar from "./includes/progress-bar";
+import moment from "moment";
 
 import "./assets/base.css";
 import "./assets/main.css";
@@ -30,6 +31,14 @@ auth.onAuthStateChanged(() => {
     pinia.use(({ store }) => {
       store.router = markRaw(router);
     });
+
+    // moment js
+    app.config.globalProperties.$filters = {
+      timeAgo(date) {
+        return moment(date).fromNow();
+      },
+    };
+
     app.use(pinia);
     app.use(router);
     app.use(VeeValidatePlugin);

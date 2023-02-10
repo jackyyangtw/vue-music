@@ -45,6 +45,7 @@
           <vee-field
             name="name"
             type="text"
+            @focus="console.log('focus')"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
             :placeholder="userData.name"
           />
@@ -175,7 +176,7 @@
       <div class="font-bold text-[24px] flex justify-between">
         <p>{{ userData.name }}</p>
         <div
-          @click="isModalOpen = true"
+          @click="openModal"
           class="text-[20px] right-5 bottom-16 hover:bg-white/[0.1] text-white rounded-full p-3 w-10 h-10 flex justify-center align-center cursor-pointer"
         >
           <i class="fas fa-pen"></i>
@@ -217,12 +218,14 @@
 </template>
 
 <script>
+import { mapActions } from "pinia";
 import {
   storage,
   auth,
   usersCollection,
   songsCollection,
 } from "../includes/firebase";
+import { useGlobalStore } from "../stores/global";
 export default {
   props: ["userData", "isUserInfoLoading", "addUserInfo", "getUserData"],
   computed: {
@@ -256,8 +259,14 @@ export default {
   },
 
   methods: {
+    ...mapActions(useGlobalStore, ["setIsKeydownSpaceEventActive"]),
     closeModal() {
       this.isModalOpen = false;
+      this.setIsKeydownSpaceEventActive(false);
+    },
+    openModal() {
+      this.isModalOpen = true;
+      this.setIsKeydownSpaceEventActive(true);
     },
     uploadImg(e) {
       const files = e.dataTransfer

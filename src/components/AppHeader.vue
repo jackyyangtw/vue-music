@@ -12,13 +12,6 @@
       <div class="hidden lg:flex flex-grow items-center">
         <!-- Primary Navigation -->
         <ul class="flex flex-row mt-1">
-          <!-- Navigation Links -->
-          <!-- <li>
-            <router-link class="px-2 text-white" :to="{ name: 'about' }">{{
-              $t("header.about")
-            }}</router-link>
-          </li> -->
-
           <!-- login button -->
           <li v-if="!userLoggedIn">
             <a @click.prevent="toggleModal" class="px-2 text-white" href="#">{{
@@ -43,13 +36,13 @@
         <div class="ml-auto relative">
           <a
             href="#"
-            class="px-2 text-white text-yellow-500"
+            class="px-2 text-yellow-500"
             @mouseenter="showLanguageBox"
           >
             {{ currentLocale ? currentLocale.displayName : "English" }}
           </a>
           <ul
-            class="absolute z-10 bg-gray-800 w-40 right-[-45px] mt-2"
+            class="absolute z-10 bg-gray-800 w-40 right-[-45px] mt-2 rounded"
             v-show="isLanguageBoxShow"
           >
             <li
@@ -80,7 +73,7 @@ import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 
 const locales = ref([]);
-const currentLocale = ref({});
+const currentLocale = ref({ displayName: "English" });
 const isLanguageBoxShow = ref(false);
 
 const modalStore = useModalStore();

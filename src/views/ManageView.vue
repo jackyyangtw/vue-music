@@ -30,7 +30,7 @@
                 :updateUnsavedFlag="updateUnsavedFlag"
               ></CompositionItem>
               <div
-                class="text-center"
+                class="text-center text-white"
                 v-if="!userSongs.length && !isSongLoading"
               >
                 No song found, let's upload song now : )

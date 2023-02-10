@@ -16,7 +16,7 @@
         </button>
         <button
           class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 w-8 h-8"
-          @click="showForm = !showForm"
+          @click="toggleForm"
         >
           <i class="fa fa-pencil-alt"></i>
         </button>
@@ -82,7 +82,11 @@
 import { ErrorMessage } from "vee-validate";
 import { songsCollection } from "../includes/firebase";
 import { useModalStore } from "@/stores/modal";
-import { ref, watch } from "vue";
+import { useSongStore } from "../stores/song";
+import { useGlobalStore } from "../stores/global";
+import { ref } from "vue";
+import { storeToRefs } from "pinia";
+
 export default {
   name: "CompositionItem",
   components: { ErrorMessage },
@@ -116,15 +120,27 @@ export default {
     const modalStore = useModalStore();
     const { openComfirmModal } = modalStore;
 
-    // 新增: 如果有資料變更，songStore / needToFetchAllSong = true
+    const gloalStore = useGlobalStore();
+    const { setIsKeydownSpaceEventActive } = gloalStore;
+    const { IsKeydownSpaceEventActive } = storeToRefs(gloalStore);
+    const toggleForm = () => {
+      showForm.value = !showForm.value;
+      if (IsKeydownSpaceEventActive.value) {
+        setIsKeydownSpaceEventActive(false);
+      } else {
+        setIsKeydownSpaceEventActive(true);
+      }
+    };
+
+    // 新增: 如果有資料變更，songStore / needToFetchAllsong = true
     // 如果資料沒變 return
+    const songStore = useSongStore();
+    const { needToFetchAllsong } = storeToRefs(songStore);
+    const { updateSingleStoreSong } = songStore;
     const editForm = async (values) => {
       console.log(values);
       isSubmission.value = true;
       showAlert.value = true;
-      watch(values, (newVal) => {
-        console.log(newVal);
-      });
 
       try {
         await songsCollection.doc(props.song.docID).update(values);
@@ -136,6 +152,8 @@ export default {
       }
       props.updateUnsavedFlag(false);
       props.updateSong(props.index, values);
+      updateSingleStoreSong(props.song.docID, values);
+      needToFetchAllsong.value = true;
       isSubmission.value = false;
       alertVariant.value = "bg-green-500";
       alertMessage.value = "Success!";
@@ -149,6 +167,7 @@ export default {
       alertMessage,
       openComfirmModal,
       editForm,
+      toggleForm,
     };
   },
 };

@@ -114,13 +114,6 @@
           </div>
         </div>
         <div>
-          <div
-            class="text-white text-center font-bold p-4 mb-4 max-w-[200px]"
-            v-show="commentShowAlert"
-            :class="commentAlertVariant"
-          >
-            {{ commentAlertMessage }}
-          </div>
           <!-- Form -->
           <vee-form
             :validation-schema="schema"
@@ -134,13 +127,22 @@
               name="comment"
             ></vee-field>
             <ErrorMessage class="text-red-500" name="comment" />
-            <button
-              type="submit"
-              class="py-1.5 px-3 rounded text-white bg-green-600 block"
-              :disabled="commentInSubmission"
-            >
-              Submit
-            </button>
+            <div class="flex">
+              <button
+                type="submit"
+                class="p-4 rounded text-white bg-green-600 mr-3 min-w-[100px] block"
+                :disabled="commentInSubmission"
+              >
+                Submit
+              </button>
+              <div
+                class="text-white text-center font-bold p-4 inline-block"
+                v-show="commentShowAlert"
+                :class="commentAlertVariant"
+              >
+                {{ commentAlertMessage }}
+              </div>
+            </div>
           </vee-form>
         </div>
       </div>
@@ -161,7 +163,7 @@
             <div class="font-extrabold">
               <span class="text-sm">{{ comment.name }}</span
               ><time class="text-neutral-400 ml-2 text-xs"
-                >{{ comment.datePosted }}
+                >{{ $filters.timeAgo(comment.datePosted) }}
               </time>
             </div>
           </div>
@@ -246,7 +248,7 @@ export default {
       commentState.commentAlertVariant = "bg-blue-500";
       const comment = {
         content: values.comment,
-        datePosted: new Date().toString(),
+        datePosted: new Date().toISOString(),
         sid: route.params.id,
         name: auth.currentUser.displayName,
         uid: auth.currentUser.uid, // user更改評論的時候會用到

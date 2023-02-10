@@ -1,4 +1,6 @@
-如果更新歌曲名稱，需要同時更新主頁歌曲名稱，並請主頁要重新fetch song data
+composition item 開啟後無法輸入空格
+
+如果infinite scroll 結束後，song的內容會變成allsong
 
 "mobile" songView 多一條 Bar 可以去控歌曲時間，並且隱藏app player
 

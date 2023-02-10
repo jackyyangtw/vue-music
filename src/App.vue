@@ -24,8 +24,10 @@ import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { usePlayerStore } from "./stores/player";
 import { useEventListener } from "@vueuse/core";
+import { useSongStore } from "./stores/song";
 // import { watch } from "vue";
 // import { useSongStore } from "./stores/song";
+import { useGlobalStore } from "./stores/global";
 
 export default {
   components: {
@@ -44,12 +46,17 @@ export default {
       userLoggedIn.value = true;
     }
 
+    const globalStore = useGlobalStore();
+    const { IsKeydownSpaceEventActive } = storeToRefs(globalStore);
     useEventListener(document, "keydown", (e) => {
-      if (e.key === " ") {
+      if (e.key === " " && !IsKeydownSpaceEventActive.value) {
         e.preventDefault();
         toggleAppPlayerAudio(currentSong.value);
       }
     });
+
+    const songStore = useSongStore();
+    songStore.getAllSongs();
   },
 };
 </script>

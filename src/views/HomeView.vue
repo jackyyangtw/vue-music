@@ -34,14 +34,14 @@
           <!-- Icon -->
         </div>
         <!-- Playlist -->
-        <ol id="playlist" v-if="!needToFetchAllSong">
+        <ol id="playlist" v-if="!needToFetchAllsong">
           <SongItem
             v-for="song in allSongs"
             :key="song.docID"
             :song="song"
           ></SongItem>
         </ol>
-        <ol v-else>
+        <ol v-else-if="needToFetchAllsong">
           <SongItem
             v-for="song in songs"
             :key="song.docID"
@@ -49,7 +49,7 @@
           ></SongItem>
         </ol>
         <!-- skeleton -->
-        <div v-if="isContentLoading && needToFetchAllSong">
+        <div v-if="isContentLoading && needToFetchAllsong">
           <div
             class="p-3 pl-6 rounded animate-pulse flex justify-between align-center w-full"
             v-for="i in maxPerPage"
@@ -88,7 +88,7 @@ export default {
   },
   setup() {
     const songStore = useSongStore();
-    const { needToFetchAllSong, allSongs } = storeToRefs(songStore);
+    const { needToFetchAllsong, allSongs } = storeToRefs(songStore);
     const { getAllSongs } = songStore;
 
     const songs = ref([]);
@@ -113,8 +113,9 @@ export default {
 
     onMounted(async () => {
       window.addEventListener("scroll", scrollHandler);
-
-      getAllSongs();
+      if (needToFetchAllsong.value) {
+        getAllSongs();
+      }
       getSongs();
     });
 
@@ -144,7 +145,7 @@ export default {
           if (allSongs.value.length === songs.value.length) {
             isFetchingComplete.value = true;
             isContentLoading.value = false;
-            needToFetchAllSong.value = false;
+            needToFetchAllsong.value = false;
           } else {
             isFetchingComplete.value = false;
             isContentLoading.value = true;
@@ -171,7 +172,7 @@ export default {
       isContentLoading,
       fetchCount,
       maxPerPage,
-      needToFetchAllSong,
+      needToFetchAllsong,
       allSongs,
       isFetchingComplete,
     };

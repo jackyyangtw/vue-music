@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
 import { songsCollection } from "../includes/firebase";
 import { auth } from "@/includes/firebase";
-import { ref, watch, computed, watchEffect } from "vue";
-import { useRoute } from "vue-router";
+import { ref, watch, computed } from "vue";
+// import { useRoute } from "vue-router";
 
 export const useSongStore = defineStore("song", () => {
-  const route = useRoute();
+  // const route = useRoute();
   const allSongs = ref([]);
-  const needToFetchAllSong = ref(true);
+  const needToFetchAllsong = ref(true); // 如果資料有變更、頁面第一次載入時
   const fetchAllSongCount = ref(0);
   const needToFetchUserSong = ref(false);
   const userSongs = ref([]);
@@ -16,11 +16,18 @@ export const useSongStore = defineStore("song", () => {
     userSongs.value.splice(index, 1);
   };
 
+  const updateSingleStoreSong = (sid, updatedVal) => {
+    let updatedSong = allSongs.value.find((song) => song.docID === sid);
+    Object.assign(updatedSong, updatedVal);
+  };
+
   const getAllSongs = async () => {
     console.log("get all songs");
+
     const snapshot = await songsCollection.get();
     snapshot.docs.forEach((doc) => {
       const docID = doc.data().docID;
+      // 如果資料沒變更
       const thisSongId = allSongs.value.find((song) => song.docID === docID);
       if (thisSongId) {
         return;
@@ -38,36 +45,31 @@ export const useSongStore = defineStore("song", () => {
     snapshot.forEach((doc) => {
       userSongs.value.push(doc.data());
     });
-    needToFetchAllSong.value = false;
+    needToFetchAllsong.value = false;
   };
 
   const allSongLength = computed(() => allSongs.value.length);
   watch(allSongLength, (newVal, oldVal) => {
     if (newVal === oldVal) {
-      needToFetchAllSong.value = false;
+      needToFetchAllsong.value = false;
     } else if (newVal !== oldVal) {
-      needToFetchAllSong.value = true;
+      needToFetchAllsong.value = true;
     }
   });
 
-  // 如果任一歌曲資料有變更，needToFetchAllSong set to true
+  // 如果任一歌曲資料有變更，needToFetchAllsong set to true
   // song.modifiedName
   // allSongs.value.some((song) => {
   //   watchEffect(() => {
   //     console.log(song.modifiedName);
-  //     needToFetchAllSong.value = true;
-  //     console.log(needToFetchAllSong.value);
+  //     needToFetchAllsong.value = true;
+  //     console.log(needToFetchAllsong.value);
   //   });
   // });
 
-  const routePath = computed(() => route.path);
-  watch(routePath, () => {
-    console.log("route change");
-  });
-
   return {
     allSongs,
-    needToFetchAllSong,
+    needToFetchAllsong,
     allSongLength,
     userSongs,
     needToFetchUserSong,
@@ -75,6 +77,7 @@ export const useSongStore = defineStore("song", () => {
     getAllSongs,
     getUserSongs,
     removeUserSong,
+    updateSingleStoreSong,
   };
 });
 
