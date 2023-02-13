@@ -33,6 +33,7 @@ export const useUserStore = defineStore("user", () => {
   const signoutAction = async () => {
     await auth.signOut();
     userLoggedIn.value = false;
+    location.reload();
   };
   const getUserDataAction = async () => {
     const userSnapshot = await usersCollection.doc(auth.currentUser.uid).get();

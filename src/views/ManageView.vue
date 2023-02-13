@@ -9,7 +9,7 @@
           :addUserInfo="addUserInfo"
           :getUserData="getUserData"
         ></UserInfo>
-        <AppUpload ref="upload" :addSong="addSong"></AppUpload>
+        <Upload ref="upload" :addSong="addSong"></Upload>
       </div>
       <div class="md:col-span-1 2xl:col-span-2 mt-5 md:mt-0">
         <div class="rounded border border-gray-200 relative flex flex-col">
@@ -58,25 +58,23 @@
 </template>
 
 <script>
-import AppUpload from "@/components/Upload.vue";
+import Upload from "@/components/Upload.vue";
 import CompositionItem from "../components/CompositionItem.vue";
 import ComfirmModal from "../components/ComfirmModal.vue";
 import UserInfo from "../components/UserInfo.vue";
 import { useUserStore } from "../stores/user";
 import { useSongStore } from "../stores/song";
+import { useGlobalStore } from "../stores/global";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
+import { onBeforeRouteLeave } from "vue-router";
 export default {
-  components: { AppUpload, CompositionItem, ComfirmModal, UserInfo },
+  components: { Upload, CompositionItem, ComfirmModal, UserInfo },
   name: "manage",
   setup() {
     const userStore = useUserStore();
     const { getUserDataAction } = userStore;
     const { userData } = storeToRefs(userStore);
-
-    const songStore = useSongStore();
-    const { getUserSongs, removeUserSong } = songStore;
-    const { allSongs, allSongLength, userSongs } = storeToRefs(songStore);
 
     const unsavedFlag = ref(false);
     const isSongLoading = ref(false);
@@ -87,12 +85,17 @@ export default {
       await getUserDataAction();
       isUserInfoLoading.value = false;
     };
+
+    const songStore = useSongStore();
+    const { getUserSongs, removeUserSong } = songStore;
+    const { allSongs, allSongLength, userSongs } = storeToRefs(songStore);
+
     const getSongData = async () => {
       isSongLoading.value = true;
       await getUserSongs();
       isSongLoading.value = false;
     };
-    const updateSong = (index, values) => {
+    const updateSong = async (index, values) => {
       userSongs.value[index].modifiedName = values.modifiedName;
       userSongs.value[index].genre = values.genre;
     };
@@ -102,9 +105,11 @@ export default {
       removeUserSong(index);
     };
 
-    const addSong = (document) => {
+    const addSong = async (document, docID) => {
+      console.log(document.data());
       const song = {
         ...document.data(), // get firebase document data
+        docID,
       };
       userSongs.value.push(song);
     };
@@ -119,6 +124,24 @@ export default {
     const updateUnsavedFlag = (value) => {
       unsavedFlag.value = value;
     };
+
+    const globalStore = useGlobalStore();
+    const { compositionItemShowFormState } = storeToRefs(globalStore);
+    onBeforeRouteLeave((to, from, next) => {
+      if (!unsavedFlag.value) {
+        compositionItemShowFormState.value = [];
+        next();
+      } else {
+        const leave = confirm(
+          "You have unsaved changes. Are you sure you want to leave?"
+        );
+        if (leave) {
+          compositionItemShowFormState.value = [];
+        }
+        next(leave);
+      }
+    });
+
     return {
       isUserInfoLoading,
       allSongs,
@@ -134,16 +157,6 @@ export default {
       addUserInfo,
       updateUnsavedFlag,
     };
-  },
-  beforeRouteLeave(to, from, next) {
-    if (!this.unsavedFlag) {
-      next();
-    } else {
-      const leave = confirm(
-        "You have unsaved changes. Are you sure you want to leave?"
-      );
-      next(leave);
-    }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {

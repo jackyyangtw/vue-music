@@ -22,8 +22,6 @@ export const useSongStore = defineStore("song", () => {
   };
 
   const getAllSongs = async () => {
-    console.log("get all songs");
-
     const snapshot = await songsCollection.get();
     snapshot.docs.forEach((doc) => {
       const docID = doc.data().docID;
@@ -38,11 +36,11 @@ export const useSongStore = defineStore("song", () => {
   };
 
   const getUserSongs = async () => {
-    console.log("get user songs");
     const snapshot = await songsCollection
       .where("uid", "==", auth.currentUser.uid)
       .get();
     snapshot.forEach((doc) => {
+      console.log(doc);
       userSongs.value.push(doc.data());
     });
     needToFetchAllsong.value = false;
@@ -56,16 +54,6 @@ export const useSongStore = defineStore("song", () => {
       needToFetchAllsong.value = true;
     }
   });
-
-  // 如果任一歌曲資料有變更，needToFetchAllsong set to true
-  // song.modifiedName
-  // allSongs.value.some((song) => {
-  //   watchEffect(() => {
-  //     console.log(song.modifiedName);
-  //     needToFetchAllsong.value = true;
-  //     console.log(needToFetchAllsong.value);
-  //   });
-  // });
 
   return {
     allSongs,

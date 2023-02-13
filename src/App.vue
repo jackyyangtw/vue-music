@@ -47,11 +47,18 @@ export default {
     }
 
     const globalStore = useGlobalStore();
-    const { IsKeydownSpaceEventActive } = storeToRefs(globalStore);
+    const { IsKeydownSpaceEventActive, isCompositionItemShowForm } =
+      storeToRefs(globalStore);
+
     useEventListener(document, "keydown", (e) => {
-      if (e.key === " " && !IsKeydownSpaceEventActive.value) {
+      if (
+        e.key === " " &&
+        !IsKeydownSpaceEventActive.value &&
+        !isCompositionItemShowForm.value
+      ) {
         e.preventDefault();
         toggleAppPlayerAudio(currentSong.value);
+        console.log("yes");
       }
     });
 

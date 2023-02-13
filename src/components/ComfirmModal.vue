@@ -63,6 +63,7 @@
 
 <script>
 import { useModalStore } from "../stores/modal";
+import { useSongStore } from "../stores/song";
 import { storage, songsCollection } from "../includes/firebase";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
@@ -74,6 +75,8 @@ export default {
     const modalStore = useModalStore();
     const { isComfirmModalOpen, song, index } = storeToRefs(modalStore);
     const { closeComfirmModal } = modalStore;
+    const songStore = useSongStore();
+    const { getAllSongs } = songStore;
 
     const deleteSong = async () => {
       // delete storage file
@@ -85,6 +88,7 @@ export default {
         await songRef.delete();
         // delete data
         await songsCollection.doc(song.value.docID).delete();
+        await getAllSongs();
       } catch (err) {
         console.log(err);
       }

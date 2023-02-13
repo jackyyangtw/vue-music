@@ -120,12 +120,15 @@
             @submit="addComment"
             v-if="userStore.userLoggedIn"
           >
-            <vee-field
-              as="textarea"
-              class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded mb-4"
-              placeholder="Your comment here..."
-              name="comment"
-            ></vee-field>
+            <vee-field name="comment" v-slot="{ field }">
+              <textarea
+                class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded mb-4"
+                placeholder="Your comment here..."
+                v-bind="field"
+                @focus="changeState($event)"
+                @blur="changeState($event)"
+              />
+            </vee-field>
             <ErrorMessage class="text-red-500" name="comment" />
             <div class="flex">
               <button
@@ -182,6 +185,7 @@ import { songsCollection, commentCollection, auth } from "../includes/firebase";
 import { usePlayerStore } from "../stores/player";
 import { useUserStore } from "../stores/user";
 import { useModalStore } from "../stores/modal";
+import { useGlobalStore } from "../stores/global";
 import { ref, reactive, computed, watch, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -283,6 +287,16 @@ export default {
       });
     };
 
+    const globalStore = useGlobalStore();
+    const { IsKeydownSpaceEventActive } = storeToRefs(globalStore);
+    const changeState = (e) => {
+      if (e.type === "focus") {
+        IsKeydownSpaceEventActive.value = true;
+      } else if (e.type === "blur") {
+        IsKeydownSpaceEventActive.value = false;
+      }
+    };
+
     return {
       song,
       comments,
@@ -297,6 +311,7 @@ export default {
       addComment,
       getComments,
       toggleModal,
+      changeState,
       t,
     };
   },

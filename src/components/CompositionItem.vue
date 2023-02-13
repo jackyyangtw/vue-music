@@ -2,11 +2,12 @@
   <!-- Composition Items -->
   <div class="p-3 mb-4 rounded hover:bg-white/[0.1] transition">
     <div class="flex justify-between" v-show="!showForm">
-      <h4
+      <router-link
+        :to="{ name: 'song', params: { id: song.docID } }"
         class="block text-white text-l md:text-xl xl:text-2xl font-bold w-[60%]"
       >
         {{ song.modifiedName }}
-      </h4>
+      </router-link>
       <div class="flex justify-center items-center">
         <button
           class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 w-8 h-8"
@@ -69,7 +70,7 @@
           type="button"
           class="py-1.5 px-3 rounded text-white bg-gray-600"
           :disabled="isSubmission"
-          @click.prevent="(showForm = false), (showAlert = false)"
+          @click.prevent="toggleForm"
         >
           Go Back
         </button>
@@ -121,14 +122,19 @@ export default {
     const { openComfirmModal } = modalStore;
 
     const gloalStore = useGlobalStore();
-    const { setIsKeydownSpaceEventActive } = gloalStore;
-    const { IsKeydownSpaceEventActive } = storeToRefs(gloalStore);
+    const { compositionItemShowFormState } = storeToRefs(gloalStore);
     const toggleForm = () => {
       showForm.value = !showForm.value;
-      if (IsKeydownSpaceEventActive.value) {
-        setIsKeydownSpaceEventActive(false);
+      if (showForm.value) {
+        compositionItemShowFormState.value.push({
+          showForm: true,
+          id: props.song.docID,
+        });
       } else {
-        setIsKeydownSpaceEventActive(true);
+        compositionItemShowFormState.value =
+          compositionItemShowFormState.value.filter(
+            (state) => state.id !== props.song.docID
+          );
       }
     };
 

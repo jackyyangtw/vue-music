@@ -45,6 +45,8 @@
 import { ErrorMessage } from "vee-validate";
 import { useUserStore } from "../stores/user";
 import { reactive, ref } from "vue";
+import { useGlobalStore } from "../stores/global";
+import { storeToRefs } from "pinia";
 export default {
   components: {
     ErrorMessage,
@@ -64,6 +66,8 @@ export default {
       loginAlertMsg: "Please wait! We are logging you in.",
     });
 
+    const globalStore = useGlobalStore();
+    const { IsKeydownSpaceEventActive } = storeToRefs(globalStore);
     const login = async (values) => {
       loginState.loginInSubmission = true;
       loginState.loginShowAlert = true;
@@ -75,6 +79,7 @@ export default {
         loginState.loginAlertVariant = "bg-green-500";
         loginState.loginAlertMsg = "Success! You are now logged in!";
         window.location.reload();
+        IsKeydownSpaceEventActive.value = false;
       } catch (err) {
         loginState.loginInSubmission = false;
         loginState.loginAlertVariant = "bg-red-500";

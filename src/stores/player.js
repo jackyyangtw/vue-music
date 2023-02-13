@@ -111,18 +111,19 @@ export const usePlayerStore = defineStore("player", () => {
     }
   };
 
-  const toggleAppPlayerAudio = () => {
+  const toggleAppPlayerAudio = (allowToggle = true) => {
     // 如果目前沒有撥放並且沒有在歌曲頁面的時候就return
     if (!currentSong.value.sid && !route.params.id) {
       return;
     }
-
-    // 暫停、撥放切換
-    if (currentSong.value.sid) {
-      if (sound.value.playing()) {
-        sound.value.pause();
-      } else {
-        sound.value.play();
+    if (allowToggle) {
+      // 暫停、撥放切換
+      if (currentSong.value.sid) {
+        if (sound.value.playing()) {
+          sound.value.pause();
+        } else {
+          sound.value.play();
+        }
       }
     }
   };

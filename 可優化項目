@@ -1,4 +1,6 @@
-composition item 開啟後無法輸入空格
+刪除歌曲後，回到首頁重新fetch data後，need to fetch data 不會變回false
+
+刪除歌曲的時候，要再執行get all song 一次，完成後allsongs arr 會多出現一個key
 
 如果infinite scroll 結束後，song的內容會變成allsong
 

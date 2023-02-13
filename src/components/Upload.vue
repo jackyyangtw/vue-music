@@ -160,7 +160,7 @@ export default {
               );
 
               // add song data to ManageView songs array to display song
-              props.addSong(songSnapshot);
+              props.addSong(songSnapshot, docID);
               needToFetchAllsong.value = true;
             } catch (err) {
               console.log(err);
