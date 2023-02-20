@@ -15,6 +15,7 @@ import {
   max_value as maxVal,
   confirmed,
   not_one_of as excluded,
+  is_not,
 } from "@vee-validate/rules";
 export default {
   install(app) {
@@ -39,6 +40,8 @@ export default {
     defineRule("excluded", excluded);
     defineRule("country_excluded", excluded);
 
+    defineRule("not_same_value", is_not);
+
     configure({
       generateMessage: (ctx) => {
         const messages = {
@@ -53,6 +56,7 @@ export default {
           country_excluded: `Due to restrictions, we de not accept users from this location`,
           passwords_mismatch: "The passwords don't match.",
           tos: `You must accept the Terms of Service`,
+          not_same_value: `The field can not be the same value`,
         };
 
         const message = messages[ctx.rule.name]

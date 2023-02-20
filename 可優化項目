@@ -1,3 +1,9 @@
+第一次載入後，將所有歌曲資料存入localStorage，如果歌曲資料變更或是刪除、新增，都要更新localStorage的資料。
+
+如果沒有更新資料的話，返回首頁呈現localStorage的資料，並且不能有loading效果，並且變更showFetchedSongs = true
+
+
+
 刪除歌曲後，回到首頁重新fetch data後，need to fetch data 不會變回false
 
 刪除歌曲的時候，要再執行get all song 一次，完成後allsongs arr 會多出現一個key
@@ -12,7 +18,6 @@
 
 
 首頁歌曲 < 5 的話就不要執行infinit scroll
-
 
 
 PWA offline時，上傳檔案的話會出現 error message

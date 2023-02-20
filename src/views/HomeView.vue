@@ -34,14 +34,14 @@
           <!-- Icon -->
         </div>
         <!-- Playlist -->
-        <ol id="playlist" v-if="!needToFetchAllsong">
+        <ol id="playlist" v-if="showFetchedSongs">
           <SongItem
             v-for="song in allSongs"
             :key="song.docID"
             :song="song"
           ></SongItem>
         </ol>
-        <ol v-else-if="needToFetchAllsong">
+        <ol v-else-if="!showFetchedSongs">
           <SongItem
             v-for="song in songs"
             :key="song.docID"
@@ -49,7 +49,7 @@
           ></SongItem>
         </ol>
         <!-- skeleton -->
-        <div v-if="isContentLoading && needToFetchAllsong">
+        <div v-if="isContentLoading">
           <div
             class="p-3 pl-6 rounded animate-pulse flex justify-between align-center w-full"
             v-for="i in maxPerPage"
@@ -88,7 +88,7 @@ export default {
   },
   setup() {
     const songStore = useSongStore();
-    const { needToFetchAllsong, allSongs } = storeToRefs(songStore);
+    const { showFetchedSongs, allSongs } = storeToRefs(songStore);
     const { getAllSongs } = songStore;
 
     const songs = ref([]);
@@ -106,17 +106,18 @@ export default {
         Math.round(scrollTop) + innerHeight >= offsetHeight;
 
       if (isBottomOfWindow) {
-        console.log("bottom");
         getSongs();
       }
     };
 
     onMounted(async () => {
       window.addEventListener("scroll", scrollHandler);
-      if (needToFetchAllsong.value) {
+      if (showFetchedSongs.value) {
+        isContentLoading.value = false;
         getAllSongs();
+      } else {
+        getSongs();
       }
-      getSongs();
     });
 
     onBeforeUnmount(async () => {
@@ -129,6 +130,7 @@ export default {
       }
 
       pendingRequest.value = true;
+
       let snapshot;
       if (songs.value.length) {
         // 最後一筆data
@@ -142,14 +144,14 @@ export default {
           .get();
         fetchCount.value += 1;
         watchEffect(() => {
-          if (allSongs.value.length === songs.value.length) {
+          if (allSongs.value.length >= songs.value.length) {
             isFetchingComplete.value = true;
             isContentLoading.value = false;
-            needToFetchAllsong.value = false;
+            // showFetchedSongs.value = false;
           } else {
             isFetchingComplete.value = false;
             isContentLoading.value = true;
-            // needToFetchAllsong.value = true;
+            // showFetchedSongs.value = true;
           }
         });
       } else {
@@ -173,7 +175,7 @@ export default {
       isContentLoading,
       fetchCount,
       maxPerPage,
-      needToFetchAllsong,
+      showFetchedSongs,
       allSongs,
       isFetchingComplete,
     };

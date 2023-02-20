@@ -66,7 +66,7 @@ import { useUserStore } from "../stores/user";
 import { useSongStore } from "../stores/song";
 import { useGlobalStore } from "../stores/global";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 export default {
   components: { Upload, CompositionItem, ComfirmModal, UserInfo },
@@ -88,7 +88,19 @@ export default {
 
     const songStore = useSongStore();
     const { getUserSongs, removeUserSong } = songStore;
-    const { allSongs, allSongLength, userSongs } = storeToRefs(songStore);
+    const { allSongs, allSongLength, userSongs, showFetchedSongs } =
+      storeToRefs(songStore);
+
+    onMounted(() => {
+      showFetchedSongs.value = true;
+      watch(allSongLength, (newVal, oldVal) => {
+        if (newVal === oldVal) {
+          showFetchedSongs.value = true;
+        } else if (newVal !== oldVal) {
+          showFetchedSongs.value = false;
+        }
+      });
+    });
 
     const getSongData = async () => {
       isSongLoading.value = true;
@@ -106,7 +118,6 @@ export default {
     };
 
     const addSong = async (document, docID) => {
-      console.log(document.data());
       const song = {
         ...document.data(), // get firebase document data
         docID,

@@ -7,7 +7,7 @@ import { ref, watch, computed } from "vue";
 export const useSongStore = defineStore("song", () => {
   // const route = useRoute();
   const allSongs = ref([]);
-  const needToFetchAllsong = ref(true); // 如果資料有變更、頁面第一次載入時
+  const showFetchedSongs = ref(false); // 是否呈現已經fetch來的localstorage data，如果資料沒有變成為 true，有的化為false
   const fetchAllSongCount = ref(0);
   const needToFetchUserSong = ref(false);
   const userSongs = ref([]);
@@ -40,24 +40,22 @@ export const useSongStore = defineStore("song", () => {
       .where("uid", "==", auth.currentUser.uid)
       .get();
     snapshot.forEach((doc) => {
-      console.log(doc);
       userSongs.value.push(doc.data());
     });
-    needToFetchAllsong.value = false;
   };
 
   const allSongLength = computed(() => allSongs.value.length);
-  watch(allSongLength, (newVal, oldVal) => {
-    if (newVal === oldVal) {
-      needToFetchAllsong.value = false;
-    } else if (newVal !== oldVal) {
-      needToFetchAllsong.value = true;
-    }
-  });
+  // watch(allSongLength, (newVal, oldVal) => {
+  //   if (newVal === oldVal) {
+  //     showFetchedSongs.value = true;
+  //   } else if (newVal !== oldVal) {
+  //     showFetchedSongs.value = false;
+  //   }
+  // });
 
   return {
     allSongs,
-    needToFetchAllsong,
+    showFetchedSongs,
     allSongLength,
     userSongs,
     needToFetchUserSong,

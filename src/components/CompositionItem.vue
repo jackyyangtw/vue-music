@@ -111,7 +111,7 @@ export default {
   setup(props) {
     const showForm = ref(false);
     const schema = {
-      modifiedName: "required",
+      modifiedName: { required: true, not_same_value: props.song.modifiedName },
       genre: "alpha_spaces",
     };
     const isSubmission = ref(false);
@@ -138,13 +138,12 @@ export default {
       }
     };
 
-    // 新增: 如果有資料變更，songStore / needToFetchAllsong = true
+    // 新增: 如果有資料變更，songStore / showFetchedSongs = true
     // 如果資料沒變 return
     const songStore = useSongStore();
-    const { needToFetchAllsong } = storeToRefs(songStore);
+    const { showFetchedSongs } = storeToRefs(songStore);
     const { updateSingleStoreSong } = songStore;
     const editForm = async (values) => {
-      console.log(values);
       isSubmission.value = true;
       showAlert.value = true;
 
@@ -159,7 +158,7 @@ export default {
       props.updateUnsavedFlag(false);
       props.updateSong(props.index, values);
       updateSingleStoreSong(props.song.docID, values);
-      needToFetchAllsong.value = true;
+      showFetchedSongs.value = false;
       isSubmission.value = false;
       alertVariant.value = "bg-green-500";
       alertMessage.value = "Success!";

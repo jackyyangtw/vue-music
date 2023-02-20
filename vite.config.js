@@ -13,9 +13,13 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
-      registerType: "autoUpdate",
+      display: "standalone",
+      // registerType: "autoUpdate",
+      // registerType: "dev",
+      registerType: "prompt",
       devOptions: {
-        enabled: true,
+        // enabled: true,
+        enabled: false, // 開發時不啟用service worker，不過build的時候會啟用
       },
       manifest: {
         name: "Music App",
