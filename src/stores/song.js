@@ -45,13 +45,21 @@ export const useSongStore = defineStore("song", () => {
   };
 
   const allSongLength = computed(() => allSongs.value.length);
-  // watch(allSongLength, (newVal, oldVal) => {
-  //   if (newVal === oldVal) {
-  //     showFetchedSongs.value = true;
-  //   } else if (newVal !== oldVal) {
-  //     showFetchedSongs.value = false;
-  //   }
-  // });
+  const oldSongLength = ref(0);
+  const addedSongsCount = computed(() => {
+    if (allSongLength.value - oldSongLength.value <= 0) {
+      return 0;
+    }
+    return allSongLength.value - oldSongLength.value;
+  });
+
+  watch(allSongLength, (newVal, oldVal) => {
+    oldSongLength.value = oldVal;
+  });
+
+  songsCollection.onSnapshot((snapshot) => {
+    allSongLength.value = snapshot.size;
+  });
 
   return {
     allSongs,
@@ -60,6 +68,8 @@ export const useSongStore = defineStore("song", () => {
     userSongs,
     needToFetchUserSong,
     fetchAllSongCount,
+    oldSongLength,
+    addedSongsCount,
     getAllSongs,
     getUserSongs,
     removeUserSong,
