@@ -21,6 +21,7 @@
         type="text"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Enter Name"
+        autocomplete="name"
       />
       <ErrorMessage class="text-red-600" name="name"></ErrorMessage>
     </div>
@@ -32,6 +33,7 @@
         name="email"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Enter Email"
+        autocomplete="email"
       />
       <ErrorMessage class="text-red-600" name="email"></ErrorMessage>
     </div>
@@ -41,6 +43,7 @@
       <vee-field
         type="number"
         name="age"
+        autocomplete="age"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
       />
       <ErrorMessage class="text-red-600" name="age"></ErrorMessage>
@@ -54,6 +57,7 @@
           class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
           placeholder="Password"
           v-bind="field"
+          autocomplete="password"
         />
         <div class="text-red-600" v-for="error in errors" :key="error">
           {{ error }}
@@ -69,6 +73,7 @@
         name="confirm_password"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Confirm Password"
+        autocomplete="password"
       />
       <ErrorMessage class="text-red-600" name="confirm_password"></ErrorMessage>
     </div>
@@ -78,6 +83,7 @@
       <vee-field
         as="select"
         name="country"
+        autocomplete="country"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
       >
         <option value="USA">USA</option>

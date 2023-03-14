@@ -41,7 +41,7 @@
             :song="song"
           ></SongItem>
         </ol>
-        <ol v-else-if="!showFetchedSongs">
+        <ol v-else>
           <SongItem
             v-for="song in songs"
             :key="song.docID"
@@ -147,11 +147,9 @@ export default {
           if (allSongs.value.length >= songs.value.length) {
             isFetchingComplete.value = true;
             isContentLoading.value = false;
-            // showFetchedSongs.value = false;
           } else {
             isFetchingComplete.value = false;
             isContentLoading.value = true;
-            // showFetchedSongs.value = true;
           }
         });
       } else {

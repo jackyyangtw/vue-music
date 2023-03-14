@@ -66,6 +66,7 @@ export default {
 
     const songStore = useSongStore();
     const { showFetchedSongs } = storeToRefs(songStore);
+    const { getAllSongs } = songStore;
 
     onBeforeUnmount(() => {
       uploads.value.forEach((upload) => {
@@ -161,6 +162,7 @@ export default {
 
               // add song data to ManageView songs array to display song
               props.addSong(songSnapshot, docID);
+              getAllSongs();
               showFetchedSongs.value = false;
             } catch (err) {
               console.log(err);
