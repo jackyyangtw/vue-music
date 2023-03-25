@@ -34,20 +34,11 @@
           <!-- Icon -->
         </div>
         <!-- Playlist -->
-        <ol id="playlist" v-if="showFetchedSongs">
-          <SongItem
-            v-for="song in allSongs"
-            :key="song.docID"
-            :song="song"
-          ></SongItem>
-        </ol>
-        <ol v-else>
-          <SongItem
-            v-for="song in songs"
-            :key="song.docID"
-            :song="song"
-          ></SongItem>
-        </ol>
+        <SongItem
+          v-for="song in filteredSongs"
+          :key="song.docID"
+          :song="song"
+        />
         <!-- skeleton -->
         <div v-if="isContentLoading">
           <div
@@ -80,7 +71,7 @@ import SongItem from "../components/SongItem.vue";
 import IconSecondary from "../directives/icon-secondary";
 import { useSongStore } from "../stores/song";
 import { storeToRefs } from "pinia";
-import { ref, onMounted, onBeforeUnmount, watchEffect } from "vue";
+import { ref, onMounted, onBeforeUnmount, watchEffect, computed } from "vue";
 export default {
   name: "Home",
   components: {
@@ -96,6 +87,14 @@ export default {
     const isContentLoading = ref(true);
     const fetchCount = ref(0);
     const isFetchingComplete = ref(false);
+
+    const filteredSongs = computed(() => {
+      if (showFetchedSongs.value) {
+        return allSongs.value;
+      } else {
+        return songs.value;
+      }
+    });
 
     const maxPerPage = 5;
 
@@ -176,6 +175,7 @@ export default {
       showFetchedSongs,
       allSongs,
       isFetchingComplete,
+      filteredSongs,
     };
   },
 
