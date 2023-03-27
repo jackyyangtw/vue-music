@@ -27,7 +27,7 @@
           @click="isLangModalOpen = true"
         >
           <i class="fas fa-language text-4xl"></i>
-          <p>更改語言</p>
+          <p>{{ $t("mobile.manage_view.change_lang") }}</p>
         </div>
         <a
           class="block py-1 rounded mx-auto text-center flex flex-col justify-center items-center w-full h-40 border text-white"
@@ -155,4 +155,3 @@ export default {
   },
 };
 </script>
-

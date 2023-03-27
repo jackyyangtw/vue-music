@@ -24,7 +24,7 @@
         <div class="py-4 text-left px-6">
           <!--Title-->
           <div class="flex justify-between items-center pb-4">
-            <p class="text-2xl font-bold">Your Account</p>
+            <p class="text-2xl font-bold">{{ $t("header.your_account") }}</p>
             <!-- Modal Close Button -->
             <div class="modal-close cursor-pointer z-50">
               <i class="fas fa-times" @click.prevent="isOpen = false"></i>
@@ -42,7 +42,7 @@
                 }"
                 href="#"
                 @click.prevent="tab = 'login'"
-                >Login</a
+                >{{ $t("header.login_tab") }}</a
               >
             </li>
             <li class="flex-auto text-center">
@@ -54,7 +54,7 @@
                   'hover:text-blue-900': tab === 'login',
                 }"
                 @click.prevent="tab = 'register'"
-                >Register</a
+                >{{ $t("header.register") }}</a
               >
             </li>
           </ul>

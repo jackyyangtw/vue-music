@@ -33,7 +33,7 @@
                 class="text-center text-white"
                 v-if="!userSongs.length && !isSongLoading"
               >
-                No song found, let's upload song now : )
+                {{ $t("manage.no_song_found") }}
               </div>
             </div>
             <div v-if="isSongLoading">

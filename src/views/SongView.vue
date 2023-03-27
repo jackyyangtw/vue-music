@@ -96,8 +96,8 @@
             v-model="sort"
             class="block py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
           >
-            <option value="1">Latest</option>
-            <option value="2">Oldest</option>
+            <option value="1">{{ $t("song.latest") }}</option>
+            <option value="2">{{ $t("song.oldest") }}</option>
           </select>
         </div>
         <!-- login button -->
@@ -123,7 +123,7 @@
             <vee-field name="comment" v-slot="{ field }">
               <textarea
                 class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded mb-4"
-                placeholder="Your comment here..."
+                :placeholder="$t('song.textarea_placeholder')"
                 v-bind="field"
                 @focus="changeState($event)"
                 @blur="changeState($event)"
@@ -136,12 +136,12 @@
                 class="p-4 rounded text-white bg-green-600 mr-3 min-w-[100px] block"
                 :disabled="commentInSubmission"
               >
-                Submit
+                {{ $t("common.submit") }}
               </button>
               <div
-                class="text-white text-center font-bold p-4 inline-block"
+                class="text-white text-center font-bold p-4 inline-block transition-all"
                 v-show="commentShowAlert"
-                :class="commentAlertVariant"
+                :class="[commentAlertVariant, { 'opacity-0': !showMessage }]"
               >
                 {{ commentAlertMessage }}
               </div>
@@ -170,7 +170,6 @@
               </time>
             </div>
           </div>
-
           <p>
             {{ comment.content }}
           </p>
@@ -190,6 +189,7 @@ import { ref, reactive, computed, watch, toRefs } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
+import { useSongStore } from "../stores/song";
 export default {
   setup() {
     const { t } = useI18n();
@@ -198,6 +198,7 @@ export default {
     const { userLoggedIn } = storeToRefs(userStore);
     const modalstore = useModalStore();
     const { toggleModal } = modalstore;
+
     const route = useRoute();
     const router = useRouter();
 
@@ -211,7 +212,7 @@ export default {
       commentInSubmission: false,
       commentShowAlert: false,
       commentAlertVariant: "bg-blue-500",
-      commentAlertMessage: "Please wait! Your comment is being submitted...",
+      commentAlertMessage: t("app_state.adding_comment"),
     });
 
     const sortedComments = computed(() => {
@@ -246,7 +247,12 @@ export default {
       });
     });
 
+    const songStore = useSongStore();
+    const { getAllSongs } = songStore;
+    const showMessage = ref(true);
     const addComment = async (values, { resetForm }) => {
+      showMessage.value = true;
+      commentState.commentAlertMessage = t("app_state.adding_comment");
       commentState.commentInSubmission = true;
       commentState.commentShowAlert = true;
       commentState.commentAlertVariant = "bg-blue-500";
@@ -264,10 +270,16 @@ export default {
         commentCount: song.value.commentCount,
       });
 
+      getAllSongs();
+
       getComments();
       commentState.commentInSubmission = false;
       commentState.commentAlertVariant = "bg-green-500";
-      commentState.commentAlertMessage = "comment added!";
+      commentState.commentAlertMessage = t("app_state.add_comment_success");
+
+      setTimeout(() => {
+        showMessage.value = false;
+      }, 3000);
 
       resetForm(); // context.resetForm
     };
@@ -312,6 +324,7 @@ export default {
       getComments,
       toggleModal,
       changeState,
+      showMessage,
       t,
     };
   },

@@ -2,15 +2,14 @@ import { defineStore } from "pinia";
 import { songsCollection } from "../includes/firebase";
 import { auth } from "@/includes/firebase";
 import { ref, watch, computed } from "vue";
-// import { useRoute } from "vue-router";
 
 export const useSongStore = defineStore("song", () => {
-  // const route = useRoute();
   const allSongs = ref([]);
-  const showFetchedSongs = ref(false); // 是否呈現已經fetch來的localstorage data，如果資料沒有變成為 true，有的化為false
+  const showFetchedSongs = ref(false);
   const fetchAllSongCount = ref(0);
-  const needToFetchUserSong = ref(false);
   const userSongs = ref([]);
+  const oldSongLength = ref(0);
+  const needToFetchUserSong = ref(false);
 
   const removeUserSong = (index) => {
     userSongs.value.splice(index, 1);
@@ -23,15 +22,15 @@ export const useSongStore = defineStore("song", () => {
 
   const getAllSongs = async () => {
     const snapshot = await songsCollection.get();
-    snapshot.docs.forEach((doc) => {
+    const promises = snapshot.docs.map(async (doc) => {
       const docID = doc.data().docID;
-      // 如果資料沒變更
       const thisSongId = allSongs.value.find((song) => song.docID === docID);
       if (thisSongId) {
         return;
       }
       allSongs.value.push(doc.data());
     });
+    await Promise.all(promises);
     fetchAllSongCount.value += 1;
   };
 
@@ -39,13 +38,17 @@ export const useSongStore = defineStore("song", () => {
     const snapshot = await songsCollection
       .where("uid", "==", auth.currentUser.uid)
       .get();
-    snapshot.forEach((doc) => {
+    const promises = snapshot.docs.map(async (doc) => {
       userSongs.value.push(doc.data());
     });
+    await Promise.all(promises);
   };
 
-  const allSongLength = computed(() => allSongs.value.length);
-  const oldSongLength = ref(0);
+  const allSongLength = ref(0);
+  songsCollection.onSnapshot((snapshot) => {
+    allSongLength.value = snapshot.size;
+  });
+
   const addedSongsCount = computed(() => {
     if (allSongLength.value - oldSongLength.value <= 0) {
       return 0;
@@ -55,10 +58,6 @@ export const useSongStore = defineStore("song", () => {
 
   watch(allSongLength, (newVal, oldVal) => {
     oldSongLength.value = oldVal;
-  });
-
-  songsCollection.onSnapshot((snapshot) => {
-    allSongLength.value = snapshot.size;
   });
 
   return {
@@ -76,6 +75,3 @@ export const useSongStore = defineStore("song", () => {
     updateSingleStoreSong,
   };
 });
-
-// 判斷歌曲是否有新增
-// 1. allSong arr 是否變更

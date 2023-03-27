@@ -1,22 +1,82 @@
 {
   "home": {
-    "listen": "Listen to Great Music!",
-    "desc": "Upload your music and share with the others!"
+    "listen": "Global Music Sharing Platform",
+    "desc": "Start a new journey of music, starting from here.",
+    "songs": "songs"
   },
   "header": {
     "about": "About",
     "manage": "Manage",
     "logout": "Logout",
-    "login": "Login/Register"
+    "login": "Login/Register",
+    "login_tab": "Login",
+    "your_account": "Your Account",
+    "register": "Register",
+    "submit": "Submit"
+  },
+  "common": {
+    "submit": "Submit"
   },
   "song": {
-    "commentCount": "No comments | 1 comment | {count} comments"
+    "commentCount": "No comments | 1 comment | {count} comments",
+    "textarea_placeholder": "Your comment here...",
+    "textarea_error": "The field comment is required.",
+    "latest": "Latest",
+    "oldest": "Oldest"
   },
   "register": {
     "accept": "I accept Music's {0}",
     "tos": "Terms of Service"
   },
   "manage": {
-    "my_song": "My Songs"
+    "my_song": "My Songs",
+    "upload":"upload",
+    "select_file":"select file",
+    "song_title": "Song Title",
+    "genre": "Genre",
+    "back": "Go Back",
+    "drop_file": "Drop your files here",
+    "no_song_found": "No song found, let's upload song now : )"
+  },
+  "input_field": {
+    "name": "Name",
+    "name_placeholder": "Please enter your name",
+    "email": "Email",
+    "email_placeholer": "Please enter your email",
+    "password": "Password",
+    "password_placeholder": "Please enter your password",
+    "age": "Age",
+    "confirm_password": "Confirm Password",
+    "confirm_password_placeholder": "Please confirm new password",
+    "country": "Country",
+    "submit": "Submit",
+    "genre_placeholder": "Enter Genre"
+  },
+  "confirm_modal": {
+    "info": "Are you sure you want to delete this song?",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting_info": "Deleting song..."
+  },
+  "app_state": {
+    "logging_in": "Please wait! We are logging you in.",
+    "login_success": "Success! You are now logged in!",
+    "login_error": "Invalid login details.",
+    "creating_account": "Please wait! Your account is being created.",
+    "create_account_error": "An unexpected error occured. Please try again later.",
+    "create_account_success": "Success! Your account has been created",
+    "adding_comment": "Please wait! Your comment is being submitted...",
+    "add_comment_success": "comment added!"
+  },
+  "mobile": {
+    "footer": {
+      "home": "Home",
+      "upload": "Upload Music",
+      "manage": "Manage"
+    },
+    "manage_view": {
+      "change_lang":"Change Lanuage",
+      "logout": "Logout"
+    }
   }
 }

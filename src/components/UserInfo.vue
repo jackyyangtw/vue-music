@@ -40,7 +40,7 @@
         v-else
       >
         <div class="mb-3">
-          <label class="inline-block mb-2">Name</label>
+          <label class="inline-block mb-2">{{ $t("input_field.name") }}</label>
           <!-- Name -->
           <vee-field
             name="name"
@@ -51,7 +51,7 @@
         </div>
         <!-- Age -->
         <div class="mb-3">
-          <label class="inline-block mb-2">Age</label>
+          <label class="inline-block mb-2">{{ $t("input_field.age") }}</label>
           <vee-field
             type="number"
             name="age"
@@ -61,7 +61,7 @@
         </div>
         <!-- Email -->
         <div class="mb-3">
-          <label class="inline-block mb-2">Email</label>
+          <label class="inline-block mb-2">{{ $t("input_field.email") }}</label>
           <vee-field
             type="email"
             name="email"
@@ -72,7 +72,9 @@
         </div>
         <!-- password -->
         <div class="mb-3">
-          <label class="inline-block mb-2">Password</label>
+          <label class="inline-block mb-2">{{
+            $t("input_field.password")
+          }}</label>
           <vee-field
             type="text"
             name="password"
@@ -84,12 +86,14 @@
         </div>
         <!-- Confirm Password -->
         <div class="mb-3" v-if="isUserPasswordChange">
-          <label class="inline-block mb-2">Confirm Password</label>
+          <label class="inline-block mb-2">{{
+            $t("input_field.confirm_password")
+          }}</label>
           <vee-field
             type="password"
             name="confirm_password"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-            placeholder="Confirm Password"
+            :placeholder="$t('input_field.confirm_password_placeholder')"
           />
           <ErrorMessage
             class="text-red-600"
@@ -98,7 +102,9 @@
         </div>
         <!-- Country -->
         <div class="mb-3">
-          <label class="inline-block mb-2">Country</label>
+          <label class="inline-block mb-2">{{
+            $t("input_field.country")
+          }}</label>
           <vee-field
             as="select"
             name="country"

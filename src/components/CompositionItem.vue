@@ -38,7 +38,7 @@
         class="text-white"
       >
         <div class="mb-3 text-white">
-          <label class="inline-block mb-2">Song Title</label>
+          <label class="inline-block mb-2">{{ $t("manage.song_title") }}</label>
           <vee-field
             type="text"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
@@ -50,11 +50,11 @@
           <ErrorMessage class="text-red-600" name="modifiedName"></ErrorMessage>
         </div>
         <div class="mb-3">
-          <label class="inline-block mb-2">Genre</label>
+          <label class="inline-block mb-2">{{ $t("manage.genre") }}</label>
           <vee-field
             type="text"
             class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-            placeholder="Enter Genre"
+            :placeholder="$t('input_field.genre_placeholder')"
             name="genre"
             autocomplete="genre"
             @input="updateUnsavedFlag(true)"
@@ -66,7 +66,7 @@
           class="py-1.5 px-3 mr-3 rounded text-white bg-green-600"
           :disabled="isSubmission"
         >
-          Submit
+          {{ $t("input_field.submit") }}
         </button>
         <button
           type="button"
@@ -74,7 +74,7 @@
           :disabled="isSubmission"
           @click.prevent="toggleForm"
         >
-          Go Back
+          {{ $t("manage.back") }}
         </button>
       </vee-form>
     </div>

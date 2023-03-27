@@ -15,31 +15,31 @@
   >
     <!-- Name -->
     <div class="mb-3">
-      <label class="inline-block mb-2">Name</label>
+      <label class="inline-block mb-2">{{ $t("input_field.name") }}</label>
       <vee-field
         name="name"
         type="text"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-        placeholder="Enter Name"
+        :placeholder="$t('input_field.name_placeholder')"
         autocomplete="name"
       />
       <ErrorMessage class="text-red-600" name="name"></ErrorMessage>
     </div>
     <!-- Email -->
     <div class="mb-3">
-      <label class="inline-block mb-2">Email</label>
+      <label class="inline-block mb-2">{{ $t("input_field.email") }}</label>
       <vee-field
         type="email"
         name="email"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-        placeholder="Enter Email"
+        :placeholder="$t('input_field.email_placeholer')"
         autocomplete="email"
       />
       <ErrorMessage class="text-red-600" name="email"></ErrorMessage>
     </div>
     <!-- Age -->
     <div class="mb-3">
-      <label class="inline-block mb-2">Age</label>
+      <label class="inline-block mb-2">{{ $t("input_field.age") }}</label>
       <vee-field
         type="number"
         name="age"
@@ -50,36 +50,35 @@
     </div>
     <!-- Password -->
     <div class="mb-3">
-      <label class="inline-block mb-2">Password</label>
-      <vee-field name="password" :bails="false" v-slot="{ field, errors }">
+      <label class="inline-block mb-2">{{ $t("input_field.password") }}</label>
+      <vee-field name="password" :bails="false" v-slot="{ field }">
         <input
           type="password"
           class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-          placeholder="Password"
+          :placeholder="$t('input_field.password_placeholder')"
           v-bind="field"
           autocomplete="password"
         />
-        <div class="text-red-600" v-for="error in errors" :key="error">
-          {{ error }}
-        </div>
       </vee-field>
       <ErrorMessage class="text-red-600" name="password"></ErrorMessage>
     </div>
     <!-- Confirm Password -->
     <div class="mb-3">
-      <label class="inline-block mb-2">Confirm Password</label>
+      <label class="inline-block mb-2">{{
+        $t("input_field.confirm_password")
+      }}</label>
       <vee-field
         type="password"
         name="confirm_password"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
-        placeholder="Confirm Password"
+        :placeholder="$t('input_field.confirm_password_placeholder')"
         autocomplete="password"
       />
       <ErrorMessage class="text-red-600" name="confirm_password"></ErrorMessage>
     </div>
     <!-- Country -->
     <div class="mb-3">
-      <label class="inline-block mb-2">Country</label>
+      <label class="inline-block mb-2">{{ $t("input_field.country") }}</label>
       <vee-field
         as="select"
         name="country"
@@ -114,7 +113,7 @@
       class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
       :disabled="regState.regInSubmission"
     >
-      Submit
+      {{ $t("header.submit") }}
     </button>
   </vee-form>
 </template>
@@ -123,6 +122,7 @@
 import { ErrorMessage } from "vee-validate";
 import { useUserStore } from "../stores/user";
 import { reactive } from "vue";
+import { useI18n } from "vue-i18n";
 
 export default {
   components: {
@@ -141,11 +141,14 @@ export default {
     const userData = {
       country: "Mexico",
     };
+
+    const i18n = useI18n();
+    const { t } = i18n;
     const regState = reactive({
       regInSubmission: false,
       regShowAlert: false,
       regAlertVariant: "bg-blue-500",
-      regAlertMsg: "Please wait! Your account is being created.",
+      regAlertMsg: t("app_state.creating_account"),
     });
 
     const userStore = useUserStore();
@@ -154,7 +157,7 @@ export default {
       regState.regShowAlert = true;
       regState.regInSubmission = true;
       regState.regAlertVariant = "bg-blue-500";
-      regState.regAlertMsg = "Please wait! Your account is being created.";
+      regState.regAlertMsg = t("app_state.creating_account");
 
       try {
         await createUser(values); // 存使用者帳密
@@ -162,13 +165,12 @@ export default {
         console.log(err);
         regState.regInSubmission = false;
         regState.regAlertVariant = "bg-red-500";
-        regState.regAlertMsg =
-          "An unexpected error occured. Please try again later.";
+        regState.regAlertMsg = t("app_state.create_account_error");
         return;
       }
 
       regState.regAlertVariant = "bg-green-500";
-      regState.regAlertMsg = "Success! Your account has been created";
+      regState.regAlertMsg = t("app_state.create_account_success");
       window.location.reload();
     };
     return {

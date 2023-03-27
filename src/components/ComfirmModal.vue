@@ -32,13 +32,13 @@
                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               ></path>
             </svg>
-            <div class="pb-3">Are you sure you want to delete this song?</div>
+            <div class="pb-3">{{ $t("confirm_modal.info") }}</div>
             <div class="text-green-500 italic pb-3">
               {{ song.modifiedName }}
             </div>
           </div>
           <div class="text-2xl font-bold text-center" v-else>
-            Deleting song...
+            {{ $t("confirm_modal.deleting_info") }}
           </div>
 
           <!-- buttons -->
@@ -46,13 +46,15 @@
             <div
               class="cursor-pointer bg-blue-500 hover:bg-blue-400 p-3 rounded text-white mr-5"
             >
-              <button @click="closeComfirmModal">Cancel</button>
+              <button @click="closeComfirmModal">
+                {{ $t("confirm_modal.cancel") }}
+              </button>
             </div>
             <div
               class="cursor-pointer bg-red-500 text-white p-3 rounded hover:bg-red-400"
               @click="deleteSong"
             >
-              Delete
+              {{ $t("confirm_modal.delete") }}
             </div>
           </div>
         </div>
@@ -63,7 +65,6 @@
 
 <script>
 import { useModalStore } from "../stores/modal";
-import { useSongStore } from "../stores/song";
 import { storage, songsCollection } from "../includes/firebase";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";

@@ -30,7 +30,7 @@
           class="px-6 pt-6 pb-5 font-bold border-b border-gray-200"
           v-icon-secondary="{ icon: 'headphones-alt', right: true }"
         >
-          <span class="card-title">Songs</span>
+          <span class="card-title">{{ $t("home.songs") }}</span>
           <!-- Icon -->
         </div>
         <!-- Playlist -->

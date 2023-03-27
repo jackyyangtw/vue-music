@@ -1,7 +1,7 @@
 <template>
   <div class="rounded border border-gray-200 relative flex flex-col">
     <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
-      <span class="card-title">upload</span>
+      <span class="card-title">{{ $t("manage.upload") }}</span>
       <i class="fas fa-upload float-right text-green-400 text-2xl"></i>
     </div>
     <div class="p-6">
@@ -17,13 +17,13 @@
         @dragleave.prevent.stop="isDragover = false"
         @drop.prevent.stop="uploadFile($event)"
       >
-        <h5>Drop your files here</h5>
+        <h5>{{ $t("manage.drop_file") }}</h5>
       </div>
       <div class="text-center">
         <label
           class="text-white inline-block mt-3 border px-5 py-1 rounded hover:bg-white hover:text-gray-800 cursor-pointer transition mx-auto"
           for="file"
-          >Select file</label
+          >{{ $t("manage.upload") }}</label
         >
         <input
           class="hidden"
