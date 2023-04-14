@@ -40,6 +40,15 @@ const routes = [
     meta: {
       requiresAuth: true,
     },
+    // beforeEnter: (to, from, next) => {
+    //   const userStore = useUserStore();
+    //   const { userLoggedIn } = storeToRefs(userStore);
+    //   if (userLoggedIn.value) {
+    //     next();
+    //   } else {
+    //     next({ name: "UserInfo" });
+    //   }
+    // },
   },
   {
     path: "/manage",
@@ -63,6 +72,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  console.log(to.name);
   const userStore = useUserStore();
 
   if (!to.meta.requiresAuth) {
@@ -72,7 +82,11 @@ router.beforeEach((to, from, next) => {
 
   if (userStore.userLoggedIn) {
     next();
-  } else {
+  }
+  // else if (!userStore.userLoggedIn && to.name === "manage") {
+  //   next({ name: "UserInfo" });
+  // }
+  else {
     next({ name: "home" });
   }
 

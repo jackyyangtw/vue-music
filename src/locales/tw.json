@@ -77,6 +77,9 @@
     "manage_view": {
       "change_lang":"更改語言",
       "logout": "登出"
+    },
+    "manage_redirect": {
+      "please_login": "請登入使用管理功能"
     }
   }
 }

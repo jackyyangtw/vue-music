@@ -1,15 +1,17 @@
 <template>
   <div class="m-5">
     <div v-if="!userLoggedIn">
-      <p class="text-center pb-5">請登入使用管理功能</p>
+      <p class="text-center text-white pb-5">
+        {{ $t("mobile.manage_redirect.please_login") }}
+      </p>
       <a
         @click.prevent="toggleModal"
         class="block py-1 rounded-xl mx-auto text-center flex justify-center items-center max-w-[80%] h-48 border"
         href="#"
       >
         <div class="text-white text-gray-700">
-          <i class="fas fa-user text-6xl"></i>
-          <p class="pt-4">{{ $t("header.login") }}</p>
+          <i class="fas fa-user text-6xl text-white"></i>
+          <p class="pt-4 text-white">{{ $t("header.login") }}</p>
         </div>
       </a>
     </div>
