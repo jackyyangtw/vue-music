@@ -108,9 +108,9 @@
           <div
             v-cloak
             @click="toggleModal"
-            class="cursor-pointer text-gray-700 transition bg-green-400 hover:bg-green-500 max-w-xs text-center inline-block rounded py-3 px-3"
+            class="cursor-pointer text-white-700 transition bg-green-400 hover:bg-green-500 max-w-xs text-center inline-block rounded py-3 px-3"
           >
-            login to leave a comment : )
+            {{ $t("song.login_btn") }}
           </div>
         </div>
         <div>

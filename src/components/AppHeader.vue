@@ -42,7 +42,7 @@
             {{ currentLocale ? currentLocale.displayName : "English" }}
           </a>
           <ul
-            class="absolute z-10 bg-gray-800 w-40 right-[-45px] mt-2 rounded"
+            class="absolute z-10 bg-gray-800 w-40 right-[-45px] mt-2 rounded border border-slate-400"
             v-show="isLanguageBoxShow"
           >
             <li

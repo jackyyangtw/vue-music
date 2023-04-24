@@ -88,15 +88,23 @@ export default {
     const fetchCount = ref(0);
     const isFetchingComplete = ref(false);
 
+    // 如果歌曲資料沒有變更，return allsongs，如果有變更，return songs
     const filteredSongs = computed(() => {
-      if (showFetchedSongs.value) {
-        return allSongs.value;
-      } else {
-        return songs.value;
-      }
+      return showFetchedSongs.value ? allSongs.value : songs.value;
     });
 
-    const maxPerPage = 5;
+    // 取得剩餘的song數
+    const remainingSongs = computed(() => {
+      return allSongs.value.length - songs.value.length;
+    });
+
+    const maxPerPage = ref(5);
+    watchEffect(() => {
+      if (fetchCount.value < 1) {
+        return;
+      }
+      maxPerPage.value = remainingSongs.value >= 5 ? 5 : remainingSongs.value;
+    });
 
     const scrollHandler = async () => {
       const { scrollTop, offsetHeight } = document.documentElement; // scrollTop: view以上的總高度，offsetHeight: 頁面總高度
@@ -127,9 +135,13 @@ export default {
       if (pendingRequest.value) {
         return;
       }
+      if (remainingSongs.value === 0) {
+        isFetchingComplete.value = true;
+        return;
+      }
 
       pendingRequest.value = true;
-
+      fetchCount.value += 1;
       let snapshot;
       if (songs.value.length) {
         // 最後一筆data
@@ -139,23 +151,13 @@ export default {
         snapshot = await songsCollection
           .orderBy("modifiedName")
           .startAfter(lastDoc)
-          .limit(maxPerPage) // 限制取得的data數
+          .limit(maxPerPage.value) // 限制取得的data數
           .get();
-        fetchCount.value += 1;
-        watchEffect(() => {
-          if (allSongs.value.length >= songs.value.length) {
-            isFetchingComplete.value = true;
-            isContentLoading.value = false;
-          } else {
-            isFetchingComplete.value = false;
-            isContentLoading.value = true;
-          }
-        });
       } else {
         // 第一次載入頁面的時候
         snapshot = await songsCollection
           .orderBy("modifiedName")
-          .limit(maxPerPage)
+          .limit(maxPerPage.value)
           .get();
       }
 
@@ -167,6 +169,47 @@ export default {
       pendingRequest.value = false;
     };
 
+    // const getSongs = async () => {
+    //   if (pendingRequest.value) {
+    //     return;
+    //   }
+    //   pendingRequest.value = true;
+    //   let snapshot;
+    //   if (songs.value.length) {
+    //     // 最後一筆data
+    //     const lastDoc = await songsCollection
+    //       .doc(songs.value[songs.value.length - 1].docID)
+    //       .get();
+    //     snapshot = await songsCollection
+    //       .orderBy("modifiedName")
+    //       .startAfter(lastDoc)
+    //       .limit(maxPerPage.value) // 限制取得的data數
+    //       .get();
+    //     fetchCount.value += 1;
+    //     watchEffect(() => {
+    //       if (allSongs.value.length >= songs.value.length) {
+    //         isFetchingComplete.value = true;
+    //         isContentLoading.value = false;
+    //       } else {
+    //         isFetchingComplete.value = false;
+    //         isContentLoading.value = true;
+    //       }
+    //     });
+    //   } else {
+    //     // 第一次載入頁面的時候
+    //     snapshot = await songsCollection
+    //       .orderBy("modifiedName")
+    //       .limit(maxPerPage.value)
+    //       .get();
+    //   }
+    //   snapshot.forEach((document) => {
+    //     songs.value.push({
+    //       ...document.data(),
+    //     });
+    //   });
+    //   pendingRequest.value = false;
+    // };
+
     return {
       songs,
       isContentLoading,
@@ -176,6 +219,8 @@ export default {
       allSongs,
       isFetchingComplete,
       filteredSongs,
+      pendingRequest,
+      remainingSongs,
     };
   },
 

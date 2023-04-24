@@ -89,6 +89,7 @@ import { useSongStore } from "../stores/song";
 import { useGlobalStore } from "../stores/global";
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "CompositionItem",
@@ -111,6 +112,7 @@ export default {
     },
   },
   setup(props) {
+    const { t } = useI18n();
     const showForm = ref(false);
     const schema = {
       modifiedName: { required: true, not_same_value: props.song.modifiedName },
@@ -119,7 +121,7 @@ export default {
     const isSubmission = ref(false);
     const showAlert = ref(false);
     const alertVariant = ref("bg-blue-500");
-    const alertMessage = ref("Please wait ! Updating song info...");
+    const alertMessage = ref(t("app_state.changing_song_info"));
     const modalStore = useModalStore();
     const { openComfirmModal } = modalStore;
 
@@ -154,7 +156,7 @@ export default {
       } catch (err) {
         isSubmission.value = false;
         alertVariant.value = "bg-red-500";
-        alertMessage.value = "Something went wrong! Try again later";
+        alertMessage.value = t("app_state.error_happened");
         return;
       }
       props.updateUnsavedFlag(false);
@@ -163,7 +165,7 @@ export default {
       showFetchedSongs.value = false;
       isSubmission.value = false;
       alertVariant.value = "bg-green-500";
-      alertMessage.value = "Success!";
+      alertMessage.value = t("app_state.success");
     };
     return {
       showForm,

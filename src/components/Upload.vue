@@ -35,20 +35,40 @@
       </div>
       <hr class="my-6" />
       <!-- Progess Bars -->
-      <div class="mb-4" v-for="upload in uploads" :key="upload.name">
-        <!-- File Name -->
-        <div class="font-bold text-sm text-white" :class="upload.textClass">
-          <i class="mr-2" :class="upload.icon"></i>{{ upload.name }}
+      <!-- 消失的時候會有fadeout效果 -->
+      <transition-group name="fade" tag="div">
+        <div
+          class="mb-4"
+          v-for="upload in uploads"
+          :key="upload.name"
+          @click="cancelUpload(upload)"
+        >
+          <!-- File Name -->
+          <!-- 右邊加上X，讓使用者刪除progress bar -->
+          <div class="flex justify-between">
+            <div class="font-bold text-sm text-white" :class="upload.textClass">
+              <i
+                @click="cancelUpload(upload)"
+                class="mr-2"
+                :class="upload.icon"
+              ></i
+              >{{ upload.name }}
+            </div>
+            <!-- delete icon -->
+            <div class="text-white text-red-500">
+              <i class="fas fa-times"></i>
+            </div>
+          </div>
+          <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
+            <!-- Inner Progress Bar -->
+            <div
+              class="transition-all progress-bar"
+              :class="upload.variant"
+              :style="{ width: upload.currentProgress + '%' }"
+            ></div>
+          </div>
         </div>
-        <div class="flex h-4 overflow-hidden bg-gray-200 rounded">
-          <!-- Inner Progress Bar -->
-          <div
-            class="transition-all progress-bar"
-            :class="upload.variant"
-            :style="{ width: upload.currentProgress + '%' }"
-          ></div>
-        </div>
-      </div>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -175,12 +195,35 @@ export default {
         );
       });
     };
+    const cancelUpload = (upload) => {
+      upload.task.cancel();
+      uploads.value = uploads.value.filter((u) => u !== upload);
+    };
 
     return {
       isDragover,
       uploads,
       uploadFile,
+      cancelUpload,
     };
   },
 };
 </script>
+
+<style scoped>
+/* fadeout 效果 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+/* .fade-leave-active {
+  position: absolute;
+} */
+.progress-bar {
+  height: 100%;
+}
+</style>

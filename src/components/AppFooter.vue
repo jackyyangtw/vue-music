@@ -25,4 +25,5 @@ import { storeToRefs } from "pinia";
 import { useUserStore } from "../stores/user";
 const userStore = useUserStore();
 const { userLoggedIn } = storeToRefs(userStore);
+
 </script>

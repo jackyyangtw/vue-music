@@ -22,7 +22,8 @@
     "textarea_placeholder": "在此輸入您的評論...",
     "textarea_error": "The field comment is required.",
     "latest": "最新",
-    "oldest": "最舊"
+    "oldest": "最舊",
+    "login_btn": "登入留下評論吧 : )"
   },
   "register": {
     "accept": "我接受 Music 的{0}",
@@ -52,6 +53,22 @@
     "submit": "確認更改",
     "genre_placeholder": "請輸入歌曲類型"
   },
+  "input_error": {
+    "messages": {
+      "required": "此項目為必填",
+      "min": "{field}過短",
+      "max": "{field}過長",
+      "alpha_spaces": "只能包含字母和空格",
+      "email": "必須是有效的電子郵件地址",
+      "min_value": "{field}過低",
+      "max_value": "{field}過高",
+      "excluded": "{field}不能使用此值",
+      "country_excluded": "由於限制，我們不接受來自此地區的用戶",
+      "passwords_mismatch": "密碼不一致",
+      "tos": "您必須接受服務條款",
+      "not_same_value": "此欄位不能是相同的值"
+    }
+  },
   "confirm_modal": {
     "info": "您確認刪除這首歌曲嗎?",
     "cancel": "取消",
@@ -66,7 +83,10 @@
     "create_account_error": "發生意外錯誤，請稍後再試。",
     "create_account_success": "您的帳號已經建立成功!",
     "adding_comment": "請稍等！正在上傳您的評論...",
-    "add_comment_success": "評論已上傳!"
+    "add_comment_success": "評論已上傳!",
+    "changing_song_info":"請稍等，正在更新歌曲資訊...",
+    "error_happened": "發生錯誤，請再試試",
+    "success": "成功!"
   },
   "mobile": {
     "footer": {

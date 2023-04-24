@@ -1,7 +1,7 @@
 import { createI18n } from "vue-i18n";
 import en from "@/locales/en.json";
 import tw from "@/locales/tw.json";
-// import uvei18n
+
 // import { VueI18n } from "vue-i18n";
 export const i18n = createI18n({
   legacy: false,
