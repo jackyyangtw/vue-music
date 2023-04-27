@@ -9,10 +9,13 @@
 PWA offline時，上傳檔案的話會出現 error message
 
 
-mobile 更改語言視窗
-
-
-
+    // watchEffect(() => {
+    //   if (fetchCount.value < 1) {
+    //     maxPerPage.value = 5;
+    //   } else {
+    //     maxPerPage.value = remainingSongs.value >= 5 ? 5 : remainingSongs.value;
+    //   }
+    // });
 
 完成:
 重新註冊會無法更改userData

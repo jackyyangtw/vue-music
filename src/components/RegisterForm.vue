@@ -85,10 +85,13 @@
         autocomplete="country"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
       >
-        <option value="USA">USA</option>
-        <option value="Mexico">Mexico</option>
-        <option value="Germany">Germany</option>
-        <option value="Antarctica">Antarctica</option>
+        <option
+          v-for="country in allCountry"
+          :value="country.name"
+          :key="country.name"
+        >
+          {{ country.name }}
+        </option>
       </vee-field>
       <ErrorMessage class="text-red-600" name="country"></ErrorMessage>
     </div>
@@ -123,12 +126,21 @@ import { ErrorMessage } from "vee-validate";
 import { useUserStore } from "../stores/user";
 import { reactive } from "vue";
 import { useI18n } from "vue-i18n";
+import { ref } from "vue";
 
 export default {
   components: {
     ErrorMessage,
   },
   setup() {
+    const allCountry = ref([]);
+    const getAllContry = async () => {
+      const res = await fetch("https://restcountries.com/v2/all");
+      const data = await res.json();
+      data.forEach((data) => allCountry.value.push(data));
+    };
+    getAllContry();
+
     const schema = {
       name: "required|min:3|max:100|alpha_spaces",
       email: "required|min:3|max:100|email",
@@ -178,6 +190,7 @@ export default {
       userData,
       register,
       regState,
+      allCountry,
     };
   },
 };

@@ -60,8 +60,11 @@
               @click.prevent="playerStore.loopSong"
               v-if="showFunctionIcons"
               type="button"
-              class="h-12 w-12 text-xl bg-white text-black rounded focus:outline-none"
-              :class="{ 'text-red-500': playerStore.loopedSong.loop }"
+              class="h-12 w-12 text-xl bg-white rounded focus:outline-none"
+              :class="{
+                'text-red-500': playerStore.loopedSong.loop,
+                'text-black': !playerStore.loopedSong.loop,
+              }"
             >
               <i class="fas fa-recycle"></i>
             </button>

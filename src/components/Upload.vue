@@ -55,7 +55,7 @@
               >{{ upload.name }}
             </div>
             <!-- delete icon -->
-            <div class="text-white text-red-500">
+            <div class="text-white text-red-500 cursor-pointer">
               <i class="fas fa-times"></i>
             </div>
           </div>
@@ -195,6 +195,7 @@ export default {
         );
       });
     };
+
     const cancelUpload = (upload) => {
       upload.task.cancel();
       uploads.value = uploads.value.filter((u) => u !== upload);
@@ -220,9 +221,7 @@ export default {
 .fade-leave-to {
   opacity: 0;
 }
-/* .fade-leave-active {
-  position: absolute;
-} */
+
 .progress-bar {
   height: 100%;
 }

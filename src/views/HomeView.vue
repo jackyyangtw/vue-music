@@ -99,11 +99,15 @@ export default {
     });
 
     const maxPerPage = ref(5);
+
     watchEffect(() => {
-      if (fetchCount.value < 1) {
-        return;
+      if (fetchCount.value > 1 && remainingSongs.value > 5) {
+        maxPerPage.value = 5;
+      } else if (fetchCount.value > 1 && remainingSongs.value < 5) {
+        maxPerPage.value = remainingSongs.value;
+      } else if (fetchCount.value === 0) {
+        maxPerPage.value = 5;
       }
-      maxPerPage.value = remainingSongs.value >= 5 ? 5 : remainingSongs.value;
     });
 
     const scrollHandler = async () => {
@@ -119,6 +123,8 @@ export default {
 
     onMounted(async () => {
       window.addEventListener("scroll", scrollHandler);
+      // getSongs();
+      // console.log(isContentLoading.value);
       if (showFetchedSongs.value) {
         isContentLoading.value = false;
         getAllSongs();
@@ -135,11 +141,13 @@ export default {
       if (pendingRequest.value) {
         return;
       }
-      if (remainingSongs.value === 0) {
+      if (fetchCount.value >= 1 && remainingSongs.value === 0) {
         isFetchingComplete.value = true;
         return;
       }
-
+      if (!showFetchedSongs.value) {
+        isContentLoading.value = true;
+      }
       pendingRequest.value = true;
       fetchCount.value += 1;
       let snapshot;
@@ -167,6 +175,7 @@ export default {
         });
       });
       pendingRequest.value = false;
+      isContentLoading.value = false;
     };
 
     // const getSongs = async () => {
