@@ -1,5 +1,5 @@
 <template>
-  <div class="flex lg:hidden bg-gray-600">
+  <div class="flex lg:hidden bg-gray-600 pb-5 pt-1">
     <router-link to="/" class="w-[33.333%] py-1 text-white text-center m-0">
       {{ $t("mobile.footer.home") }}<i class="block fas fa-home text-white"></i>
     </router-link>
@@ -19,11 +19,3 @@
     </router-link>
   </div>
 </template>
-
-<script setup>
-import { storeToRefs } from "pinia";
-import { useUserStore } from "../stores/user";
-const userStore = useUserStore();
-const { userLoggedIn } = storeToRefs(userStore);
-
-</script>

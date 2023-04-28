@@ -2,7 +2,7 @@
   <li
     class="flex justify-between items-center p-3 pl-6 cursor-pointer transition duration-300 hover:bg-white/[0.1]"
   >
-    <div class="mr-3">
+    <div class="mr-3 max-w-[80%]">
       <router-link
         :to="{ name: 'song', params: { id: song.docID } }"
         class="font-bold block text-white"
@@ -18,7 +18,7 @@
         :to="{ name: 'song', params: { id: song.docID }, hash: '#comments' }"
         v-slot="{ navigate }"
       >
-        <span class="comments" @click="navigate">
+        <span class="comments text-sm md:text-lg" @click="navigate">
           <i class="fa fa-comments text-white"></i>
           {{ song.commentCount }}
         </span>

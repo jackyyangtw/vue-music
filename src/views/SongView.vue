@@ -222,7 +222,6 @@ export default {
       return comments.value.slice().sort((a, b) => {
         if (sort.value === "1") {
           // date string ex: Thu Nov 03 2022 08:28:21 GMT+0800 (台北標準時間)
-          // console.log(new Date(b.datePosted));
           return new Date(b.datePosted) - new Date(a.datePosted); // new -> old，降冪
         }
         return new Date(a.datePosted) - new Date(b.datePosted); // old -> new

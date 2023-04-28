@@ -65,7 +65,6 @@ export default {
 
     const i18n = useI18n();
     const { t } = i18n;
-    console.log(t("app_state.logging_in"));
     const loginState = reactive({
       loginInSubmission: false,
       loginShowAlert: false,

@@ -4,8 +4,6 @@ import { useUserStore } from "@/stores/user";
 import { usePlayerStore } from "../stores/player";
 import { storeToRefs } from "pinia";
 import { useWindowSize } from "@vueuse/core";
-// import { useSongStore } from "../stores/song";
-// import { watch } from "vue";
 
 const HomeView = () => import("@/views/HomeView.vue");
 const ManageView = () => import("@/views/ManageView.vue");
@@ -40,15 +38,6 @@ const routes = [
     meta: {
       requiresAuth: true,
     },
-    // beforeEnter: (to, from, next) => {
-    //   const userStore = useUserStore();
-    //   const { userLoggedIn } = storeToRefs(userStore);
-    //   if (userLoggedIn.value) {
-    //     next();
-    //   } else {
-    //     next({ name: "UserInfo" });
-    //   }
-    // },
   },
   {
     path: "/manage",
@@ -72,7 +61,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log(to.name);
   const userStore = useUserStore();
 
   if (!to.meta.requiresAuth) {
@@ -83,9 +71,6 @@ router.beforeEach((to, from, next) => {
   if (userStore.userLoggedIn) {
     next();
   }
-  // else if (!userStore.userLoggedIn && to.name === "manage") {
-  //   next({ name: "UserInfo" });
-  // }
   else {
     next({ name: "home" });
   }

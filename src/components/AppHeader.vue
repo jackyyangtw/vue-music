@@ -64,62 +64,75 @@
   </header>
 </template>
 
-<script setup>
-import { useUserStore } from "@/stores/user";
+<script>
+import { useUserStore } from "../stores/user";
 import { useModalStore } from "../stores/modal";
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
+export default {
+  setup() {
+    const locales = ref([]);
+    const currentLocale = ref({ displayName: "English" });
+    const isLanguageBoxShow = ref(false);
 
-const locales = ref([]);
-const currentLocale = ref({ displayName: "English" });
-const isLanguageBoxShow = ref(false);
+    const modalStore = useModalStore();
+    const { toggleModal } = modalStore;
 
-const modalStore = useModalStore();
-const { toggleModal } = modalStore;
+    const userStore = useUserStore();
+    const { signoutAction } = userStore;
+    const { userLoggedIn } = storeToRefs(userStore);
 
-const userStore = useUserStore();
-const { signoutAction } = userStore;
-const { userLoggedIn } = storeToRefs(userStore);
+    const router = useRouter();
+    const route = useRoute();
+    const signOut = () => {
+      signoutAction();
+      if (route.meta.requiresAuth) {
+        router.push({ name: "home" });
+      }
+    };
 
-const router = useRouter();
-const route = useRoute();
-const signOut = () => {
-  signoutAction();
-  if (route.meta.requiresAuth) {
-    router.push({ name: "home" });
-  }
+    const changeLocale = (localObj) => {
+      currentLocale.value = localObj;
+      localStorage.setItem("currentLanguage", JSON.stringify(localObj));
+      location.reload();
+    };
+
+    const showLanguageBox = () => {
+      isLanguageBoxShow.value = !isLanguageBoxShow.value;
+    };
+
+    // created
+    const i18n = useI18n();
+
+    Object.keys(i18n.messages.value).forEach((key) => {
+      let displayName;
+      if (key === "en") displayName = "English";
+      if (key === "tw") displayName = "繁體中文";
+      locales.value.push({
+        locale: key,
+        displayName,
+      });
+    });
+    const currentLangueage = localStorage.getItem("currentLanguage");
+    const currentLangueageObj = currentLangueage
+      ? JSON.parse(currentLangueage)
+      : "";
+    if (currentLangueageObj) {
+      i18n.locale.value = currentLangueageObj.locale;
+      currentLocale.value = currentLangueageObj;
+    }
+    return {
+      locales,
+      currentLocale,
+      isLanguageBoxShow,
+      showLanguageBox,
+      changeLocale,
+      signOut,
+      toggleModal,
+      userLoggedIn,
+    };
+  },
 };
-
-const changeLocale = (localObj) => {
-  currentLocale.value = localObj;
-  localStorage.setItem("currentLanguage", JSON.stringify(localObj));
-  location.reload();
-};
-
-const showLanguageBox = () => {
-  isLanguageBoxShow.value = !isLanguageBoxShow.value;
-};
-
-// created
-const i18n = useI18n();
-Object.keys(i18n.messages.value).forEach((key) => {
-  let displayName;
-  if (key === "en") displayName = "English";
-  if (key === "tw") displayName = "繁體中文";
-  locales.value.push({
-    locale: key,
-    displayName,
-  });
-});
-
-const currentLangueage = localStorage.getItem("currentLanguage");
-const currentLangueageObj = currentLangueage
-  ? JSON.parse(currentLangueage)
-  : "";
-if (currentLangueageObj) {
-  i18n.locale.value = currentLangueageObj.locale;
-  currentLocale.value = currentLangueageObj;
-}
 </script>

@@ -25,10 +25,7 @@ import { storeToRefs } from "pinia";
 import { usePlayerStore } from "./stores/player";
 import { useEventListener } from "@vueuse/core";
 import { useSongStore } from "./stores/song";
-// import { watch } from "vue";
-// import { useSongStore } from "./stores/song";
 import { useGlobalStore } from "./stores/global";
-
 export default {
   components: {
     AppHeader,
@@ -58,7 +55,6 @@ export default {
       ) {
         e.preventDefault();
         toggleAppPlayerAudio(currentSong.value);
-        console.log("yes");
       }
     });
 

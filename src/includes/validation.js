@@ -17,12 +17,9 @@ import {
   not_one_of as excluded,
   is_not,
 } from "@vee-validate/rules";
-// import { useI18n } from "vue-i18n";
 import { i18n } from "./i18n";
 export default {
   install(app) {
-    // const { t } = useI18n();
-    // app.config.globalProperties.$t = useI18n().t;
     app.component("VeeForm", VeeForm);
     app.component("VeeField", VeeField);
     app.component("ErrorMessage", ErrorMessage);
@@ -84,29 +81,6 @@ export default {
           i18n.t("input_error.messages.invalid", { field })
         );
       },
-
-      // generateMessage: (ctx) => {
-      //   // const messages = {
-      //   //   required: `The field ${ctx.field} is required.`,
-      //   //   min: `The field ${ctx.field} is too short`,
-      //   //   max: `The field ${ctx.field} is too long`,
-      //   //   alpha_spaces: `The field ${ctx.field} may only contain alphabetical characters and spaces.`,
-      //   //   email: `The field ${ctx.field} must be a valid email`,
-      //   //   min_value: `The field ${ctx.field} is too low`,
-      //   //   max_value: `The field ${ctx.field} is too high`,
-      //   //   excluded: `Yor are not allowed to use this value for the field ${ctx.field}`,
-      //   //   country_excluded: `Due to restrictions, we de not accept users from this location`,
-      //   //   passwords_mismatch: "The passwords don't match.",
-      //   //   tos: `You must accept the Terms of Service`,
-      //   //   not_same_value: `The field can not be the same value`,
-      //   // };
-
-      //   // const message = messages[ctx.rule.name]
-      //   //   ? messages[ctx.rule.name]
-      //   //   : `The field ${ctx.field} is invalid`;
-
-      //   return message;
-      // },
       validateOnBlur: true,
       validateOnChange: true,
       validateOnInput: false, // if true 如果錯誤就直接feedback 很擾人
@@ -114,4 +88,3 @@ export default {
     });
   },
 };
-console.log(i18n);

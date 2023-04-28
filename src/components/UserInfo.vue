@@ -140,14 +140,6 @@
         class="rounded-full overflow-hidden relative bg-cover bg-center h-48 w-48 lg:h-52 lg:h-52 relative border mx-auto"
         :style="userPicUrl"
       >
-        <!-- <img
-          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px]"
-          :src="
-            userData.imgUrl ||
-            'https://teameowdev.files.wordpress.com/2016/04/avatar24-01.png'
-          "
-          :alt="userData.name"
-        /> -->
         <div class="absolute right-1 bottom-16">
           <label
             for="image-upload"

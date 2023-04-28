@@ -22,13 +22,13 @@ export default defineConfig({
         enabled: false, // 開發時不啟用service worker，不過build的時候會啟用
       },
       manifest: {
-        name: "Music App",
-        theme_color: "#ff5e3a",
+        name: "Vue Music",
+        theme_color: "#1F2937",
         icons: [
           {
-            src: "assets/img/pwa-192x192.png",
+            src: "assets/img/logo.jpg",
             sizes: "192x192",
-            type: "image/png",
+            type: "image/jpg",
           },
         ],
       },

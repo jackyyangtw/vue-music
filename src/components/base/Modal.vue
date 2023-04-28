@@ -41,7 +41,6 @@
 
 <script>
 export default {
-  // props: ["isModalOpen", "isForm", "successHandler"],
   props: {
     isModalOpen: {
       type: Boolean,
