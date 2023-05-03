@@ -1,13 +1,33 @@
+import { expect } from "vitest";
+import SongItem from "../songItem.vue";
+import { shallowMount, RouterLinkStub } from "@vue/test-utils";
 
-import { mount } from "@vue/test-utils";
-import SongItem from "@/components/SongItem";
-
+// 測試SongItem.vue，.composition-author是否有顯示song.displayName
 describe("SongItem.vue", () => {
-  it("renders props.msg when passed", () => {
-    const msg = "new message";
-    const wrapper = mount(SongItem, {
-      props: { msg },
+  test("render song.displayName", () => {
+    const song = { displayName: "test" };
+    const wrapper = shallowMount(SongItem, {
+      props: { song },
+      global: {
+        components: {
+          "router-link": RouterLinkStub,
+        },
+      },
     });
-    expect(wrapper.text()).toMatch(msg);
+    // querySelector
+    const compositionAuthor = wrapper.find(".composition-author");
+    expect(compositionAuthor.text()).toBe(song.displayName);
+  });
+  test("render song.docID in id attr", () => {
+    const song = { docID: "abs" };
+    const wrapper = shallowMount(SongItem, {
+      props: { song },
+      global: {
+        components: {
+          "router-link": RouterLinkStub,
+        },
+      },
+    });
+    expect(wrapper.attributes("id")).toBe(`song-${song.docID}`);
   });
 });

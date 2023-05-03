@@ -14,7 +14,10 @@ module.exports = {
       extends: ["plugin:cypress/recommended"],
     },
     {
-      files: ["src/components/__tests__/**.spec.js"],
+      files: [
+        "src/components/__tests__/**.spec.js",
+        "src/stores/__test__/**.spec.js",
+      ],
       globals: {
         // let eslint know testing function
         test: "readonly",
