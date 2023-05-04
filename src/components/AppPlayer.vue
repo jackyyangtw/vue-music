@@ -35,6 +35,7 @@
           type="button"
           @click.prevent="toggleAppPlayerAudio"
           class="lg:hidden"
+          id="player-play-btn-mobile"
         >
           <i
             class="fa text-white text-xl"
@@ -45,7 +46,11 @@
       <!-- PC player -->
       <div class="hidden lg:flex flex-nowrap gap-4 items-center">
         <!-- Play/Pause Button -->
-        <button type="button" @click.prevent="toggleAppPlayerAudio">
+        <button
+          type="button"
+          @click.prevent="toggleAppPlayerAudio"
+          id="player-play-btn-pc"
+        >
           <i
             class="fa text-white text-xl"
             :class="{ 'fa-play': !playing, 'fa-pause': playing }"
