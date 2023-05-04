@@ -75,6 +75,13 @@
     "delete": "Delete",
     "deleting_info": "Deleting song..."
   },
+  "modal": {
+    "info": "Are you sure you want to delete this song?",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting_info": "Deleting song...",
+    "comfirm": "Comfirm"
+  },
   "app_state": {
     "logging_in": "Please wait! We are logging you in.",
     "login_success": "Success! You are now logged in!",
@@ -86,7 +93,8 @@
     "add_comment_success": "comment added!",
     "changing_song_info":"Please wait ! Updating song info...",
     "error_happened": "Something went wrong! Try again later",
-    "success": "Success!"
+    "success": "Success!",
+    "update_data": "Updateing..."
   },
   "mobile": {
     "footer": {

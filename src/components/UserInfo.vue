@@ -1,8 +1,10 @@
 <template>
   <div class="rounded border border-gray-200 mb-5" v-if="!isUserInfoLoading">
     <BaseModal
-      :isModalOpen="isModalOpen"
       @closeModal="closeModal"
+      :isModalOpen="isModalOpen"
+      :showButton="true"
+      :isSubmiting="isUpdatingUserInfo"
       :isForm="true"
     >
       <p
@@ -28,7 +30,7 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           ></path>
         </svg>
-        Updateing...
+        {{ $t("app_state.update_data") }}
       </p>
       <p class="red" v-else-if="updateInfo.hasError">
         {{ updateInfo.hasErrorMsg }}
@@ -120,17 +122,22 @@
           </vee-field>
           <ErrorMessage class="text-red-600" name="country"></ErrorMessage>
         </div>
-        <div class="flex justify-end items-center pb-4">
+        <div
+          v-if="!isUpdatingUserInfo"
+          class="flex justify-end items-center pb-4"
+        >
           <!-- left -->
           <BaseButton
             @click="closeModal"
             type="button"
             class="mr-5"
             :blue="true"
-            >Cancel</BaseButton
+            >{{ $t("modal.cancel") }}</BaseButton
           >
           <!-- right -->
-          <BaseButton red="true" type="submit">Submit</BaseButton>
+          <BaseButton red="true" type="submit">{{
+            $t("modal.comfirm")
+          }}</BaseButton>
         </div>
       </VeeForm>
     </BaseModal>
@@ -222,6 +229,7 @@ import {
   songsCollection,
 } from "../includes/firebase";
 import { useGlobalStore } from "../stores/global";
+
 export default {
   props: ["userData", "isUserInfoLoading", "addUserInfo", "getUserData"],
   computed: {
@@ -251,6 +259,7 @@ export default {
       isUpdatingUserInfo: false,
       userPassword: "",
       isUserPasswordChange: false,
+      submitData: {},
     };
   },
 
@@ -343,6 +352,7 @@ export default {
         password: value.password ?? this.userData.password,
         name: value.name ?? this.userData.name,
       };
+      this.submitData = submitedData;
       try {
         let cred;
         this.isUpdatingUserInfo = true;

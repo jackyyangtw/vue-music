@@ -75,6 +75,13 @@
     "delete": "確認刪除",
     "deleting_info": "正在刪除歌曲..."
   },
+  "modal": {
+    "info": "您確認刪除這首歌曲嗎?",
+    "cancel": "取消",
+    "delete": "確認刪除",
+    "deleting_info": "正在刪除歌曲...",
+    "comfirm": "確認"
+  },
   "app_state": {
     "logging_in": "請稍等！我們正在登錄...",
     "login_success": "成功！您現在已登錄！",
@@ -86,7 +93,8 @@
     "add_comment_success": "評論已上傳!",
     "changing_song_info":"請稍等，正在更新歌曲資訊...",
     "error_happened": "發生錯誤，請再試試",
-    "success": "成功!"
+    "success": "成功!",
+    "update_data": "正在更新資料..."
   },
   "mobile": {
     "footer": {

@@ -8,20 +8,49 @@
       >
         {{ song.modifiedName }}
       </router-link>
-      <div class="flex justify-center items-center">
-        <button
-          class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 w-8 h-8"
-          @click="openComfirmModal(song, index)"
-        >
-          <i class="fa fa-times"></i>
-        </button>
-        <button
-          class="ml-1 py-1 px-2 text-sm rounded text-white bg-blue-600 w-8 h-8"
-          @click="toggleForm"
-        >
-          <i class="fa fa-pencil-alt"></i>
-        </button>
-      </div>
+      <BaseModal>
+        <div class="text-2xl font-bold pb-5" v-if="!isDeleting">
+          <svg
+            aria-hidden="true"
+            class="mx-auto mb-4 w-20 h-20 text-gray-400 dark:text-black-200"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <div class="pb-3">{{ $t("confirm_modal.info") }}</div>
+          <div class="text-green-500 italic pb-3">
+            {{ song.modifiedName }}
+          </div>
+        </div>
+        <div class="text-2xl font-bold text-center" v-else>
+          {{ $t("confirm_modal.deleting_info") }}
+        </div>
+
+        <!-- buttons -->
+        <div class="flex justify-end items-center pb-4" v-if="!isDeleting">
+          <div
+            class="cursor-pointer bg-blue-500 hover:bg-blue-400 p-3 rounded text-white mr-5"
+          >
+            <button @click="closeComfirmModal">
+              {{ $t("confirm_modal.cancel") }}
+            </button>
+          </div>
+          <div
+            class="cursor-pointer bg-red-500 text-white p-3 rounded hover:bg-red-400"
+            @click="deleteSong"
+          >
+            {{ $t("confirm_modal.delete") }}
+          </div>
+        </div>
+      </BaseModal>
     </div>
     <div v-show="showForm">
       <div
@@ -79,6 +108,7 @@
       </vee-form>
     </div>
   </div>
+  <BaseModal></BaseModal>
 </template>
 
 <script>

@@ -1,6 +1,6 @@
 <template>
   <teleport to="body">
-    <transition name="fadeUp">
+    <transition name="fadeUp" @after-leave="leavingHandler">
       <div
         v-show="isModalOpen"
         class="flex items-center justify-center pt-4 px-4 pb-20 text-center sm:block sm:p-0"
@@ -12,26 +12,24 @@
         <div
           class="content fixed-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg w-[80%]"
         >
-          <slot></slot>
+          <slot> </slot>
           <!-- buttons -->
-          <div v-if="!isForm" class="flex justify-end items-center pb-4">
+          <div
+            v-if="showButton && !isForm"
+            class="flex justify-end items-center pb-4"
+          >
             <!-- left -->
             <BaseButton
               @click="closeModal"
-              :type="button"
+              type="button"
               class="mr-5"
               :blue="true"
-              v-if="showButton"
-              >Cancel</BaseButton
+              >{{ $t("modal.cancel") }}</BaseButton
             >
             <!-- right -->
-            <BaseButton
-              red="true"
-              type="button"
-              @click="successHandler"
-              v-if="showButton"
-              >Delete</BaseButton
-            >
+            <BaseButton red="true" type="button" @click="successHandler">{{
+              actionString
+            }}</BaseButton>
           </div>
         </div>
       </div>
@@ -40,6 +38,7 @@
 </template>
 
 <script>
+import { useI18n } from "vue-i18n";
 export default {
   props: {
     isModalOpen: {
@@ -55,6 +54,16 @@ export default {
     showButton: {
       type: Boolean,
       default: true,
+    },
+    leavingHandler: {
+      type: Function,
+    },
+    actionString: {
+      type: String,
+      default: () => {
+        const { t } = useI18n();
+        return t("modal.delete");
+      },
     },
   },
   emits: ["closeModal"],
