@@ -9,8 +9,7 @@ export const useModalStore = defineStore("modal", () => {
   });
 
   const isComfirmModalOpen = ref(false);
-  const index = ref("");
-  const song = ref({});
+
   const globalStore = useGlobalStore();
   const { IsKeydownSpaceEventActive } = storeToRefs(globalStore);
   const { setIsKeydownSpaceEventActive } = globalStore;
@@ -26,6 +25,8 @@ export const useModalStore = defineStore("modal", () => {
   const closeComfirmModal = () => {
     isComfirmModalOpen.value = false;
   };
+  const index = ref("");
+  const song = ref({});
   const openComfirmModal = (songData, indexData) => {
     isComfirmModalOpen.value = true;
     song.value = songData;

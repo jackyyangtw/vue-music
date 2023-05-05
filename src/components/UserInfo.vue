@@ -4,7 +4,6 @@
       @closeModal="closeModal"
       :isModalOpen="isModalOpen"
       :showButton="true"
-      :isSubmiting="isUpdatingUserInfo"
       :isForm="true"
     >
       <p
