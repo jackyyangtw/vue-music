@@ -5,7 +5,7 @@
         {{ $t("mobile.manage_redirect.please_login") }}
       </p>
       <a
-        @click.prevent="toggleModal"
+        @click.prevent="toggleAuthModal"
         class="block py-1 rounded-xl mx-auto text-center flex justify-center items-center max-w-[80%] h-48 border"
         href="#"
       >
@@ -78,7 +78,7 @@ export default {
   setup() {
     const userStore = useUserStore();
     const modalStore = useModalStore();
-    const { toggleModal } = modalStore;
+    const { toggleAuthModal } = modalStore;
     const route = useRoute();
     const router = useRouter();
     const { getUserDataAction, signoutAction } = userStore;
@@ -141,8 +141,8 @@ export default {
       addUserInfo,
       getUserData,
       signOut,
-      toggleModal,
       changeLocale,
+      toggleAuthModal,
     };
   },
   async beforeRouteEnter(to, from, next) {

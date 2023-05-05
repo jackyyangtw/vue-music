@@ -24,7 +24,7 @@
     </section>
 
     <!-- Main Content -->
-    <section class="container mx-auto">
+    <section class="container mx-auto" :class="{ 'mb-20': sid !== '' }">
       <div class="rounded border border-gray-200 relative flex flex-col mx-5">
         <div
           class="px-6 pt-6 pb-5 font-bold border-b border-gray-200"
@@ -70,6 +70,7 @@ import { songsCollection } from "../includes/firebase";
 import SongItem from "../components/SongItem.vue";
 import IconSecondary from "../directives/icon-secondary";
 import { useSongStore } from "../stores/song";
+import { usePlayerStore } from "../stores/player";
 import { storeToRefs } from "pinia";
 import { ref, onMounted, onBeforeUnmount, watchEffect, computed } from "vue";
 export default {
@@ -81,6 +82,9 @@ export default {
     const songStore = useSongStore();
     const { showFetchedSongs, allSongs } = storeToRefs(songStore);
     const { getAllSongs } = songStore;
+
+    const playerStore = usePlayerStore();
+    const { sid } = storeToRefs(playerStore);
 
     const songs = ref([]);
     const pendingRequest = ref(false);
@@ -187,6 +191,7 @@ export default {
       filteredSongs,
       pendingRequest,
       remainingSongs,
+      sid,
     };
   },
 

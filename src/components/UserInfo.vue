@@ -143,7 +143,7 @@
     <!-- pic -->
     <div class="w-full lg:w-1/2 p-5 relative">
       <div
-        class="rounded-full overflow-hidden relative bg-cover bg-center h-48 w-48 lg:h-52 lg:h-52 relative border mx-auto"
+        class="rounded-full overflow-hidden relative bg-cover bg-center h-48 w-48 lg:h-54 lg:h-54 relative border mx-auto"
         :style="userPicUrl"
       >
         <div class="absolute right-1 bottom-16">

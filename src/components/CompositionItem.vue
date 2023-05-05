@@ -11,7 +11,7 @@
       <div class="flex justify-center items-center">
         <button
           class="ml-1 py-1 px-2 text-sm rounded text-white bg-red-600 w-8 h-8"
-          @click="openComfirmModal(song, index)"
+          @click="openComfirmModal"
         >
           <i class="fa fa-times"></i>
         </button>
@@ -130,8 +130,12 @@
 
 <script>
 import { ErrorMessage } from "vee-validate";
-import { songsCollection, storage } from "../includes/firebase";
-// import { useModalStore } from "@/stores/modal";
+import {
+  songsCollection,
+  commentCollection,
+  storage,
+  db,
+} from "../includes/firebase";
 import { useSongStore } from "../stores/song";
 import { useGlobalStore } from "../stores/global";
 import { ref } from "vue";
@@ -169,18 +173,33 @@ export default {
     const showAlert = ref(false);
     const alertVariant = ref("bg-blue-500");
     const alertMessage = ref(t("app_state.changing_song_info"));
-    // const modalStore = useModalStore();
-    // const { openComfirmModal } = modalStore;
 
     // delete song
+    const songStore = useSongStore();
+    const { removeUserSong } = songStore;
+    const { allSongs } = storeToRefs(songStore);
+    const removeSongData = (index) => {
+      allSongs.value.splice(index, 1);
+      removeUserSong(index);
+    };
     const isDeleting = ref(false);
     const isModalOpen = ref(false);
-    const index = ref("");
-    const song = ref({});
-    const openComfirmModal = (songData, indexData) => {
+    const openComfirmModal = async () => {
       isModalOpen.value = true;
-      song.value = songData;
-      index.value = indexData;
+      // const snapshots = await commentCollection.get();
+      // snapshots.forEach((snapshot) => {
+      //   // console.log(snapshot.data());
+      //   console.log(snapshot.data().sid);
+      // });
+      // console.log(data);
+      // console.log(props.song.docID);
+      const snapshots = await commentCollection
+        .where("sid", "==", props.song.docID)
+        .get();
+
+      snapshots.forEach((doc) => {
+        console.log(doc);
+      });
     };
     const closeComfirmModal = () => {
       isModalOpen.value = false;
@@ -188,18 +207,29 @@ export default {
     const deleteSong = async () => {
       // delete storage file
       const storeRef = storage.ref();
-      const songRef = storeRef.child(`song/${song.value.originialName}`);
+      const songRef = storeRef.child(`song/${props.song.originialName}`);
       isDeleting.value = true;
+
+      // const batch = db.batch();
 
       try {
         await songRef.delete();
-        // delete data
-        await songsCollection.doc(song.value.docID).delete();
+        // delete song data
+        await songsCollection.doc(props.song.docID).delete();
+
+        // delete comment
+        const commentSnapshots = await commentCollection
+          .where("sid", "==", props.song.docID)
+          .get();
+
+        commentSnapshots.forEach(async (doc) => {
+          await doc.ref.delete();
+        });
       } catch (err) {
         console.log(err);
       }
 
-      props.removeSongData(index.value);
+      removeSongData(props.index);
       closeComfirmModal();
     };
 
@@ -221,9 +251,7 @@ export default {
       }
     };
 
-    // 新增: 如果有資料變更，songStore / showFetchedSongs = true
-    // 如果資料沒變 return
-    const songStore = useSongStore();
+    // 更新歌曲資訊
     const { showFetchedSongs } = storeToRefs(songStore);
     const { updateSingleStoreSong } = songStore;
     const editForm = async (values) => {

@@ -110,7 +110,7 @@
         >
           <div
             v-cloak
-            @click="toggleModal"
+            @click="toggleAuthModal"
             class="cursor-pointer text-white-700 transition bg-green-400 hover:bg-green-500 max-w-xs text-center inline-block rounded py-3 px-3"
           >
             {{ $t("song.login_btn") }}
@@ -144,7 +144,7 @@
               <div
                 class="text-white text-center font-bold p-4 inline-block transition-all"
                 v-show="commentShowAlert"
-                :class="[commentAlertVariant, { 'opacity-0': !showMessage }]"
+                :class="[{ 'opacity-0': !showMessage }, commentAlertVariant]"
               >
                 {{ commentAlertMessage }}
               </div>
@@ -188,8 +188,8 @@ import { usePlayerStore } from "../stores/player";
 import { useUserStore } from "../stores/user";
 import { useModalStore } from "../stores/modal";
 import { useGlobalStore } from "../stores/global";
-import { ref, reactive, computed, watch, toRefs } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { ref, reactive, computed, toRefs } from "vue";
+import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { useSongStore } from "../stores/song";
@@ -200,10 +200,9 @@ export default {
     const userStore = useUserStore();
     const { userLoggedIn } = storeToRefs(userStore);
     const modalstore = useModalStore();
-    const { toggleModal } = modalstore;
+    const { toggleAuthModal } = modalstore;
 
     const route = useRoute();
-    const router = useRouter();
 
     const song = ref({});
     const comments = ref([]);
@@ -238,19 +237,9 @@ export default {
       return false;
     });
 
-    watch(sort, (newVal) => {
-      if (newVal === route.query.sort) {
-        return;
-      }
-      router.push({
-        query: {
-          sort: newVal,
-        },
-      });
-    });
-
     const songStore = useSongStore();
     const { getAllSongs } = songStore;
+    const { allSongs } = storeToRefs(songStore);
     const showMessage = ref(true);
     const addComment = async (values, { resetForm }) => {
       showMessage.value = true;
@@ -263,7 +252,7 @@ export default {
         datePosted: new Date().toISOString(),
         sid: route.params.id,
         name: auth.currentUser.displayName,
-        uid: auth.currentUser.uid, // user更改評論的時候會用到
+        uid: auth.currentUser.uid,
       };
       await commentCollection.add(comment);
 
@@ -272,9 +261,13 @@ export default {
         commentCount: song.value.commentCount,
       });
 
-      getAllSongs();
+      // update commemt count in allSongs
+      allSongs.value.find(
+        (song) => song.docID === route.params.id
+      ).commentCount += 1;
 
-      getComments();
+      await getComments();
+      await getAllSongs();
       commentState.commentInSubmission = false;
       commentState.commentAlertVariant = "bg-green-500";
       commentState.commentAlertMessage = t("app_state.add_comment_success");
@@ -324,7 +317,7 @@ export default {
       ...toRefs(commentState),
       addComment,
       getComments,
-      toggleModal,
+      toggleAuthModal,
       changeState,
       showMessage,
       t,

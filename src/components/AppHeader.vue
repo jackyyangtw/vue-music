@@ -14,9 +14,12 @@
         <ul class="flex flex-row mt-1">
           <!-- login button -->
           <li v-if="!userLoggedIn">
-            <a @click.prevent="toggleModal" class="px-2 text-white" href="#">{{
-              $t("header.login")
-            }}</a>
+            <a
+              @click.prevent="toggleAuthModal"
+              class="px-2 text-white"
+              href="#"
+              >{{ $t("header.login") }}</a
+            >
           </li>
 
           <!-- manage & logout -->
@@ -78,7 +81,7 @@ export default {
     const isLanguageBoxShow = ref(false);
 
     const modalStore = useModalStore();
-    const { toggleModal } = modalStore;
+    const { toggleAuthModal } = modalStore;
 
     const userStore = useUserStore();
     const { signoutAction } = userStore;
@@ -130,7 +133,7 @@ export default {
       showLanguageBox,
       changeLocale,
       signOut,
-      toggleModal,
+      toggleAuthModal,
       userLoggedIn,
     };
   },

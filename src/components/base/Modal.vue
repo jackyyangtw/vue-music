@@ -6,12 +6,13 @@
         class="flex items-center justify-center pt-4 px-4 pb-20 text-center sm:block sm:p-0"
       >
         <!-- backdrop -->
-        <div class="fixed inset-0 transition-opacity" @click="closeModal">
+        <div class="fixed inset-0 transition-opacity z-10" @click="closeModal">
           <div class="absolute inset-0 bg-gray-800 opacity-75"></div>
         </div>
         <div
-          class="content fixed-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg w-[80%]"
+          class="content fixed-center inline-block align-bottom bg-white text-left overflow-hidden shadow-xl transition-all p-5 rounded-lg sm:my-8 sm:align-middle sm:max-w-lg w-[80%] z-20"
         >
+          <slot name="head"> </slot>
           <slot> </slot>
           <!-- buttons -->
           <div

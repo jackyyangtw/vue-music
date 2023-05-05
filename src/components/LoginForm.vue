@@ -1,13 +1,12 @@
 <template>
   <div
     v-if="loginState.loginShowAlert"
-    class="text-white text-center font-blod p-4 mb-4 transition"
+    class="text-white text-center font-blod p-4 my-5 transition"
     :class="loginState.loginAlertVariant"
   >
     {{ loginState.loginAlertMsg }}
   </div>
-  <input type="text" id="test" />
-  <vee-form :validation-schema="loginSchema" @submit="login">
+  <vee-form :validation-schema="loginSchema" @submit="login" class="py-3">
     <!-- Email -->
     <div class="mb-3">
       <label class="inline-block mb-2">{{ $t("input_field.email") }}</label>
@@ -35,7 +34,7 @@
     </div>
     <button
       type="submit"
-      class="block w-full bg-purple-600 text-white py-1.5 px-3 rounded transition hover:bg-purple-700"
+      class="block w-full bg-purple-600 text-white py-1.5 px-3 mt-7 rounded transition hover:bg-purple-700"
       :disabled="loginState.loginInSubmission"
     >
       {{ $t("header.submit") }}

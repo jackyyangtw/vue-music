@@ -53,14 +53,12 @@
         </div>
       </div>
     </div>
-    <ComfirmModal :removeSongData="removeSongData"></ComfirmModal>
   </section>
 </template>
 
 <script>
 import Upload from "@/components/Upload.vue";
 import CompositionItem from "../components/CompositionItem.vue";
-import ComfirmModal from "../components/ComfirmModal.vue";
 import UserInfo from "../components/UserInfo.vue";
 import { useUserStore } from "../stores/user";
 import { useSongStore } from "../stores/song";
@@ -69,7 +67,7 @@ import { storeToRefs } from "pinia";
 import { onMounted, ref, watch } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 export default {
-  components: { Upload, CompositionItem, ComfirmModal, UserInfo },
+  components: { Upload, CompositionItem, UserInfo },
   name: "manage",
   setup() {
     const userStore = useUserStore();
